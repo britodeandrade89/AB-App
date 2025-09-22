@@ -1,0 +1,59 @@
+Email ,% FC Alvo,FC Máx do Aluno,FC de Treino Alvo (BPM),Data o Treino,Número do treino ,MÉTODO DE TREINO,Velocidade (Km|h),PACE (Esperado),Tempo Total do Treino (Esperado),Data Final,Método Final
+britodeandrade@gmail.com,"0,8",184,"147,2",10/9,1,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC","8,5",7,30,10/9,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC"
+britodeandrade@gmail.com,"0,85",184,"156,4","=IF(MOD(ROW() - 2, 3) = 2, data_da_linha_anterior + 3, data_da_linha_anterior + 2)",2,"INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC ","9,5","6,19",30,"=IF(MOD(ROW() - 2, 3) = 2, data_da_linha_anterior + 3, data_da_linha_anterior + 2)","INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC "
+britodeandrade@gmail.com,"0,8",184,"147,2",17/9,3,"LONGÃO 
+5' AQ + 3 KM DE CO CONTÍNUA + 5' REC
+","8,5","7,04",30,17/9,"LONGÃO 
+5' AQ + 3 KM DE CO CONTÍNUA + 5' REC
+"
+britodeandrade@gmail.com,"0,9",184,"165,6",12/09,4,"RITMO
+5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC",11,"5,27","26,3",12/09,"RITMO
+5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC"
+britodeandrade@gmail.com,"0,95",184,"174,8",19/9,5,"TIROS
+5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC",15,4,32,19/9,"TIROS
+5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC"
+britodeandrade@gmail.com,"0,8",184,"147,2",20/09,0,,"8,5",7,30,20/09,Método Próximo Treino
+britodeandrade@gmail.com,"0,85",184,"156,4",21/09,0,,"9,5","6,19",30,21/09,Método Próximo Treino
+britodeandrade@gmail.com,"0,8",184,"147,2",22/9,0,,"8,5","7,04",30,22/9,Método Próximo Treino
+britodeandrade@gmail.com,"0,9",184,"165,6",23/9,0,,11,"5,27","26,3",23/9,Método Próximo Treino
+britodeandrade@gmail.com,"0,95",184,"174,8",24/9,0,,15,4,32,24/9,Método Próximo Treino
+britodeandrade@gmail.com,,184,,25/9,0,,,,,25/9,Método Próximo Treino
+britodeandrade@gmail.com,,184,,26/9,0,,,,,26/9,Método Próximo Treino
+britodeandrade@gmail.com,,184,,27/9,0,,,,,27/9,Método Próximo Treino
+,,,,,0,,,,,Data Próximo Treino (Calculado),Método Próximo Treino
+marcellybispo92@gmail.com,"0,8",187,"149,6",15/9,1,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC","7,5",8,30,15/9,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC"
+marcellybispo92@gmail.com,"0,85",187,"158,95",10/9,2,"INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC ","8,5","7,04",30,10/9,"INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC "
+marcellybispo92@gmail.com,"0,8",187,"149,6",17/9,3,"LONGÃO 
+5' AQ + 3 KM DE CO CONTÍNUA + 5' REC
+",8,"7,3",30,17/9,"LONGÃO 
+5' AQ + 3 KM DE CO CONTÍNUA + 5' REC
+"
+marcellybispo92@gmail.com,"0,9",187,"168,3",12/09,4,"RITMO
+5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC","9,5","6,19","26,3",12/09,"RITMO
+5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC"
+marcellybispo92@gmail.com,"0,95",187,"177,65",19/9,5,"TIROS
+5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC",12,5,32,19/9,"TIROS
+5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC"
+marcellybispo92@gmail.com,"0,8",187,"149,6",15/9,1,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC","7,5",8,30,15/9,"FARTLEK  
+5' AQ + 20' CO alternado entre CA : CO + 5' REC"
+marcellybispo92@gmail.com,"0,85",187,"158,95",10/9,2,"INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC ","8,5","7,04",30,10/9,"INTERVALADO 
+5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC "
+,,,,,0,,,,,Data Próximo Treino (Calculado),Método Próximo Treino
+,,,,,0,,,,,Data Próximo Treino (Calculado),Método Próximo Treino
+,,,,,0,,,,,Data Próximo Treino (Calculado),Método Próximo Treino
+,,,,,0,,,,,Data Próximo Treino (Calculado),Método Próximo Treino
+marcellybispo92@gmail.com,,187,,10/9,0,,,,,10/9,Método Próximo Treino
+marcellybispo92@gmail.com,,187,,11/9,0,,,,,11/9,Método Próximo Treino
+marcellybispo92@gmail.com,,187,,12/9,0,,,,,12/9,Método Próximo Treino
+marcellybispo92@gmail.com,,187,,13/9,0,,,,,13/9,Método Próximo Treino
+marcellybispo92@gmail.com,,187,,14/9,0,,,,,14/9,Método Próximo Treino
