@@ -316,6 +316,128 @@
             color: white;
         }
         
+        .periodization-container {
+            overflow-x: auto;
+        }
+        
+        .periodization-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            font-size: 0.85rem; 
+            min-width: 800px;
+        }
+        
+        .periodization-table th, .periodization-table td { 
+            border: 1px solid var(--border-color); 
+            padding: 10px; 
+            text-align: left; 
+        }
+        
+        .periodization-table th { 
+            background-color: var(--bg-secondary); 
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+        }
+        
+        .periodization-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .phase-adaptation {
+            background-color: #e8f5e9 !important;
+        }
+        
+        .phase-strength {
+            background-color: #e3f2fd !important;
+        }
+        
+        .phase-max-strength {
+            background-color: #f3e5f5 !important;
+        }
+        
+        .phase-deload {
+            background-color: #fff3e0 !important;
+        }
+        
+        .running-plan { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        
+        .running-session { 
+            background-color: #eff6ff; 
+            border-left: 4px solid #3b82f6; 
+            padding: 15px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        
+        .running-session.next {
+            background-color: #e8f5e9;
+            border-left-color: var(--accent-green);
+        }
+        
+        .running-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .running-details.active {
+            display: block;
+        }
+        
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 10px; 
+            margin-top: 15px; 
+        }
+        
+        .stat-card { 
+            background-color: var(--bg-secondary); 
+            padding: 15px; 
+            border-radius: 5px; 
+            text-align: center; 
+        }
+        
+        .stat-value { 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: var(--accent-red); 
+        }
+        
+        .stat-label { 
+            font-size: 0.8rem; 
+            color: var(--text-secondary); 
+        }
+        
+        /* Estilo para a logo AB Fit */
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-red);
+            margin-bottom: 20px;
+        }
+        
+        .logo-text span:first-child {
+            color: var(--accent-red);
+        }
+        
+        .logo-text span:last-child {
+            color: var(--text-primary);
+        }
+        
+        .workout-progress {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
         .calendar-controls { 
             display: flex; 
             justify-content: space-between; 
@@ -415,101 +537,6 @@
         .day-number { 
             font-weight: bold; 
         }
-        
-        .periodization-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 15px; 
-            font-size: 0.9rem; 
-        }
-        
-        .periodization-table th, .periodization-table td { 
-            border: 1px solid var(--border-color); 
-            padding: 12px; 
-            text-align: left; 
-        }
-        
-        .periodization-table th { 
-            background-color: var(--bg-secondary); 
-            font-weight: 600;
-        }
-        
-        .running-plan { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-        
-        .running-session { 
-            background-color: #eff6ff; 
-            border-left: 4px solid #3b82f6; 
-            padding: 15px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-        }
-        
-        .running-session.next {
-            background-color: #e8f5e9;
-            border-left-color: var(--accent-green);
-        }
-        
-        .running-details {
-            display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .running-details.active {
-            display: block;
-        }
-        
-        .stats { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-            gap: 10px; 
-            margin-top: 15px; 
-        }
-        
-        .stat-card { 
-            background-color: var(--bg-secondary); 
-            padding: 15px; 
-            border-radius: 5px; 
-            text-align: center; 
-        }
-        
-        .stat-value { 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            color: var(--accent-red); 
-        }
-        
-        .stat-label { 
-            font-size: 0.8rem; 
-            color: var(--text-secondary); 
-        }
-        
-        /* Estilo para a logo AB Fit */
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent-red);
-            margin-bottom: 20px;
-        }
-        
-        .logo-text span:first-child {
-            color: var(--accent-red);
-        }
-        
-        .logo-text span:last-child {
-            color: var(--text-primary);
-        }
-        
-        .workout-progress {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
     </style>
 </head>
 <body>
@@ -600,8 +627,10 @@
             <div id="periodization-tab" class="tab-content">
                 <div class="card">
                     <h2><i class="fas fa-calendar-week"></i> Periodização</h2>
-                    <div id="periodization-table">
-                        <!-- A tabela de periodização será carregada via JavaScript -->
+                    <div class="periodization-container">
+                        <div id="periodization-table">
+                            <!-- A tabela de periodização será carregada via JavaScript -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -677,7 +706,7 @@
             }
         ];
 
-        // Dados COMPLETOS de treinos com TODOS os exercícios do CSV
+        // Dados COMPLETOS de treinos (mantidos iguais)
         const workouts = {
             "britodeandrade@gmail.com": {
                 A: [
@@ -761,8 +790,7 @@
             }
         };
 
-        // Restante do código JavaScript permanece igual...
-        // Dados de corrida
+        // Dados de corrida (mantidos iguais)
         const runningPlans = {
             "britodeandrade@gmail.com": [
                 { date: "30/09/2025", number: 1, method: "FARTLEK", targetHR: "147,2", pace: "7:00", duration: "30min", details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC" },
@@ -776,30 +804,47 @@
             ]
         };
 
-        // Dados de periodização
+        // Dados COMPLETOS de periodização até a 13ª semana conforme as planilhas
         const periodizations = {
             "britodeandrade@gmail.com": [
-                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
-                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
-                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s" }
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s", description: "Realizar o número prescrito de repetições com a carga determinada, mantendo técnica adequada em todas as repetições." },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s", description: "Realizar uma série até a falha concêntrica, descansar apenas 10 segundos, realizar mais repetições até nova falha, repetir o total de séries prescritas por exercício." },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s", description: "Iniciar com carga para o número de repetições alvo, reduzir 2% da carga e realizar + 1 repetição, repetir o processo 3 vezes, ou seja, sempre manter a carga e aumentar as repetições a cada série." },
+                { weeks: "7ª e 8ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "5-6", volume: "12 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s", description: "" },
+                { weeks: "9ª e 10ª", phase: "Força Máxima", method: "Método de execução Simples + Pirâmide", reps: "3 \\ 4 \\ 5", volume: "10 séries/grupo", intensity: "85-90% 1RM", recovery: "120-180s", description: "" },
+                { weeks: "11ª", phase: "Força Máxima", method: "Método de execução Simples + Rest-Pause + Pirâmide", reps: "3 \\ 4 \\ 5", volume: "10 séries/grupo", intensity: "85-90% 1RM", recovery: "120-180s", description: "" },
+                { weeks: "12ª e 13ª", phase: "Deload", method: "Método de execução Simples (recuperação)", reps: "6-8", volume: "8 séries/grupo", intensity: "50-60% 1RM", recovery: "60s", description: "" }
             ],
             "marcellybispo92@gmail.com": [
-                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
-                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
-                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s" }
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s", description: "Realizar o número prescrito de repetições com a carga determinada, mantendo técnica adequada em todas as repetições." },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s", description: "Realizar uma série até a falha concêntrica, descansar apenas 10 segundos, realizar mais repetições até nova falha, repetir o total de séries prescritas por exercício." },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s", description: "Iniciar com carga para o número de repetições alvo, reduzir 2% da carga e realizar + 1 repetição, repetir o processo 3 vezes, ou seja, sempre manter a carga e aumentar as repetições a cada série." },
+                { weeks: "7ª e 8ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "5-6", volume: "12 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s", description: "" },
+                { weeks: "9ª e 10ª", phase: "Força Máxima", method: "Método de execução Simples + Pirâmide", reps: "3 \\ 4 \\ 5", volume: "10 séries/grupo", intensity: "85-90% 1RM", recovery: "120-180s", description: "" },
+                { weeks: "11ª", phase: "Força Máxima", method: "Método de execução Simples + Rest-Pause + Pirâmide", reps: "3 \\ 4 \\ 5", volume: "10 séries/grupo", intensity: "85-90% 1RM", recovery: "120-180s", description: "" },
+                { weeks: "12ª e 13ª", phase: "Deload", method: "Método de execução Simples (recuperação)", reps: "6-8", volume: "8 séries/grupo", intensity: "50-60% 1RM", recovery: "60s", description: "" }
             ],
             "andrademarcia.ucam@gmail.com": [
-                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
-                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
-                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" }
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "7ª e 8ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "10", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "9ª e 10ª", phase: "Força", method: "Método de execução Simples + Pirâmide", reps: "8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "11ª", phase: "Força", method: "Método de execução Simples + Rest-Pause + Pirâmide", reps: "12/10/8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "12ª e 13ª", phase: "Drop-set", method: "Método de execução Simples (recuperação)", reps: "8 + 8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" }
             ],
             "lilicatorres@gmail.com": [
-                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
-                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
-                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" }
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s", description: "" },
+                { weeks: "7ª e 8ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "10", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "9ª e 10ª", phase: "Força", method: "Método de execução Simples + Pirâmide", reps: "8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "11ª", phase: "Força", method: "Método de execução Simples + Rest-Pause + Pirâmide", reps: "12/10/8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" },
+                { weeks: "12ª e 13ª", phase: "Drop-set", method: "Método de execução Simples (recuperação)", reps: "8 + 8", volume: "9 séries/grupo", intensity: "70-75% 1RM", recovery: "30s", description: "" }
             ]
         };
 
+        // Restante do código JavaScript permanece igual...
         // Estado da aplicação
         let currentUser = null;
         let workoutHistory = JSON.parse(localStorage.getItem('workoutHistory')) || {};
@@ -1130,14 +1175,22 @@
                             <th>Volume</th>
                             <th>Intensidade</th>
                             <th>Recuperação</th>
+                            <th>Descrição</th>
                         </tr>
                     </thead>
                     <tbody>
                 `;
                 
                 userPeriodization.forEach(phase => {
+                    // Determinar a classe CSS baseada na fase
+                    let phaseClass = '';
+                    if (phase.phase.includes('Adaptação')) phaseClass = 'phase-adaptation';
+                    else if (phase.phase.includes('Força') && !phase.phase.includes('Máxima')) phaseClass = 'phase-strength';
+                    else if (phase.phase.includes('Força Máxima')) phaseClass = 'phase-max-strength';
+                    else if (phase.phase.includes('Deload') || phase.phase.includes('Drop-set')) phaseClass = 'phase-deload';
+                    
                     tableHTML += `
-                    <tr>
+                    <tr class="${phaseClass}">
                         <td>${phase.weeks}</td>
                         <td>${phase.phase}</td>
                         <td>${phase.method}</td>
@@ -1145,6 +1198,7 @@
                         <td>${phase.volume}</td>
                         <td>${phase.intensity}</td>
                         <td>${phase.recovery}</td>
+                        <td>${phase.description || '-'}</td>
                     </tr>
                     `;
                 });
