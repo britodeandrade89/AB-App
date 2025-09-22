@@ -259,39 +259,46 @@
             border-bottom: none; 
         }
         
-        .exercise-item img { 
-            width: 60px; 
-            height: 60px; 
-            border-radius: 8px; 
-            object-fit: cover; 
-            margin-right: 15px; 
-            flex-shrink: 0; 
-            background-color: #eee; 
-        }
-        
         .exercise-info { 
             flex: 1; 
         }
         
         .exercise-info h4 { 
             color: var(--text-primary); 
-            margin-bottom: 4px; 
+            margin-bottom: 8px; 
+            font-size: 1.1rem;
         }
         
         .exercise-info p { 
             color: var(--text-secondary); 
             font-size: 0.9rem; 
+            margin-bottom: 4px;
+        }
+        
+        .exercise-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .exercise-detail {
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
         
         .exercise-check {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-left: 15px;
         }
         
         .check-btn {
-            width: 24px;
-            height: 24px;
+            width: 30px;
+            height: 30px;
             border: 2px solid #ddd;
             border-radius: 50%;
             background: none;
@@ -299,6 +306,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
         }
         
         .check-btn.checked {
@@ -411,17 +420,18 @@
             width: 100%; 
             border-collapse: collapse; 
             margin-top: 15px; 
-            font-size: 0.8rem; 
+            font-size: 0.9rem; 
         }
         
         .periodization-table th, .periodization-table td { 
             border: 1px solid var(--border-color); 
-            padding: 10px; 
+            padding: 12px; 
             text-align: left; 
         }
         
         .periodization-table th { 
             background-color: var(--bg-secondary); 
+            font-weight: 600;
         }
         
         .running-plan { 
@@ -479,53 +489,6 @@
             color: var(--text-secondary); 
         }
         
-        .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 2000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5); 
-            animation: fadeIn 0.3s; 
-        }
-        
-        .modal-content { 
-            background-color: var(--bg-primary); 
-            margin: 15% auto; 
-            padding: 25px; 
-            border: 1px solid #ccc; 
-            border-radius: 10px; 
-            width: 90%; 
-            max-width: 500px; 
-            position: relative; 
-        }
-        
-        .close-btn { 
-            color: #aaa; 
-            position: absolute; 
-            top: 10px; 
-            right: 20px; 
-            font-size: 28px; 
-            font-weight: bold; 
-        }
-        
-        .close-btn:hover, .close-btn:focus { 
-            color: var(--text-primary); 
-            text-decoration: none; 
-            cursor: pointer; 
-        }
-        
-        #modal-run-details p { 
-            margin-bottom: 10px; 
-        }
-        
-        #modal-run-details p strong { 
-            color: var(--text-secondary); 
-        }
-        
         /* Estilo para a logo AB Fit */
         .logo-text {
             font-size: 2.5rem;
@@ -540,6 +503,12 @@
         
         .logo-text span:last-child {
             color: var(--text-primary);
+        }
+        
+        .workout-progress {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -587,6 +556,7 @@
                             <span><i class="fas fa-folder"></i> Treino A</span>
                             <button class="check-in-btn" id="checkInA">Check-in A</button>
                         </h3>
+                        <div class="workout-progress" id="progressA">0/0 exercícios completos</div>
                         <div class="workout-details" id="workoutA-details">
                             <!-- Exercícios do Treino A serão carregados aqui -->
                         </div>
@@ -597,6 +567,7 @@
                             <span><i class="fas fa-folder"></i> Treino B</span>
                             <button class="check-in-btn" id="checkInB">Check-in B</button>
                         </h3>
+                        <div class="workout-progress" id="progressB">0/0 exercícios completos</div>
                         <div class="workout-details" id="workoutB-details">
                             <!-- Exercícios do Treino B serão carregados aqui -->
                         </div>
@@ -663,7 +634,7 @@
     </div>
 
     <script>
-        // Dados dos usuários
+        // Dados COMPLETOS dos usuários com todos os exercícios
         const users = [
             {
                 name: "André Brito",
@@ -706,42 +677,91 @@
             }
         ];
 
-        // Dados de treinos
+        // Dados COMPLETOS de treinos com TODOS os exercícios do CSV
         const workouts = {
             "britodeandrade@gmail.com": {
                 A: [
                     { exercise: "Agachamento parcial no Smith", series: 4, reps: 10, load: 15, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Agachamento Livre com HBC", series: 4, reps: 10, load: 14, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Cadeira extensora", series: 4, reps: 10, load: 3, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Supino inclinado com HBC", series: 3, reps: 10, load: 12, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Extensão de cotovelos no solo", series: 3, reps: 10, load: 0, method: "Método Simples (10 RM)", recovery: "30s" }
+                    { exercise: "Supino inclinado com HBC (CONJUGADO 1)", series: 3, reps: 10, load: 12, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Extensão de cotovelos no solo (CONJUGADO 1)", series: 3, reps: 10, load: 0, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo aberto na máquina", series: 6, reps: 10, load: 8, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Desenvolvimento aberto com HBC no banco 75º (CONJUGADO 2)", series: 4, reps: 10, load: 7, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Tríceps em pé no cross barra reta", series: 6, reps: 10, load: 6, method: "Método Simples (10 RM)", recovery: "30s" }
                 ],
                 B: [
                     { exercise: "Agachamento sumô com HBC", series: 4, reps: 10, load: 22, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Stiff em pé com HBM", series: 4, reps: 10, load: 14, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Extensão de quadril com caneleira", series: 4, reps: 10, load: 7, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Remada curvada aberta com HBC", series: 3, reps: 10, load: 8, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Crucifixo inverso curvado com HBC", series: 3, reps: 10, load: 4, method: "Método Simples (10 RM)", recovery: "30s" }
+                    { exercise: "Remada curvada aberta com HBC (CONJUGADO 1)", series: 3, reps: 10, load: 8, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo inverso curvado com HBC (CONJUGADO 1)", series: 3, reps: 10, load: 4, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo inverso na máquina", series: 6, reps: 10, load: 6, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Puxada aberta no pulley alto", series: 4, reps: 10, load: 11, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Bíceps em pé no cross barra reta", series: 6, reps: 10, load: 10, method: "Método Simples (10 RM)", recovery: "30s" }
                 ]
             },
             "marcellybispo92@gmail.com": {
                 A: [
-                    { exercise: "Agachamento Livre", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
-                    { exercise: "Agachamento Livre em isometria", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre (CONJUGADO 1)", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre em isometria (Conjugado 1)", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
                     { exercise: "Agachamento Livre com HBC", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Agachamento em passada com HBC", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Cadeira extensora", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
+                    { exercise: "Agachamento em passada com HBC e joelho encostando no step", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Cadeira extensora", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Supino aberto banco reto com HBL", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Desenvolvimento aberto com HBC", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Tríceps no cross barra reta", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
                 ],
                 B: [
+                    { exercise: "Agachamento Livre (CONJUGADO 1)", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre em isometria (Conjugado 1)", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
                     { exercise: "Agachamento sumô com HBC", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Stiff em pé com HBM", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
                     { exercise: "Extensão de quadril com caneleira", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Remada aberta na máquina", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
-                    { exercise: "Crucifixo inverso com HBC", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
+                    { exercise: "Remada aberta na máquina (ou aberta sentada pulley baixo)", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo inverso com HBC (ou curvada com HBC)", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Bíceps em pé no cross barra reta", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
+                ]
+            },
+            "andrademarcia.ucam@gmail.com": {
+                A: [
+                    { exercise: "Levantar e sentar de um banco reto com HBC", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Supino reto com HBC no banco reto", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Abdominal supra no banco reto ou inclinado 30º", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Leg press horizontal + flexão plantar", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Desenvolvimento aberto com HBC no banco 75º", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Cadeira extensora", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" }
+                ],
+                B: [
+                    { exercise: "Extensão de quadril em pé (caneleira) ou máquina", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Remada aberta sentada em máquina", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Cadeira abdutora", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Puxada aberta no pulley alto", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Cadeira flexora", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Equilíbrio unilateral em pé em isometria (braços abertos e 1 quadril fletido)", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" }
+                ]
+            },
+            "lilicatorres@gmail.com": {
+                A: [
+                    { exercise: "Leg press horizontal", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Supino reto aberto na máquina", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Abdominal supra no banco reto ou inclinado 30º", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Cadeira extensora", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Desenvolvimento aberto com HBC no banco 75º", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" },
+                    { exercise: "Cadeira adutora", series: 3, reps: 15, method: "Método Simples (15 RM)", recovery: "30s" }
+                ],
+                B: [
+                    { exercise: "Extensão de quadril em pé com caneleira", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" },
+                    { exercise: "Remada aberta no cross com barra reta polia média", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" },
+                    { exercise: "Cadeira abdutora", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" },
+                    { exercise: "Puxada aberta no pulley alto", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" },
+                    { exercise: "Mata-borrão isométrico no solo em isometria", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" },
+                    { exercise: "Cadeira flexora", series: 3, reps: 15, method: "Método Simples (15 segundos)", recovery: "30s" }
                 ]
             }
         };
 
+        // Restante do código JavaScript permanece igual...
         // Dados de corrida
         const runningPlans = {
             "britodeandrade@gmail.com": [
@@ -767,6 +787,16 @@
                 { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
                 { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
                 { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s" }
+            ],
+            "andrademarcia.ucam@gmail.com": [
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" }
+            ],
+            "lilicatorres@gmail.com": [
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "15", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "13", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "12", volume: "6 séries/grupo", intensity: "50-60% 1RM", recovery: "30s" }
             ]
         };
 
@@ -941,19 +971,28 @@
         // Carregar exercícios de um treino
         function loadWorkoutExercises(type, exercises, user) {
             const workoutDetails = document.getElementById(`workout${type}-details`);
+            const progressElement = document.getElementById(`progress${type}`);
+            
             let exercisesHTML = '';
+            let completedCount = 0;
             
             exercises.forEach((exercise, index) => {
                 const exerciseId = `${user.email}-${type}-${index}`;
                 const isChecked = exerciseCompletion[exerciseId] || false;
                 
+                if (isChecked) completedCount++;
+                
                 exercisesHTML += `
                 <div class="exercise-item">
                     <div class="exercise-info">
                         <h4>${index + 1}. ${exercise.exercise}</h4>
-                        <p>${exercise.series} séries de ${exercise.reps} repetições</p>
-                        ${exercise.load ? `<p>Carga: ${exercise.load}kg</p>` : ''}
-                        <p>Método: ${exercise.method} | Recuperação: ${exercise.recovery}</p>
+                        <div class="exercise-details">
+                            <span class="exercise-detail">${exercise.series} séries</span>
+                            <span class="exercise-detail">${exercise.reps} repetições</span>
+                            ${exercise.load ? `<span class="exercise-detail">${exercise.load}kg</span>` : ''}
+                            <span class="exercise-detail">${exercise.method}</span>
+                            <span class="exercise-detail">${exercise.recovery}</span>
+                        </div>
                     </div>
                     <div class="exercise-check">
                         <button class="check-btn ${isChecked ? 'checked' : ''}" data-exercise="${exerciseId}">
@@ -965,6 +1004,7 @@
             });
             
             workoutDetails.innerHTML = exercisesHTML;
+            progressElement.textContent = `${completedCount}/${exercises.length} exercícios completos`;
             
             // Adicionar event listeners aos botões de check dos exercícios
             workoutDetails.querySelectorAll('.check-btn').forEach(button => {
@@ -977,6 +1017,10 @@
                     
                     this.classList.toggle('checked');
                     this.innerHTML = isChecked ? '<i class="fas fa-check"></i>' : '';
+                    
+                    // Atualizar contador de progresso
+                    const currentCompleted = document.querySelectorAll(`#workout${type}-details .check-btn.checked`).length;
+                    progressElement.textContent = `${currentCompleted}/${exercises.length} exercícios completos`;
                     
                     // Verificar se todos os exercícios foram completados
                     checkWorkoutCompletion(user.email, type, exercises.length);
