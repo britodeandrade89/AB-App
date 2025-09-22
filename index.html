@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Próximo Treino de Corrida</title>
+    <title>Sistema de Treinos - Corrida</title>
     <style>
         :root {
             --primary-color: #3498db;
@@ -12,6 +12,7 @@
             --light-color: #f9f9f9;
             --dark-color: #333;
             --border-color: #ddd;
+            --sidebar-width: 250px;
         }
         
         * {
@@ -25,29 +26,296 @@
             background-color: #f5f7fa;
             color: var(--dark-color);
             line-height: 1.6;
-            padding: 20px;
+            display: flex;
+            min-height: 100vh;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .content-header h1 {
+            font-size: 2rem;
+            color: var(--dark-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Dashboard Styles */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
             border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-icon.blue { background-color: var(--primary-color); }
+        .stat-icon.green { background-color: var(--secondary-color); }
+        .stat-icon.red { background-color: var(--accent-color); }
+        .stat-icon.orange { background-color: #f39c12; }
+        
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .recent-activities {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .recent-activities h2 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
         }
         
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e8f4fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        /* Clients Page */
+        .clients-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box input {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            width: 300px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .clients-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background-color: #e8f6ef;
+            color: var(--secondary-color);
+        }
+        
+        .status-inactive {
+            background-color: #fdeaea;
+            color: var(--accent-color);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        /* Training Page Styles (existing styles) */
         .next-training {
             background-color: white;
             border-radius: 10px;
@@ -216,7 +484,37 @@
             z-index: 99;
         }
         
+        /* Mobile Responsive */
         @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .menu-item {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+            }
+            
+            .menu-item:hover, .menu-item.active {
+                border-left: none;
+                border-bottom: 4px solid var(--secondary-color);
+            }
+            
             .calendar {
                 grid-template-columns: repeat(7, 1fr);
                 gap: 5px;
@@ -231,53 +529,261 @@
             .training-info {
                 grid-template-columns: 1fr;
             }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Próximo Treino de Corrida</h1>
-            <p>Planejamento e acompanhamento dos seus treinos</p>
-        </header>
-        
-        <section class="next-training">
-            <h2>Próximo Treino: <span id="next-training-date">30/09/2025</span></h2>
-            <div class="training-info">
-                <div class="info-item">
-                    <strong>Tipo de Treino</strong>
-                    <span id="next-training-type">FARTLEK</span>
-                </div>
-                <div class="info-item">
-                    <strong>FC Alvo</strong>
-                    <span id="next-training-fc">147,2 BPM</span>
-                </div>
-                <div class="info-item">
-                    <strong>Pace</strong>
-                    <span id="next-training-pace">7:00 min/km</span>
-                </div>
-                <div class="info-item">
-                    <strong>Duração</strong>
-                    <span id="next-training-duration">30min</span>
-                </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>FitTrack Pro</h2>
+            <p>Sistema de Gestão</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item active" data-target="dashboard">
+                <i>📊</i> Dashboard
             </div>
-        </section>
+            <div class="menu-item" data-target="clients">
+                <i>👥</i> Clientes
+            </div>
+            <div class="menu-item" data-target="training">
+                <i>🏃</i> Treinos de Corrida
+            </div>
+            <div class="menu-item" data-target="nutrition">
+                <i>🥗</i> Planos Alimentares
+            </div>
+            <div class="menu-item" data-target="progress">
+                <i>📈</i> Acompanhamento
+            </div>
+            <div class="menu-item" data-target="payments">
+                <i>💳</i> Pagamentos
+            </div>
+            <div class="menu-item" data-target="settings">
+                <i>⚙️</i> Configurações
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-header">
+            <h1 id="page-title">Dashboard</h1>
+            <div class="user-info">
+                <div class="user-avatar">PF</div>
+                <span>Personal Fit</span>
+            </div>
+        </div>
         
-        <section class="calendar-container">
-            <div class="calendar-header">
-                <h2 id="current-month-year">Setembro 2025</h2>
-                <div class="nav-buttons">
-                    <button id="prev-month">&lt; Mês Anterior</button>
-                    <button id="next-month">Próximo Mês &gt;</button>
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon blue">👥</div>
+                    <div class="stat-info">
+                        <h3>24</h3>
+                        <p>Clientes Ativos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">🏃</div>
+                    <div class="stat-info">
+                        <h3>18</h3>
+                        <p>Treinos Esta Semana</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">💵</div>
+                    <div class="stat-info">
+                        <h3>R$ 4.280</h3>
+                        <p>Receita do Mês</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📈</div>
+                    <div class="stat-info">
+                        <h3>92%</h3>
+                        <p>Taxa de Adesão</p>
+                    </div>
                 </div>
             </div>
             
-            <div class="calendar" id="calendar">
-                <!-- O calendário será gerado via JavaScript -->
+            <div class="recent-activities">
+                <h2>Atividades Recentes</h2>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon">🏃</div>
+                        <div>
+                            <strong>João Silva</strong> completou treino de corrida
+                            <div class="activity-time">Há 2 horas</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">💳</div>
+                        <div>
+                            <strong>Maria Santos</strong> realizou pagamento
+                            <div class="activity-time">Há 5 horas</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">👥</div>
+                        <div>
+                            <strong>Carlos Oliveira</strong> novo cliente cadastrado
+                            <div class="activity-time">Ontem</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">📊</div>
+                        <div>
+                            <strong>Ana Costa</strong> atualizou medidas corporais
+                            <div class="activity-time">Ontem</div>
+                        </div>
+                    </li>
+                </ul>
             </div>
-        </section>
+        </div>
+        
+        <!-- Clients Section -->
+        <div id="clients" class="content-section">
+            <div class="clients-header">
+                <h2>Gestão de Clientes</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Buscar cliente...">
+                    <button class="btn btn-primary">Adicionar Cliente</button>
+                </div>
+            </div>
+            
+            <div class="clients-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Plano</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>João Silva</td>
+                            <td>joao.silva@email.com</td>
+                            <td>(11) 99999-9999</td>
+                            <td>Premium</td>
+                            <td><span class="status-badge status-active">Ativo</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-small btn-primary">Editar</button>
+                                <button class="btn btn-small btn-success">Treino</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Maria Santos</td>
+                            <td>maria.santos@email.com</td>
+                            <td>(11) 98888-8888</td>
+                            <td>Básico</td>
+                            <td><span class="status-badge status-active">Ativo</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-small btn-primary">Editar</button>
+                                <button class="btn btn-small btn-success">Treino</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Carlos Oliveira</td>
+                            <td>carlos.oliveira@email.com</td>
+                            <td>(11) 97777-7777</td>
+                            <td>Premium</td>
+                            <td><span class="status-badge status-inactive">Inativo</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-small btn-primary">Editar</button>
+                                <button class="btn btn-small btn-success">Treino</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ana Costa</td>
+                            <td>ana.costa@email.com</td>
+                            <td>(11) 96666-6666</td>
+                            <td>Intermediário</td>
+                            <td><span class="status-badge status-active">Ativo</span></td>
+                            <td class="action-buttons">
+                                <button class="btn btn-small btn-primary">Editar</button>
+                                <button class="btn btn-small btn-success">Treino</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Training Section -->
+        <div id="training" class="content-section">
+            <section class="next-training">
+                <h2>Próximo Treino: <span id="next-training-date">30/09/2025</span></h2>
+                <div class="training-info">
+                    <div class="info-item">
+                        <strong>Tipo de Treino</strong>
+                        <span id="next-training-type">FARTLEK</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>FC Alvo</strong>
+                        <span id="next-training-fc">147,2 BPM</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Pace</strong>
+                        <span id="next-training-pace">7:00 min/km</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Duração</strong>
+                        <span id="next-training-duration">30min</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="calendar-container">
+                <div class="calendar-header">
+                    <h2 id="current-month-year">Setembro 2025</h2>
+                    <div class="nav-buttons">
+                        <button id="prev-month">&lt; Mês Anterior</button>
+                        <button id="next-month">Próximo Mês &gt;</button>
+                    </div>
+                </div>
+                
+                <div class="calendar" id="calendar">
+                    <!-- O calendário será gerado via JavaScript -->
+                </div>
+            </section>
+        </div>
+        
+        <!-- Other Sections (Placeholder) -->
+        <div id="nutrition" class="content-section">
+            <h2>Planos Alimentares</h2>
+            <p>Conteúdo da seção de planos alimentares será desenvolvido aqui.</p>
+        </div>
+        
+        <div id="progress" class="content-section">
+            <h2>Acompanhamento de Progresso</h2>
+            <p>Conteúdo da seção de acompanhamento será desenvolvido aqui.</p>
+        </div>
+        
+        <div id="payments" class="content-section">
+            <h2>Gestão de Pagamentos</h2>
+            <p>Conteúdo da seção de pagamentos será desenvolvido aqui.</p>
+        </div>
+        
+        <div id="settings" class="content-section">
+            <h2>Configurações</h2>
+            <p>Conteúdo da seção de configurações será desenvolvido aqui.</p>
+        </div>
     </div>
     
+    <!-- Training Details Modal -->
     <div class="overlay" id="overlay"></div>
     
     <div class="training-details" id="training-details">
@@ -363,6 +869,11 @@
         };
 
         // Elementos DOM
+        const menuItems = document.querySelectorAll('.menu-item');
+        const contentSections = document.querySelectorAll('.content-section');
+        const pageTitle = document.getElementById('page-title');
+        
+        // Elementos do calendário
         const calendarEl = document.getElementById('calendar');
         const currentMonthYearEl = document.getElementById('current-month-year');
         const prevMonthBtn = document.getElementById('prev-month');
@@ -387,13 +898,34 @@
         const detailTitleEl = document.getElementById('detail-title');
 
         // Estado atual
-        let currentDate = new Date(2025, 8, 1); // Setembro de 2025 (mês 8 = setembro, pois janeiro é 0)
+        let currentDate = new Date(2025, 8, 1); // Setembro de 2025
 
         // Inicialização
         function init() {
+            setupNavigation();
             updateNextTraining();
             renderCalendar();
-            setupEventListeners();
+            setupTrainingEventListeners();
+        }
+
+        // Configura a navegação do menu
+        function setupNavigation() {
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // Atualiza menu ativo
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Atualiza seção ativa
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                    
+                    // Atualiza título da página
+                    pageTitle.textContent = this.textContent.trim();
+                });
+            });
         }
 
         // Atualiza a seção do próximo treino
@@ -510,8 +1042,8 @@
             overlayEl.style.display = 'none';
         }
 
-        // Configura os event listeners
-        function setupEventListeners() {
+        // Configura os event listeners do treino
+        function setupTrainingEventListeners() {
             prevMonthBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 renderCalendar();
