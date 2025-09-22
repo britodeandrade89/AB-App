@@ -3,111 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AB Fit - Seu App de Treino Personalizado</title>
+    <title>AB Fit - App de Treino</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f5f5f5; color: #333; }
-        .app-container { max-width: 100%; margin: 0 auto; background-color: white; min-height: 100vh; }
-        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); padding: 20px; }
-        .login-container { background-color: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
-        .logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .logo h1 { font-size: 2rem; font-weight: 700; color: #1a2a6c; }
-        .logo i { font-size: 2.5rem; color: #fdbb2d; }
-        .login-form { display: flex; flex-direction: column; gap: 15px; }
-        .form-group { text-align: left; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        .form-group input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-        .login-btn { background: linear-gradient(135deg, #1a2a6c, #b21f1f); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
-        .login-btn:hover { transform: translateY(-2px); }
-        .user-selection { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
-        .user-option { display: flex; flex-direction: column; align-items: center; padding: 15px; background-color: #f9f9f9; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
-        .user-option:hover { background-color: #e9e9e9; transform: translateY(-3px); }
-        .user-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; }
-        .user-name { font-size: 0.9rem; font-weight: 600; text-align: center; }
-        .main-screen { display: none; }
-        header { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .logout-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        .main-content { padding: 20px; }
-        .tab-navigation { display: flex; justify-content: space-around; margin-bottom: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; position: sticky; top: 70px; z-index: 999; }
-        .tab-button { flex: 1; padding: 15px 10px; text-align: center; background: none; border: none; font-weight: 600; color: #666; cursor: pointer; transition: all 0.3s; border-bottom: 3px solid transparent; }
-        .tab-button.active { color: #1a2a6c; border-bottom: 3px solid #1a2a6c; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
-        .card h2 { color: #1a2a6c; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .card h2 i { color: #fdbb2d; }
-        .workout-folder { background-color: #f9f9f9; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #1a2a6c; cursor: pointer; }
-        .workout-folder h3 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .check-in-btn { background-color: #1a2a6c; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; font-weight: 600; transition: background-color 0.3s; }
-        .check-in-btn:hover { background-color: #0d1a4a; }
-        .check-in-btn.checked { background-color: #4CAF50; }
-        .workout-details { margin-top: 15px; display: none; }
-        .workout-details.active { display: block; }
-        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .exercise-item:last-child { border-bottom: none; }
-        .exercise-info h4 { font-size: 1rem; margin-bottom: 5px; }
-        .exercise-info p { color: #666; font-size: 0.85rem; }
-        .exercise-check { display: flex; align-items: center; gap: 10px; }
-        .check-btn { width: 24px; height: 24px; border: 2px solid #ddd; border-radius: 50%; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-        .check-btn.checked { background-color: #4CAF50; border-color: #4CAF50; color: white; }
-        .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .calendar-controls button { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1a2a6c; }
-        #current-month-year, #running-calendar-month-year { font-size: 1.2rem; font-weight: 600; color: #1a2a6c; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .calendar-header-day { text-align: center; font-weight: 600; color: #555; padding-bottom: 10px; }
-        .calendar-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; background-color: #f9f9f9; font-size: 0.9rem; position: relative; border: 1px solid #eee; }
-        .calendar-day.other-month { color: #ccc; background-color: #fafafa; }
-        .calendar-day.today { border: 2px solid #1a2a6c; font-weight: bold; }
-        .calendar-day.workout-day::after { content: ''; position: absolute; bottom: 5px; width: 6px; height: 6px; border-radius: 50%; background-color: #fdbb2d; }
-        .calendar-day.checked::after { background-color: #4CAF50; }
-        .day-number { font-weight: bold; }
-        .periodization-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.8rem; }
-        .periodization-table th, .periodization-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .periodization-table th { background-color: #f2f2f2; font-weight: 600; }
-        .periodization-table tr:nth-child(even) { background-color: #f9f9f9; }
-        .running-plan { display: flex; flex-direction: column; gap: 15px; }
-        .running-session { background-color: #f0f7ff; border-left: 4px solid #1a2a6c; padding: 15px; border-radius: 5px; cursor: pointer; }
-        .running-session.next { background-color: #e8f5e9; border-left-color: #4CAF50; }
-        .running-session h3 { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .running-session .date { font-weight: normal; color: #666; font-size: 0.9rem; }
-        .running-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd; }
-        .running-details.active { display: block; }
-        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .stat-card { background-color: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center; }
-        .stat-value { font-size: 1.5rem; font-weight: bold; color: #1a2a6c; }
-        .stat-label { font-size: 0.8rem; color: #666; }
-        /* --- ESTILOS CALENDÁRIO DE CORRIDA E MODAL --- */
-        .running-calendar-day { padding: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 0.75rem; text-align: center; line-height: 1.2; }
-        .running-calendar-day:hover { background-color: #e3f2fd !important; }
-        .running-calendar-day .day-number { font-weight: bold; }
-        .running-calendar-day .run-method { color: #1a2a6c; font-weight: 600; }
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
-        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 25px; border: 1px solid #888; border-radius: 10px; width: 90%; max-width: 500px; position: relative; }
-        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; position: absolute; top: 10px; right: 20px; }
-        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; cursor: pointer; }
-        #modal-run-details p { margin-bottom: 10px; }
-        #modal-run-details p strong { color: #333; }
-        @media (max-width: 768px) {
-            .main-content { padding: 15px 10px; }
-            .tab-button { padding: 12px 5px; font-size: 0.9rem; }
-            .card { padding: 15px; }
+        :root {
+            --bg-dark: #121212;
+            --bg-light: #1e1e1e;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a0a0a0;
+            --accent-red: #e53e3e;
+            --border-color: #333;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-primary); }
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: var(--bg-dark); padding: 20px; }
+        .login-container { background-color: var(--bg-light); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; border: 1px solid var(--border-color); }
+        .logo { max-width: 150px; margin: 0 auto 25px auto; }
+        .login-form label { color: var(--text-secondary); }
+        .login-form input { background-color: #2c2c2c; border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; padding: 12px 15px; font-size: 1rem; width: 100%; }
+        .login-form input:focus { border-color: var(--accent-red); outline: none; }
+        .login-btn { background-color: var(--accent-red); color: white; border: none; border-radius: 8px; padding: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
+        .user-option { background-color: #2c2c2c; }
+        .user-option:hover { background-color: #383838; }
+        .main-screen { display: none; }
+        header { background-color: var(--bg-light); border-bottom: 1px solid var(--border-color); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .tab-navigation { background-color: var(--bg-light); top: 70px; border-bottom: 1px solid var(--border-color); }
+        .tab-button { color: var(--text-secondary); }
+        .tab-button.active { color: var(--accent-red); border-bottom: 3px solid var(--accent-red); }
+        .card { background-color: var(--bg-light); border: 1px solid var(--border-color); padding: 20px; margin-bottom: 20px; border-radius: 10px; }
+        .card h2 { color: var(--text-primary); }
+        .card h2 i { color: var(--accent-red); }
+        .workout-folder { background-color: #2c2c2c; border-left: 4px solid var(--accent-red); }
+        .check-in-btn { background-color: var(--accent-red); }
+        .check-in-btn.checked { background-color: #4CAF50; }
+        .exercise-item { border-bottom: 1px solid var(--border-color); align-items: flex-start; }
+        .exercise-item img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; margin-right: 15px; }
+        .exercise-info { flex: 1; }
+        .exercise-info h4 { color: var(--text-primary); }
+        .exercise-info p { color: var(--text-secondary); }
+        .calendar-day { background-color: #2c2c2c; border: 1px solid var(--border-color); }
+        .calendar-day.other-month { background-color: var(--bg-light); color: #555; }
+        .calendar-day.today { border: 2px solid var(--accent-red); }
+        .calendar-day.workout-day::after { background-color: var(--accent-red); }
+        .running-calendar-day .run-method { color: var(--accent-red); }
+        .running-calendar-day:hover { background-color: #2a2a2a !important; }
+        .periodization-table th, .periodization-table td { border: 1px solid var(--border-color); }
+        .periodization-table th { background-color: #2c2c2c; }
+        .periodization-table tr:nth-child(even) { background-color: var(--bg-light); }
+        .modal { background-color: rgba(0,0,0,0.7); }
+        .modal-content { background-color: var(--bg-light); border: 1px solid var(--border-color); }
+        #modal-run-details p strong { color: var(--text-secondary); }
+        .close-btn:hover, .close-btn:focus { color: var(--text-primary); }
+
+        /* Estilos base reutilizados */
+        .login-form, .user-selection, header, .main-content, .tab-navigation, .card, .workout-folder, .exercise-item, .stats, .calendar-controls, .calendar-grid, .running-plan, .running-session, .modal-content, .user-option { transition: all 0.3s ease; }
+        .form-group, .user-info { text-align: left; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
-            <div class="logo"><i class="fas fa-dumbbell"></i><h1>AB Fit</h1></div>
+            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAHgAeADAREAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-/9k=" alt="Logotipo AB Fit" class="logo">
             <div class="login-form">
-                <div class="form-group"><label for="username">Usuário (3 primeiras letras do nome)</label><input type="text" id="username" placeholder="Ex: AND para André"></div>
-                <div class="form-group"><label for="password">Senha (3 primeiras letras do nome)</label><input type="password" id="password" placeholder="Ex: AND para André"></div>
+                <div class="form-group">
+                    <label for="username">E-mail</label>
+-                    <input type="email" id="username" placeholder="seuemail@exemplo.com">
++                    <input type="email" id="email" placeholder="seuemail@exemplo.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha (3 primeiras letras do seu nome)</label>
+-                    <input type="password" id="password" placeholder="Ex: AND">
++                    <input type="password" id="password" placeholder="Ex: AND" autocomplete="current-password">
+                </div>
                 <button class="login-btn" id="loginBtn">Entrar</button>
             </div>
-            <p style="margin: 15px 0; font-weight: 600; color: #555;">Ou selecione um usuário:</p>
+            <p style="margin: 15px 0; font-weight: 600; color: var(--text-secondary);">Ou selecione um usuário:</p>
             <div class="user-selection" id="userSelection"></div>
         </div>
     </div>
@@ -193,8 +163,19 @@
     </div>
 <script>
 // ===================================================================================
-//  DADOS CARREGADOS A PARTIR DOS SEUS ARQUIVOS CSV
+//  DADOS + IMAGENS
 // ===================================================================================
+const exerciseImageMap = {
+    "supino inclinado": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAGQABAQEBAQEAAAAAAAAAAAAAAAECBAMI/8QAHxABAQEAAgMAAwEBAAAAAAAAAAECAxESBCEEMVET/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEF/8QAFREBAQAAAAAAAAAAAAAAAAAAAED/2gAMAwEAAhEDEQA/APxlgAJKUoACpSlCgEKUIoQhaUKKUIWlCilCFpQopQhaUKKUIWlBFrSgRa1BSlKB//2Q==",
+    "agachamento livre": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAECBAP/xAAdEAEBAQACAwEBAAAAAAAAAAAAAQIREhMhMQNB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD5Ggg6pSlACEKVKAAhSpUoACEKVKAAhSpUoACEKVKAAhSpUoAf/Z",
+    "agachamento parcial no smith": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAGQABAQADAAAAAAAAAAAAAAAAAAECBAX/xAAcEAEBAQEAAgMBAAAAAAAAAAAAAQIREhMhMVH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAAL/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/APmKDV0pUgAhSpQAhCFIAIQpQAELSAAhCpQAELSAAhCpQAhC0gD//Z",
+    "supino reto": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAGQABAQEAAwAAAAAAAAAAAAAAAAECAwQF/8QAHhABAQEAAgICAwAAAAAAAAAAAAERAiEDEhMxUXH/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAERAf/aAAwDAQACEQMRAD8A+QJQQdaCkAhSpQAiundoAQhCkAIRukAUgIR2gCkAhHaAKQCO0AUgCO0AUgD/9k=",
+    "desenvolvimento aberto": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABwQAQEAAwEAAwAAAAAAAAAAAAERAhITIUFRgf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+QIKaDpQAhSpUoAEKVKgAEKVKgAEKVKgAEKVKgAEKVKgAEKVKgD/9k=",
+    "leg press": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABsQAQEAAgMBAAAAAAAAAAAAAAEAEQIhQVES/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEB/9oADAMBAAIRAxEAPwDxUJBQCEKAFgQoAWBClCwIUoWBBShYEKULAgpQsCCgFgP/Z",
+    "cadeira extensora": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABoQAQEAAgMAAAAAAAAAAAAAAAERAgMhMVH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABURAQEAAAAAAAAAAAAAAAAAAABP/aAAwDAQACEQMRAD8A+QoJFNB0oAEqVKgAJUqVAASpUqAAlSpUABKlSoACVKlQAEqVKgD/2A==",
+    "cadeira abdutora": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABwQAQEAAgMBAQEAAAAAAAAAAAERAgMhEipBUf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A+MoUmmg6UAAlSpUABKlSoACVKlQAEqVKgAJUqVAASpUqAAlSpUAf/Q==",
+    "remada aberta": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABAAEADASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAECA//EABsQAQACAwEBAQAAAAAAAAAAAAECEQASITFB/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQAC/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEB/9oADAMBAAIRAxEAPwDzFBJoOkKCFKABClCkAUoUoAIUoUgClClAAhShSAKUoUAAhSgD/2Q=="
+};
 const users = [
     { "name": "André Brito", "email": "britodeandrade@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg", "age": 36, "maxHR": 184, "loginCode": "AND" },
     { "name": "Marcelly Bispo", "email": "marcellybispo92@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg", "age": 33, "maxHR": 187, "loginCode": "MAR" },
@@ -202,8 +183,10 @@ const users = [
     { "name": "Liliane Torres", "email": "lilicatorres@gmail.com", "photo": null, "age": null, "maxHR": null, "loginCode": "LIL" }
 ];
 const workouts = {
-    "britodeandrade@gmail.com": { "A": [{"exercise":"Supino Reto com Barra","series":4,"reps":8,"load":60,"method":"Piramidal","recovery":"60s"},{"exercise":"Crucifixo Inclinado com Halteres","series":3,"reps":12,"load":12,"method":"SST","recovery":"45s"},{"exercise":"Desenvolvimento com Halteres","series":4,"reps":10,"load":16,"method":"Padrão","recovery":"60s"},{"exercise":"Elevação Lateral","series":3,"reps":15,"load":8,"method":"Drop-set","recovery":"45s"},{"exercise":"Tríceps na Polia","series":3,"reps":12,"load":25,"method":"Padrão","recovery":"45s"}], "B": [{"exercise":"Agachamento Livre","series":4,"reps":10,"load":80,"method":"Padrão","recovery":"90s"},{"exercise":"Leg Press 45","series":3,"reps":12,"load":150,"method":"Padrão","recovery":"60s"},{"exercise":"Cadeira Extensora","series":3,"reps":15,"load":40,"method":"Rest-pause","recovery":"45s"},{"exercise":"Stiff com Barra","series":4,"reps":12,"load":50,"method":"Padrão","recovery":"60s"},{"exercise":"Mesa Flexora","series":3,"reps":15,"load":35,"method":"Padrão","recovery":"45s"}] },
-    "marcellybispo92@gmail.com": { "A": [{"exercise":"Supino Reto com Barra","series":4,"reps":8,"load":60,"method":"Piramidal","recovery":"60s"},{"exercise":"Crucifixo Inclinado com Halteres","series":3,"reps":12,"load":12,"method":"SST","recovery":"45s"},{"exercise":"Desenvolvimento com Halteres","series":4,"reps":10,"load":16,"method":"Padrão","recovery":"60s"},{"exercise":"Elevação Lateral","series":3,"reps":15,"load":8,"method":"Drop-set","recovery":"45s"},{"exercise":"Tríceps na Polia","series":3,"reps":12,"load":25,"method":"Padrão","recovery":"45s"}], "B": [{"exercise":"Agachamento Livre","series":4,"reps":10,"load":80,"method":"Padrão","recovery":"90s"},{"exercise":"Leg Press 45","series":3,"reps":12,"load":150,"method":"Padrão","recovery":"60s"},{"exercise":"Cadeira Extensora","series":3,"reps":15,"load":40,"method":"Rest-pause","recovery":"45s"},{"exercise":"Stiff com Barra","series":4,"reps":12,"load":50,"method":"Padrão","recovery":"60s"},{"exercise":"Mesa Flexora","series":3,"reps":15,"load":35,"method":"Padrão","recovery":"45s"}] }
+    "britodeandrade@gmail.com": { "A": [{"exercise":"Agachamento parcial no Smith","series":4,"reps":10,"load":15,"method":"Simples (10 RM)"},{"exercise":"Agachamento Livre com HBC","series":4,"reps":10,"load":14,"method":"Simples (10 RM)"},{"exercise":"Cadeira extensora","series":4,"reps":10,"load":3,"method":"Simples (10 RM)"},{"exercise":"Supino inclinado com HBC","series":3,"reps":10,"load":12,"method":"Simples (10 RM)"},{"exercise":"Extensão de cotovelos no solo","series":3,"reps":10,"load":0,"method":"Simples (10 RM)"}], "B": [{"exercise":"Agachamento sumô com HBC","series":4,"reps":10,"load":22,"method":"Simples (10 RM)"},{"exercise":"Stiff em pé com HBM","series":4,"reps":10,"load":14,"method":"Simples (10 RM)"},{"exercise":"Extensão de quadril com caneleira","series":4,"reps":10,"load":7,"method":"Simples (10 RM)"},{"exercise":"Remada curvada aberta com HBC","series":3,"reps":10,"load":8,"method":"Simples (10 RM)"},{"exercise":"Crucifixo inverso curvado com HBC","series":3,"reps":10,"load":4,"method":"Simples (10 RM)"}] },
+    "marcellybispo92@gmail.com": { "A": [{"exercise":"Agachamento Livre","series":3,"reps":20,"method":"Simples (20 RM)"},{"exercise":"Agachamento Livre em isometria","series":3,"reps":20,"method":"Simples (20 RM)"},{"exercise":"Agachamento Livre com HBC","series":4,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Agachamento em passada com HBC","series":3,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Cadeira extensora","series":3,"reps":10,"method":"Simples (10 RM)"}], "B": [{"exercise":"Agachamento sumô com HBC","series":4,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Stiff em pé com HBM","series":4,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Extensão de quadril com caneleira","series":4,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Remada aberta na máquina","series":3,"reps":10,"method":"Simples (10 RM)"},{"exercise":"Crucifixo inverso com HBC","series":3,"reps":10,"method":"Simples (10 RM)"}] },
+    "andrademarcia.ucam@gmail.com": { "A": [{"exercise":"Supino aberto no banco reto com HBC","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Abdominal supra no banco reto","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Leg press horizontal","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Desenvolvimento aberto com HBC banco 75º","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Cadeira extensora","series":3,"reps":15,"method":"Simples (15 RM)"}], "B": [{"exercise":"Extensão de quadril em pé (caneleira)","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Remada aberta sentada em máquina","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Cadeira abdutora","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Puxada aberta no pulley alto","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Cadeira flexora","series":3,"reps":15,"method":"Simples (15 RM)"}] },
+    "lilicatorres@gmail.com": { "A": [{"exercise":"Agachamento Livre com HBL","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Supino aberto no banco inclinado com HBC","series":3,"reps":15,"method":"Simples (15 RM)"},{"exercise":"Remada aberta com barra reta na polia média","series":3,"reps":15,"method":"Simples (15 RM)"}], "B": [{"exercise":"Extensão de quadril em pé com caneleira","series":3,"reps":15,"method":"Simples (15 segundos)"},{"exercise":"Remada aberta com HBM","series":3,"reps":15,"method":"Simples (15 segundos)"},{"exercise":"Flexão de joelhos em pé na polia baixa","series":3,"reps":15,"method":"Simples (15 segundos)"}] }
 };
 const runningPlans = {
     "britodeandrade@gmail.com": [
@@ -226,21 +209,39 @@ const periodizations = {
         { "weeks": "9ª e 10ª", "phase": "Hipertrofia", "method": "Bi-set", "reps": "8-10", "volume": "18 séries/grupo", "intensity": "75-80% 1RM", "recovery": "60s" },
         { "weeks": "11ª e 12ª", "phase": "Hipertrofia", "method": "Tri-set", "reps": "10-12", "volume": "20 séries/grupo", "intensity": "70-75% 1RM", "recovery": "45-60s" },
         { "weeks": "13ª", "phase": "Deload", "method": "Execução Simples", "reps": "12-15", "volume": "10 séries/grupo", "intensity": "50-60% 1RM", "recovery": "60s" }
+    ],
+    "marcellybispo92@gmail.com": [
+        { "weeks": "1ª e 2ª Semanas", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
+        { "weeks": "3ª e 4ª Semanas", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
+        { "weeks": "5ª e 6ª Semanas", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" },
+        { "weeks": "7ª e 8ª Semanas", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "5-6", "volume": "12 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
+    ],
+    "andrademarcia.ucam@gmail.com": [
+        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "15", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "13", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "12", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "7ª e 8ª", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "10", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "9ª e 10ª", "phase": "Força", "method": "Simples + Pirâmide", "reps": "8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "11ª", "phase": "Força", "method": "Simples + Rest-Pause + Pirâmide", "reps": "12/10/8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "12ª e 13ª", "phase": "Drop-set", "method": "Simples (recuperação)", "reps": "8 + 8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" }
+    ],
+    "lilicatorres@gmail.com": [
+        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "15", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "13", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "12", "volume": "6 séries/grupo", "intensity": "50-60% 1RM", "recovery": "30 Seg" },
+        { "weeks": "7ª e 8ª", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "10", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "9ª e 10ª", "phase": "Força", "method": "Simples + Pirâmide", "reps": "8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "11ª", "phase": "Força", "method": "Simples + Rest-Pause + Pirâmide", "reps": "12/10/8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" },
+        { "weeks": "12ª e 13ª", "phase": "Drop-set", "method": "Simples (recuperação)", "reps": "8 + 8", "volume": "9 séries/grupo", "intensity": "70-75% 1RM", "recovery": "30 Seg" }
     ]
 };
-
-// ===================================================================================
-//  ESTADO DA APLICAÇÃO
-// ===================================================================================
+// ... (O resto do código JavaScript continua aqui, sem alterações)
 let currentUser = null;
 let workoutHistory = JSON.parse(localStorage.getItem('workoutHistory')) || {};
 let exerciseCompletion = JSON.parse(localStorage.getItem('exerciseCompletion')) || {};
 let mainCalendarDate = new Date();
 let runningCalendarDate = new Date();
 
-// ===================================================================================
-//  INICIALIZAÇÃO
-// ===================================================================================
 document.addEventListener('DOMContentLoaded', function() {
     renderUserSelection();
     setupLoginForm();
@@ -251,7 +252,381 @@ document.addEventListener('DOMContentLoaded', function() {
     setupModal();
 });
 
-// ... (Restante do código JavaScript)
+function getExerciseImageUrl(exerciseName) {
+    if (!exerciseName) return '';
+    const name = exerciseName.toLowerCase();
+    for (const key in exerciseImageMap) {
+        if (name.includes(key)) {
+            return exerciseImageMap[key];
+        }
+    }
+    return ''; // ou uma imagem placeholder
+}
+
+function renderUserSelection() {
+    const userSelection = document.getElementById('userSelection');
+    userSelection.innerHTML = '';
+    users.forEach(user => {
+        const userOption = document.createElement('div');
+        userOption.className = 'user-option';
+        userOption.innerHTML = `
+            <img src="${user.photo || 'https://via.placeholder.com/70'}" alt="${user.name}" class="user-photo">
+            <span class="user-name">${user.name}</span>
+        `;
+        userOption.addEventListener('click', () => {
+            document.getElementById('email').value = user.email;
+            document.getElementById('password').value = user.loginCode;
+            attemptLogin(user.email, user.loginCode);
+        });
+        userSelection.appendChild(userOption);
+    });
+}
+function setupLoginForm() {
+    const loginBtn = document.getElementById('loginBtn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    loginBtn.addEventListener('click', function() {
+        const email = emailInput.value.toLowerCase().trim();
+        const password = passwordInput.value.toUpperCase().trim();
+        attemptLogin(email, password);
+    });
+    passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            loginBtn.click();
+        }
+    });
+}
+function attemptLogin(email, password) {
+    if (!email || !password) {
+        alert('Por favor, preencha o e-mail e a senha.');
+        return;
+    }
+    const user = users.find(u => u.email.toLowerCase() === email);
+    if (user && user.loginCode === password) {
+        loginUser(user);
+    } else {
+        alert('E-mail ou senha inválidos.');
+    }
+}
+function loginUser(user) {
+    currentUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
+    document.getElementById('headerUserPhoto').src = user.photo || 'https://via.placeholder.com/40';
+    document.getElementById('headerUserName').textContent = user.name;
+    loadAllUserData(user);
+}
+function setupLogoutButton() {
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        currentUser = null;
+        document.getElementById('mainScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+    });
+}
+function setupTabNavigation() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.dataset.tab;
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+}
+function loadAllUserData(user) {
+    loadWorkoutTab(user);
+    loadRunningTab(user);
+    loadPeriodizationTab(user);
+    renderMainCalendar(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth());
+    renderRunningCalendar(runningCalendarDate.getFullYear(), runningCalendarDate.getMonth());
+    updateStatistics(user.email);
+}
+function loadWorkoutTab(user) {
+    const userWorkouts = workouts[user.email];
+    if (userWorkouts) {
+        loadWorkoutExercises('A', userWorkouts.A, user);
+        loadWorkoutExercises('B', userWorkouts.B, user);
+        setupWorkoutFolders();
+        setupCheckInButtons(user);
+    } else {
+        document.getElementById('workoutA-details').innerHTML = '<p>Nenhum treino A cadastrado.</p>';
+        document.getElementById('workoutB-details').innerHTML = '<p>Nenhum treino B cadastrado.</p>';
+    }
+}
+function loadWorkoutExercises(type, exercises, user) {
+    const container = document.getElementById(`workout${type}-details`);
+    if (!exercises || exercises.length === 0) {
+        container.innerHTML = "<p>Nenhum exercício encontrado.</p>";
+        return;
+    }
+    container.innerHTML = exercises.map((ex, index) => {
+        const exerciseId = `${user.email}-${type}-${index}`;
+        const isChecked = exerciseCompletion[exerciseId] || false;
+        const imageUrl = getExerciseImageUrl(ex.exercise);
+        return `
+            <div class="exercise-item">
+                ${imageUrl ? `<img src="${imageUrl}" alt="${ex.exercise}">` : '<div style="width:60px; height:60px; flex-shrink: 0; margin-right: 15px;"></div>'}
+                <div class="exercise-info">
+                    <h4>${index + 1}. ${ex.exercise || 'Exercício sem nome'}</h4>
+                    <p>${ex.series}x${ex.reps || 'Falha'} | Carga: ${ex.load || 'Livre'} | Descanso: ${ex.recovery || 'N/A'}</p>
+                    <p><strong>Método:</strong> ${ex.method || 'Padrão'}</p>
+                </div>
+                <div class="exercise-check">
+                    <button class="check-btn ${isChecked ? 'checked' : ''}" data-exercise-id="${exerciseId}">
+                        ${isChecked ? '<i class="fas fa-check"></i>' : ''}
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    container.querySelectorAll('.check-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const exerciseId = btn.dataset.exerciseId;
+            const isChecked = !exerciseCompletion[exerciseId];
+            exerciseCompletion[exerciseId] = isChecked;
+            localStorage.setItem('exerciseCompletion', JSON.stringify(exerciseCompletion));
+            btn.classList.toggle('checked');
+            btn.innerHTML = isChecked ? '<i class="fas fa-check"></i>' : '';
+            checkWorkoutCompletion(user.email, type, exercises.length);
+        });
+    });
+}
+function setupWorkoutFolders() {
+    document.querySelectorAll('.workout-folder').forEach(folder => {
+        folder.addEventListener('click', (e) => {
+            if (e.target.classList.contains('check-in-btn')) return;
+            const details = folder.querySelector('.workout-details');
+            details.classList.toggle('active');
+        });
+    });
+}
+function setupCheckInButtons(user) {
+    ['A', 'B'].forEach(type => {
+        const btn = document.getElementById(`checkIn${type}`);
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            const today = new Date().toISOString().split('T')[0];
+            recordWorkout(user.email, type, today, 'full');
+            updateCheckInButton(btn, true);
+            updateStatistics(user.email);
+            renderMainCalendar(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth());
+        };
+    });
+    updateAllCheckInButtons(user.email);
+}
+function updateCheckInButton(button, isChecked) {
+    button.classList.toggle('checked', isChecked);
+    button.textContent = isChecked ? 'Concluído' : `Check-in ${button.id.replace('checkIn', '')}`;
+    button.disabled = isChecked;
+}
+function updateAllCheckInButtons(email) {
+    const today = new Date().toISOString().split('T')[0];
+    const todayWorkout = workoutHistory[email]?.[today];
+    updateCheckInButton(document.getElementById('checkInA'), todayWorkout?.type === 'A');
+    updateCheckInButton(document.getElementById('checkInB'), todayWorkout?.type === 'B');
+}
+function checkWorkoutCompletion(email, type, totalExercises) {
+    let completedCount = 0;
+    for(let i = 0; i < totalExercises; i++) {
+        if (exerciseCompletion[`${email}-${type}-${i}`]) {
+            completedCount++;
+        }
+    }
+    const today = new Date().toISOString().split('T')[0];
+    const status = (completedCount === totalExercises) ? 'full' : (completedCount > 0 ? 'partial' : null);
+    if (status) {
+        recordWorkout(email, type, today, status);
+        if (status === 'full') {
+            updateAllCheckInButtons(email);
+        }
+        updateStatistics(email);
+        renderMainCalendar(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth());
+    }
+}
+function loadRunningTab(user) {
+    const runningPlanContainer = document.getElementById('running-plan');
+    const userPlan = runningPlans[user.email];
+    if (!userPlan || userPlan.length === 0) {
+        runningPlanContainer.innerHTML = '<p>Nenhum plano de corrida cadastrado.</p>';
+        return;
+    }
+    runningPlanContainer.innerHTML = userPlan.map(session => generateRunningSessionHTML(session, false)).join('');
+    runningPlanContainer.querySelectorAll('.running-session').forEach(session => {
+        session.addEventListener('click', function() {
+            this.querySelector('.running-details').classList.toggle('active');
+        });
+    });
+}
+function generateRunningSessionHTML(session, isNext) {
+    return `
+        <div class="running-session ${isNext ? 'next' : ''}">
+            <h3>Treino ${session.number} - ${session.method} <span class="date">${session.date}</span></h3>
+            <p><strong>FC Alvo:</strong> ${session.targetHR || 'N/A'} | <strong>Pace:</strong> ${session.pace || 'N/A'} | <strong>Duração:</strong> ${session.duration || 'N/A'}</p>
+            <div class="running-details">
+                <p><strong>Detalhes:</strong> ${session.details || 'Sem detalhes.'}</p>
+            </div>
+        </div>
+    `;
+}
+function loadPeriodizationTab(user) {
+    const container = document.getElementById('periodization-table-container');
+    const userPeriodization = periodizations[user.email];
+    if (!userPeriodization || userPeriodization.length === 0) {
+        container.innerHTML = '<p>Nenhuma periodização cadastrada.</p>';
+        return;
+    }
+    const tableRows = userPeriodization.map(phase => `
+        <tr>
+            <td>${phase.weeks || ''}</td><td>${phase.phase || ''}</td><td>${phase.method || ''}</td>
+            <td>${phase.reps || ''}</td><td>${phase.volume || ''}</td><td>${phase.intensity || ''}</td><td>${phase.recovery || ''}</td>
+        </tr>
+    `).join('');
+    container.innerHTML = `
+        <table class="periodization-table">
+            <thead><tr><th>Semanas</th><th>Fase</th><th>Método</th><th>Reps</th><th>Volume</th><th>Intensidade</th><th>Recuperação</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+    `;
+}
+function setupCalendarControls() {
+    document.getElementById('prev-month-btn').addEventListener('click', () => {
+        mainCalendarDate.setMonth(mainCalendarDate.getMonth() - 1);
+        renderMainCalendar(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth());
+    });
+    document.getElementById('next-month-btn').addEventListener('click', () => {
+        mainCalendarDate.setMonth(mainCalendarDate.getMonth() + 1);
+        renderMainCalendar(mainCalendarDate.getFullYear(), mainCalendarDate.getMonth());
+    });
+}
+function renderMainCalendar(year, month) {
+    const calendarBody = document.getElementById('calendar-body');
+    const monthYearEl = document.getElementById('current-month-year');
+    calendarBody.innerHTML = '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const firstDay = new Date(year, month, 1);
+    monthYearEl.textContent = `${firstDay.toLocaleString('pt-BR', { month: 'long' })} de ${year}`;
+    const userHistory = workoutHistory[currentUser.email] || {};
+    for (let i = 0; i < firstDay.getDay(); i++) {
+        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
+    }
+    const lastDay = new Date(year, month + 1, 0);
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const currentDate = new Date(year, month, day);
+        const dateStr = currentDate.toISOString().split('T')[0];
+        let classes = 'calendar-day';
+        if (currentDate.getTime() === today.getTime()) classes += ' today';
+        if (userHistory[dateStr]) classes += ' checked';
+        else {
+             const dayOfWeek = currentDate.getDay();
+             if ([1, 3, 5].includes(dayOfWeek)) classes += ' workout-day';
+        }
+        calendarBody.innerHTML += `<div class="${classes}"><div class="day-number">${day}</div></div>`;
+    }
+    while ((calendarBody.children.length % 7) !== 0) {
+        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
+    }
+}
+function setupRunningCalendarControls() {
+    document.getElementById('running-prev-month-btn').addEventListener('click', () => {
+        runningCalendarDate.setMonth(runningCalendarDate.getMonth() - 1);
+        renderRunningCalendar(runningCalendarDate.getFullYear(), runningCalendarDate.getMonth());
+    });
+    document.getElementById('running-next-month-btn').addEventListener('click', () => {
+        runningCalendarDate.setMonth(runningCalendarDate.getMonth() + 1);
+        renderRunningCalendar(runningCalendarDate.getFullYear(), runningCalendarDate.getMonth());
+    });
+}
+function renderRunningCalendar(year, month) {
+    const calendarBody = document.getElementById('running-calendar-body');
+    const monthYearEl = document.getElementById('running-calendar-month-year');
+    calendarBody.innerHTML = '';
+    const firstDay = new Date(year, month, 1);
+    monthYearEl.textContent = `${firstDay.toLocaleString('pt-BR', { month: 'long' })} de ${year}`;
+
+    const userRuns = (runningPlans[currentUser.email] || []).map(run => {
+        const parts = run.date.split('/');
+        return { ...run, dateObj: new Date(parts[2], parts[1] - 1, parts[0]) };
+    });
+
+    for (let i = 0; i < firstDay.getDay(); i++) {
+        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
+    }
+    const lastDay = new Date(year, month + 1, 0);
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+        const currentDate = new Date(year, month, day);
+        const runForDay = userRuns.find(run => run.dateObj.getTime() === currentDate.getTime());
+        
+        let dayHtml = `<div class="calendar-day running-calendar-day">
+            <div class="day-number">${day}</div>
+            ${runForDay ? `<div class="run-method">${runForDay.method}</div>` : ''}
+        </div>`;
+
+        const dayElement = document.createElement('div');
+        dayElement.innerHTML = dayHtml;
+        const finalElement = dayElement.firstElementChild;
+
+        if (runForDay) {
+            finalElement.addEventListener('click', () => showRunDetails(runForDay));
+        }
+        calendarBody.appendChild(finalElement);
+    }
+    while ((calendarBody.children.length % 7) !== 0) {
+        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
+    }
+}
+
+function setupModal() {
+    const modal = document.getElementById('running-modal');
+    const closeBtn = document.querySelector('.modal .close-btn');
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+}
+
+function showRunDetails(run) {
+    const modal = document.getElementById('running-modal');
+    document.getElementById('modal-run-title').textContent = `Treino de Corrida - ${run.date}`;
+    document.getElementById('modal-run-details').innerHTML = `
+        <p><strong>Método:</strong> ${run.method}</p>
+        <p><strong>Duração:</strong> ${run.duration}</p>
+        <p><strong>Pace Alvo:</strong> ${run.pace} min/km</p>
+        <p><strong>FC Alvo:</strong> ${run.targetHR} BPM</p>
+        <p><strong>Descrição:</strong> ${run.details}</p>
+    `;
+    modal.style.display = 'block';
+}
+
+function recordWorkout(email, type, date, status) {
+    if (!workoutHistory[email]) workoutHistory[email] = {};
+    if (!workoutHistory[email][date] || status === 'full') {
+        workoutHistory[email][date] = { type, status, timestamp: new Date().toISOString() };
+    }
+    localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+}
+function updateStatistics(email) {
+    const stats = { done: 0, missed: 0, rate: '0%', last: '-' };
+    const userHistory = workoutHistory[email] || {};
+    const historyDates = Object.keys(userHistory);
+    stats.done = historyDates.length;
+    if (historyDates.length > 0) {
+        const lastDate = new Date(Math.max(...historyDates.map(d => new Date(d))));
+        stats.last = lastDate.toLocaleDateString('pt-BR');
+    }
+    document.getElementById('workouts-done').textContent = stats.done;
+    document.getElementById('workouts-missed').textContent = stats.missed;
+    document.getElementById('attendance-rate').textContent = stats.rate;
+    document.getElementById('last-workout').textContent = stats.last;
+}
 </script>
 </body>
 </html>
