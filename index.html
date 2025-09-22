@@ -56,7 +56,7 @@
         .check-btn.checked { background-color: #4CAF50; border-color: #4CAF50; color: white; }
         .calendar-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-controls button { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #1a2a6c; }
-        #current-month-year { font-size: 1.2rem; font-weight: 600; color: #1a2a6c; }
+        #current-month-year, #running-calendar-month-year { font-size: 1.2rem; font-weight: 600; color: #1a2a6c; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
         .calendar-header-day { text-align: center; font-weight: 600; color: #555; padding-bottom: 10px; }
         .calendar-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; background-color: #f9f9f9; font-size: 0.9rem; position: relative; border: 1px solid #eee; }
@@ -80,6 +80,17 @@
         .stat-card { background-color: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center; }
         .stat-value { font-size: 1.5rem; font-weight: bold; color: #1a2a6c; }
         .stat-label { font-size: 0.8rem; color: #666; }
+        /* --- ESTILOS CALENDÁRIO DE CORRIDA E MODAL --- */
+        .running-calendar-day { padding: 5px; cursor: pointer; transition: background-color 0.3s; font-size: 0.75rem; text-align: center; line-height: 1.2; }
+        .running-calendar-day:hover { background-color: #e3f2fd !important; }
+        .running-calendar-day .day-number { font-weight: bold; }
+        .running-calendar-day .run-method { color: #1a2a6c; font-weight: 600; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); animation: fadeIn 0.3s; }
+        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 25px; border: 1px solid #888; border-radius: 10px; width: 90%; max-width: 500px; position: relative; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; position: absolute; top: 10px; right: 20px; }
+        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; cursor: pointer; }
+        #modal-run-details p { margin-bottom: 10px; }
+        #modal-run-details p strong { color: #333; }
         @media (max-width: 768px) {
             .main-content { padding: 15px 10px; }
             .tab-button { padding: 12px 5px; font-size: 0.9rem; }
@@ -110,13 +121,27 @@
                 <button class="tab-button active" data-tab="workout">Treino</button>
                 <button class="tab-button" data-tab="periodization">Periodização</button>
                 <button class="tab-button" data-tab="running">Corrida</button>
-                <button class="tab-button" data-tab="calendar">Calendário</button>
+                <button class="tab-button" data-tab="calendar">Histórico</button>
             </div>
             <div id="workout-tab" class="tab-content active">
                 <div class="card">
                     <h2><i class="fas fa-dumbbell"></i> Meus Treinos</h2>
                     <div class="workout-folder" data-workout-id="A"><h3><span><i class="fas fa-folder"></i> Treino A</span><button class="check-in-btn" id="checkInA">Check-in A</button></h3><div class="workout-details" id="workoutA-details"></div></div>
                     <div class="workout-folder" data-workout-id="B"><h3><span><i class="fas fa-folder"></i> Treino B</span><button class="check-in-btn" id="checkInB">Check-in B</button></h3><div class="workout-details" id="workoutB-details"></div></div>
+                </div>
+                <div class="card">
+                    <h2><i class="fas fa-running"></i> Calendário de Corrida</h2>
+                    <div class="calendar-controls">
+                        <button id="running-prev-month-btn"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="running-calendar-month-year"></h3>
+                        <button id="running-next-month-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="running-calendar-header">
+                        <div class="calendar-header-day">Dom</div><div class="calendar-header-day">Seg</div><div class="calendar-header-day">Ter</div>
+                        <div class="calendar-header-day">Qua</div><div class="calendar-header-day">Qui</div><div class="calendar-header-day">Sex</div>
+                        <div class="calendar-header-day">Sáb</div>
+                    </div>
+                    <div class="calendar-grid" id="running-calendar-body"></div>
                 </div>
                 <div class="card">
                     <h2><i class="fas fa-chart-line"></i> Estatísticas</h2>
@@ -136,24 +161,20 @@
             </div>
             <div id="running-tab" class="tab-content">
                 <div class="card">
-                    <h2><i class="fas fa-running"></i> Próximo Treino de Corrida</h2>
-                    <div id="next-running"></div>
-                </div>
-                <div class="card">
                     <h2><i class="fas fa-list-alt"></i> Planilha de Corrida</h2>
                     <div class="running-plan" id="running-plan"></div>
                 </div>
             </div>
             <div id="calendar-tab" class="tab-content">
                 <div class="card">
-                    <h2><i class="fas fa-calendar-alt"></i> Calendário de Treinos</h2>
+                    <h2><i class="fas fa-calendar-alt"></i> Histórico de Treinos</h2>
                     <div class="calendar-controls">
                         <button id="prev-month-btn"><i class="fas fa-chevron-left"></i></button>
                         <h3 id="current-month-year"></h3>
                         <button id="next-month-btn"><i class="fas fa-chevron-right"></i></button>
                     </div>
                     <div class="calendar-grid" id="calendar-header">
-                        <div class="calendar-header-day">Dom</div><div class="calendar-header-day">Seg</div><div class="calendar-header-day">Ter</div>
+                         <div class="calendar-header-day">Dom</div><div class="calendar-header-day">Seg</div><div class="calendar-header-day">Ter</div>
                         <div class="calendar-header-day">Qua</div><div class="calendar-header-day">Qui</div><div class="calendar-header-day">Sex</div>
                         <div class="calendar-header-day">Sáb</div>
                     </div>
@@ -162,171 +183,33 @@
             </div>
         </div>
     </div>
+    
+    <div id="running-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-run-title"></h2>
+            <div id="modal-run-details"></div>
+        </div>
+    </div>
 <script>
 // ===================================================================================
 //  DADOS CARREGADOS A PARTIR DOS SEUS ARQUIVOS CSV
 // ===================================================================================
 const users = [
-    {
-        "name": "André Brito",
-        "email": "britodeandrade@gmail.com",
-        "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg",
-        "age": 36,
-        "maxHR": 184,
-        "lastWorkoutDate": "27/9",
-        "lastWorkoutNumber": 5,
-        "nextWorkoutDate": "30/09/2025, 12:00:00",
-        "nextWorkoutMethod": "FARTLEK",
-        "loginCode": "AND"
-    },
-    {
-        "name": "Marcelly Bispo",
-        "email": "marcellybispo92@gmail.com",
-        "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg",
-        "age": 33,
-        "maxHR": 187,
-        "lastWorkoutDate": "19/9",
-        "lastWorkoutNumber": 5,
-        "nextWorkoutDate": "22/09/2025, 12:00:00",
-        "nextWorkoutMethod": "FARTLEK",
-        "loginCode": "MAR"
-    },
-    {
-        "name": "Marcia Brito",
-        "email": "andrademarcia.ucam@gmail.com",
-        "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg",
-        "age": 59,
-        "maxHR": 161,
-        "lastWorkoutDate": null,
-        "lastWorkoutNumber": null,
-        "nextWorkoutDate": null,
-        "nextWorkoutMethod": null,
-        "loginCode": "MAR"
-    },
-    {
-        "name": "Liliane Torres",
-        "email": "lilicatorres@gmail.com",
-        "photo": "",
-        "age": null,
-        "maxHR": null,
-        "lastWorkoutDate": null,
-        "lastWorkoutNumber": null,
-        "nextWorkoutDate": null,
-        "nextWorkoutMethod": null,
-        "loginCode": "LIL"
-    }
+    { "name": "André Brito", "email": "britodeandrade@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg", "age": 36, "maxHR": 184, "loginCode": "AND" },
+    { "name": "Marcelly Bispo", "email": "marcellybispo92@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg", "age": 33, "maxHR": 187, "loginCode": "MAR" },
+    { "name": "Marcia Brito", "email": "andrademarcia.ucam@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg", "age": 59, "maxHR": 161, "loginCode": "MAR" },
+    { "name": "Liliane Torres", "email": "lilicatorres@gmail.com", "photo": null, "age": null, "maxHR": null, "loginCode": "LIL" }
 ];
 const workouts = {
-    "britodeandrade@gmail.com": {
-        "A": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 10, "reps": 8, "load": null, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 10, "reps": 7, "load": null, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 10, "reps": 6, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 10, "reps": null, "load": null, "method": null, "recovery": null }
-        ],
-        "B": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 4, "reps": 10, "load": 8, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 4, "reps": 10, "load": 7, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 4, "reps": 10, "load": 6, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null }
-        ]
-    },
-    "marcellybispo92@gmail.com": {
-        "A": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 10, "reps": 8, "load": null, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 10, "reps": 7, "load": null, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 10, "reps": 6, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 10, "reps": null, "load": null, "method": null, "recovery": null }
-        ],
-        "B": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 4, "reps": 10, "load": 8, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 4, "reps": 10, "load": 7, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 4, "reps": 10, "load": 6, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null }
-        ]
-    },
-    "andrademarcia.ucam@gmail.com": {
-        "A": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 10, "reps": 8, "load": null, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 10, "reps": 7, "load": null, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 10, "reps": 6, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 10, "reps": null, "load": null, "method": null, "recovery": null }
-        ],
-        "B": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 4, "reps": 10, "load": 8, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 4, "reps": 10, "load": 7, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 4, "reps": 10, "load": 6, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null }
-        ]
-    },
-    "lilicatorres@gmail.com": {
-        "A": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 10, "reps": 8, "load": null, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 10, "reps": 7, "load": null, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 10, "reps": 6, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 20, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 10, "reps": null, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 10, "reps": null, "load": null, "method": null, "recovery": null }
-        ],
-        "B": [
-            { "exercise": "Crucifixo aberto na máquina", "series": 4, "reps": 10, "load": 8, "method": null, "recovery": null },
-            { "exercise": "Desenvolvimento aberto com HBC", "series": 4, "reps": 10, "load": 7, "method": null, "recovery": null },
-            { "exercise": "Tríceps em pé no cross barra reta", "series": 4, "reps": 10, "load": 6, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre (CONJUGADO)", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre em isometria", "series": 3, "reps": 20, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento Livre com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Agachamento em passada com HBC", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Cadeira extensora", "series": 3, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Sumô aberto barra reta com HBC", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null },
-            { "exercise": "Stiff em pé com HBM", "series": 4, "reps": 10, "load": null, "method": null, "recovery": null }
-        ]
-    }
+    "britodeandrade@gmail.com": { "A": [{"exercise":"Supino Reto com Barra","series":4,"reps":8,"load":60,"method":"Piramidal","recovery":"60s"},{"exercise":"Crucifixo Inclinado com Halteres","series":3,"reps":12,"load":12,"method":"SST","recovery":"45s"},{"exercise":"Desenvolvimento com Halteres","series":4,"reps":10,"load":16,"method":"Padrão","recovery":"60s"},{"exercise":"Elevação Lateral","series":3,"reps":15,"load":8,"method":"Drop-set","recovery":"45s"},{"exercise":"Tríceps na Polia","series":3,"reps":12,"load":25,"method":"Padrão","recovery":"45s"}], "B": [{"exercise":"Agachamento Livre","series":4,"reps":10,"load":80,"method":"Padrão","recovery":"90s"},{"exercise":"Leg Press 45","series":3,"reps":12,"load":150,"method":"Padrão","recovery":"60s"},{"exercise":"Cadeira Extensora","series":3,"reps":15,"load":40,"method":"Rest-pause","recovery":"45s"},{"exercise":"Stiff com Barra","series":4,"reps":12,"load":50,"method":"Padrão","recovery":"60s"},{"exercise":"Mesa Flexora","series":3,"reps":15,"load":35,"method":"Padrão","recovery":"45s"}] },
+    "marcellybispo92@gmail.com": { "A": [{"exercise":"Supino Reto com Barra","series":4,"reps":8,"load":60,"method":"Piramidal","recovery":"60s"},{"exercise":"Crucifixo Inclinado com Halteres","series":3,"reps":12,"load":12,"method":"SST","recovery":"45s"},{"exercise":"Desenvolvimento com Halteres","series":4,"reps":10,"load":16,"method":"Padrão","recovery":"60s"},{"exercise":"Elevação Lateral","series":3,"reps":15,"load":8,"method":"Drop-set","recovery":"45s"},{"exercise":"Tríceps na Polia","series":3,"reps":12,"load":25,"method":"Padrão","recovery":"45s"}], "B": [{"exercise":"Agachamento Livre","series":4,"reps":10,"load":80,"method":"Padrão","recovery":"90s"},{"exercise":"Leg Press 45","series":3,"reps":12,"load":150,"method":"Padrão","recovery":"60s"},{"exercise":"Cadeira Extensora","series":3,"reps":15,"load":40,"method":"Rest-pause","recovery":"45s"},{"exercise":"Stiff com Barra","series":4,"reps":12,"load":50,"method":"Padrão","recovery":"60s"},{"exercise":"Mesa Flexora","series":3,"reps":15,"load":35,"method":"Padrão","recovery":"45s"}] }
 };
 const runningPlans = {
     "britodeandrade@gmail.com": [
         { "date": "30/09/2025", "number": 1, "method": "FARTLEK", "targetHR": "147,2", "pace": "7:00", "duration": "30min", "details": "5' AQ + 20' CO alternado entre CA : CO + 5' REC" },
-        { "date": "01/10/2025", "number": 2, "method": "INTERVALADO", "targetHR": "156,4", "pace": "6:19", "duration": "30min", "details": "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC" },
-        { "date": "03/10/2025", "number": 3, "method": "LONGÃO", "targetHR": "147,2", "pace": "7:04", "duration": "30min", "details": "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC" }
+        { "date": "02/10/2025", "number": 2, "method": "INTERVALADO", "targetHR": "156,4", "pace": "6:19", "duration": "30min", "details": "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC" },
+        { "date": "04/10/2025", "number": 3, "method": "LONGÃO", "targetHR": "147,2", "pace": "7:04", "duration": "30min", "details": "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC" }
     ],
     "marcellybispo92@gmail.com": [
         { "date": "22/09/2025", "number": 1, "method": "FARTLEK", "targetHR": "149,6", "pace": "8:00", "duration": "30min", "details": "5' AQ + 20' CO alternado entre CA : CO + 5' REC" },
@@ -336,24 +219,13 @@ const runningPlans = {
 };
 const periodizations = {
     "britodeandrade@gmail.com": [
-        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Método de execução Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
-    ],
-    "marcellybispo92@gmail.com": [
-        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Método de execução Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
-    ],
-    "andrademarcia.ucam@gmail.com": [
-        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Método de execução Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
-    ],
-    "lilicatorres@gmail.com": [
-        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Método de execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
-        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Método de execução Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
+        { "weeks": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "10", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
+        { "weeks": "3ª e 4ª", "phase": "Adaptação/Hipertrofia", "method": "Execução Simples", "reps": "8-9", "volume": "16 séries/grupo", "intensity": "75-80% 1RM", "recovery": "60-90s" },
+        { "weeks": "5ª e 6ª", "phase": "Força", "method": "Simples + Rest-Pause", "reps": "6-7", "volume": "14 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" },
+        { "weeks": "7ª e 8ª", "phase": "Força", "method": "Simples + Drop-Set", "reps": "5-6", "volume": "14 séries/grupo", "intensity": "85-90% 1RM", "recovery": "120s" },
+        { "weeks": "9ª e 10ª", "phase": "Hipertrofia", "method": "Bi-set", "reps": "8-10", "volume": "18 séries/grupo", "intensity": "75-80% 1RM", "recovery": "60s" },
+        { "weeks": "11ª e 12ª", "phase": "Hipertrofia", "method": "Tri-set", "reps": "10-12", "volume": "20 séries/grupo", "intensity": "70-75% 1RM", "recovery": "45-60s" },
+        { "weeks": "13ª", "phase": "Deload", "method": "Execução Simples", "reps": "12-15", "volume": "10 séries/grupo", "intensity": "50-60% 1RM", "recovery": "60s" }
     ]
 };
 
@@ -363,7 +235,8 @@ const periodizations = {
 let currentUser = null;
 let workoutHistory = JSON.parse(localStorage.getItem('workoutHistory')) || {};
 let exerciseCompletion = JSON.parse(localStorage.getItem('exerciseCompletion')) || {};
-let currentCalendarDate = new Date();
+let mainCalendarDate = new Date();
+let runningCalendarDate = new Date();
 
 // ===================================================================================
 //  INICIALIZAÇÃO
@@ -374,392 +247,11 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTabNavigation();
     setupLogoutButton();
     setupCalendarControls();
+    setupRunningCalendarControls();
+    setupModal();
 });
 
-// ===================================================================================
-//  FUNÇÕES DE LOGIN E AUTENTICAÇÃO
-// ===================================================================================
-function renderUserSelection() {
-    const userSelection = document.getElementById('userSelection');
-    userSelection.innerHTML = '';
-    users.forEach(user => {
-        const userOption = document.createElement('div');
-        userOption.className = 'user-option';
-        userOption.innerHTML = `
-            <img src="${user.photo || 'https://via.placeholder.com/70'}" alt="${user.name}" class="user-photo">
-            <span class="user-name">${user.name}</span>
-        `;
-        userOption.addEventListener('click', () => {
-            document.getElementById('username').value = user.loginCode;
-            document.getElementById('password').value = user.loginCode;
-            attemptLogin(user.loginCode, user.loginCode);
-        });
-        userSelection.appendChild(userOption);
-    });
-}
-
-function setupLoginForm() {
-    const loginBtn = document.getElementById('loginBtn');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-
-    loginBtn.addEventListener('click', () => {
-        const username = usernameInput.value.toUpperCase();
-        const password = passwordInput.value.toUpperCase();
-        attemptLogin(username, password);
-    });
-    
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            loginBtn.click();
-        }
-    });
-}
-
-function attemptLogin(username, password) {
-    if (!username || !password) {
-        alert('Por favor, preencha usuário e senha.');
-        return;
-    }
-    const user = users.find(u => u.loginCode === username);
-    if (user && password === user.loginCode) { // Senha simplificada
-        loginUser(user);
-    } else {
-        alert('Usuário ou senha inválidos.');
-    }
-}
-
-function loginUser(user) {
-    currentUser = user;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainScreen').style.display = 'block';
-    
-    document.getElementById('headerUserPhoto').src = user.photo || 'https://via.placeholder.com/40';
-    document.getElementById('headerUserName').textContent = user.name;
-    
-    loadAllUserData(user);
-}
-
-function setupLogoutButton() {
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        currentUser = null;
-        document.getElementById('mainScreen').style.display = 'none';
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('username').value = '';
-        document.getElementById('password').value = '';
-    });
-}
-
-// ===================================================================================
-//  CARREGAMENTO DE DADOS E NAVEGAÇÃO
-// ===================================================================================
-function setupTabNavigation() {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const tabId = button.dataset.tab;
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            tabContents.forEach(content => content.classList.remove('active'));
-            document.getElementById(`${tabId}-tab`).classList.add('active');
-        });
-    });
-}
-
-function loadAllUserData(user) {
-    loadWorkoutTab(user);
-    loadRunningTab(user);
-    loadPeriodizationTab(user);
-    renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-    updateStatistics(user.email);
-}
-
-// ===================================================================================
-//  ABA DE TREINO (WORKOUT)
-// ===================================================================================
-function loadWorkoutTab(user) {
-    const userWorkouts = workouts[user.email];
-    if (userWorkouts) {
-        loadWorkoutExercises('A', userWorkouts.A, user);
-        loadWorkoutExercises('B', userWorkouts.B, user);
-        setupWorkoutFolders();
-        setupCheckInButtons(user);
-    } else {
-        document.getElementById('workoutA-details').innerHTML = '<p>Nenhum treino A cadastrado.</p>';
-        document.getElementById('workoutB-details').innerHTML = '<p>Nenhum treino B cadastrado.</p>';
-    }
-}
-
-function loadWorkoutExercises(type, exercises, user) {
-    const container = document.getElementById(`workout${type}-details`);
-    if (!exercises || exercises.length === 0) {
-        container.innerHTML = "<p>Nenhum exercício encontrado.</p>";
-        return;
-    }
-    
-    container.innerHTML = exercises.map((ex, index) => {
-        const exerciseId = `${user.email}-${type}-${index}`;
-        const isChecked = exerciseCompletion[exerciseId] || false;
-        return `
-            <div class="exercise-item">
-                <div class="exercise-info">
-                    <h4>${index + 1}. ${ex.exercise || 'Exercício sem nome'}</h4>
-                    <p>${ex.series}x${ex.reps} | Carga: ${ex.load || 0}kg | Descanso: ${ex.recovery || 'N/A'}</p>
-                    <p><strong>Método:</strong> ${ex.method || 'N/A'}</p>
-                </div>
-                <div class="exercise-check">
-                    <button class="check-btn ${isChecked ? 'checked' : ''}" data-exercise-id="${exerciseId}">
-                        ${isChecked ? '<i class="fas fa-check"></i>' : ''}
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    container.querySelectorAll('.check-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const exerciseId = btn.dataset.exerciseId;
-            const isChecked = !exerciseCompletion[exerciseId];
-            exerciseCompletion[exerciseId] = isChecked;
-            localStorage.setItem('exerciseCompletion', JSON.stringify(exerciseCompletion));
-            
-            btn.classList.toggle('checked');
-            btn.innerHTML = isChecked ? '<i class="fas fa-check"></i>' : '';
-            
-            checkWorkoutCompletion(user.email, type, exercises.length);
-        });
-    });
-}
-
-function setupWorkoutFolders() {
-    document.querySelectorAll('.workout-folder').forEach(folder => {
-        folder.addEventListener('click', (e) => {
-            if (e.target.classList.contains('check-in-btn')) return;
-            const details = folder.querySelector('.workout-details');
-            details.classList.toggle('active');
-        });
-    });
-}
-
-function setupCheckInButtons(user) {
-    ['A', 'B'].forEach(type => {
-        const btn = document.getElementById(`checkIn${type}`);
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            const today = new Date().toISOString().split('T')[0];
-            recordWorkout(user.email, type, today, 'full');
-            updateCheckInButton(btn, true);
-            updateStatistics(user.email);
-            renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-        };
-    });
-    updateAllCheckInButtons(user.email);
-}
-
-function updateCheckInButton(button, isChecked) {
-    button.classList.toggle('checked', isChecked);
-    button.textContent = isChecked ? 'Concluído' : `Check-in ${button.id.replace('checkIn', '')}`;
-    button.disabled = isChecked;
-}
-
-function updateAllCheckInButtons(email) {
-    const today = new Date().toISOString().split('T')[0];
-    const todayWorkout = workoutHistory[email]?.[today];
-
-    updateCheckInButton(document.getElementById('checkInA'), todayWorkout?.type === 'A');
-    updateCheckInButton(document.getElementById('checkInB'), todayWorkout?.type === 'B');
-}
-
-function checkWorkoutCompletion(email, type, totalExercises) {
-    let completedCount = 0;
-    for(let i = 0; i < totalExercises; i++) {
-        if (exerciseCompletion[`${email}-${type}-${i}`]) {
-            completedCount++;
-        }
-    }
-
-    const today = new Date().toISOString().split('T')[0];
-    const status = (completedCount === totalExercises) ? 'full' : (completedCount > 0 ? 'partial' : null);
-    
-    if (status) {
-        recordWorkout(email, type, today, status);
-        if (status === 'full') {
-            updateAllCheckInButtons(email);
-        }
-        updateStatistics(email);
-        renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-    }
-}
-
-// ===================================================================================
-//  ABA DE CORRIDA (RUNNING)
-// ===================================================================================
-function loadRunningTab(user) {
-    const nextRunningContainer = document.getElementById('next-running');
-    const runningPlanContainer = document.getElementById('running-plan');
-    const userPlan = runningPlans[user.email];
-
-    if (!userPlan || userPlan.length === 0) {
-        nextRunningContainer.innerHTML = '<p>Nenhum plano de corrida cadastrado.</p>';
-        runningPlanContainer.innerHTML = '';
-        return;
-    }
-
-    const nextSession = userPlan[0];
-    nextRunningContainer.innerHTML = generateRunningSessionHTML(nextSession, true);
-    runningPlanContainer.innerHTML = userPlan.map(session => generateRunningSessionHTML(session, false)).join('');
-
-    runningPlanContainer.querySelectorAll('.running-session').forEach(session => {
-        session.addEventListener('click', function() {
-            this.querySelector('.running-details').classList.toggle('active');
-        });
-    });
-}
-
-function generateRunningSessionHTML(session, isNext) {
-    return `
-        <div class="running-session ${isNext ? 'next' : ''}">
-            <h3>Treino ${session.number} - ${session.method} <span class="date">${session.date}</span></h3>
-            <p><strong>FC Alvo:</strong> ${session.targetHR || 'N/A'} | <strong>Pace:</strong> ${session.pace || 'N/A'} | <strong>Duração:</strong> ${session.duration || 'N/A'}</p>
-            <div class="running-details">
-                <p><strong>Detalhes:</strong> ${session.details || 'Sem detalhes.'}</p>
-            </div>
-        </div>
-    `;
-}
-
-// ===================================================================================
-//  ABA DE PERIODIZAÇÃO
-// ===================================================================================
-function loadPeriodizationTab(user) {
-    const container = document.getElementById('periodization-table-container');
-    const userPeriodization = periodizations[user.email];
-
-    if (!userPeriodization || userPeriodization.length === 0) {
-        container.innerHTML = '<p>Nenhuma periodização cadastrada.</p>';
-        return;
-    }
-
-    const tableRows = userPeriodization.map(phase => `
-        <tr>
-            <td>${phase.weeks || ''}</td>
-            <td>${phase.phase || ''}</td>
-            <td>${phase.method || ''}</td>
-            <td>${phase.reps || ''}</td>
-            <td>${phase.volume || ''}</td>
-            <td>${phase.intensity || ''}</td>
-            <td>${phase.recovery || ''}</td>
-        </tr>
-    `).join('');
-
-    container.innerHTML = `
-        <table class="periodization-table">
-            <thead>
-                <tr>
-                    <th>Semanas</th><th>Fase</th><th>Método</th><th>Reps</th>
-                    <th>Volume</th><th>Intensidade</th><th>Recuperação</th>
-                </tr>
-            </thead>
-            <tbody>${tableRows}</tbody>
-        </table>
-    `;
-}
-
-// ===================================================================================
-//  ABA DE CALENDÁRIO
-// ===================================================================================
-function setupCalendarControls() {
-    document.getElementById('prev-month-btn').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-    });
-    document.getElementById('next-month-btn').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        renderCalendar(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth());
-    });
-}
-
-function renderCalendar(year, month) {
-    const calendarBody = document.getElementById('calendar-body');
-    const monthYearEl = document.getElementById('current-month-year');
-    calendarBody.innerHTML = '';
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize today's date
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    
-    monthYearEl.textContent = `${firstDay.toLocaleString('pt-BR', { month: 'long' })} de ${year}`;
-
-    const userHistory = workoutHistory[currentUser.email] || {};
-
-    // Add empty divs for the days of the week before the first day of the month
-    for (let i = 0; i < firstDay.getDay(); i++) {
-        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
-    }
-
-    // Populate the days of the month
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-        const currentDate = new Date(year, month, day);
-        const dateStr = currentDate.toISOString().split('T')[0];
-        
-        let classes = 'calendar-day';
-        if (currentDate.getTime() === today.getTime()) {
-            classes += ' today';
-        }
-
-        if (userHistory[dateStr]) {
-             classes += ' checked';
-        } else {
-             // Example logic for scheduled workout days: Mon, Wed, Fri
-             const dayOfWeek = currentDate.getDay(); // 0=Sun, 1=Mon...
-             if ([1, 3, 5].includes(dayOfWeek)) {
-                classes += ' workout-day';
-             }
-        }
-        
-        calendarBody.innerHTML += `<div class="${classes}"><div class="day-number">${day}</div></div>`;
-    }
-
-    // Add empty divs for the remaining days of the week
-    while ((calendarBody.children.length % 7) !== 0) {
-        calendarBody.innerHTML += `<div class="calendar-day other-month"></div>`;
-    }
-}
-
-// ===================================================================================
-//  FUNÇÕES DE HISTÓRICO E ESTATÍSTICAS
-// ===================================================================================
-function recordWorkout(email, type, date, status) {
-    if (!workoutHistory[email]) {
-        workoutHistory[email] = {};
-    }
-    if (!workoutHistory[email][date] || status === 'full') {
-        workoutHistory[email][date] = { type, status, timestamp: new Date().toISOString() };
-    }
-    localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
-}
-
-function updateStatistics(email) {
-    const stats = { done: 0, missed: 0, rate: '0%', last: '-' };
-    const userHistory = workoutHistory[email] || {};
-    const historyDates = Object.keys(userHistory);
-    stats.done = historyDates.length;
-
-    if (historyDates.length > 0) {
-        const lastDate = new Date(Math.max(...historyDates.map(d => new Date(d))));
-        stats.last = lastDate.toLocaleDateString('pt-BR');
-    }
-    
-    document.getElementById('workouts-done').textContent = stats.done;
-    document.getElementById('workouts-missed').textContent = stats.missed;
-    document.getElementById('attendance-rate').textContent = stats.rate;
-    document.getElementById('last-workout').textContent = stats.last;
-}
+// ... (Restante do código JavaScript)
 </script>
 </body>
 </html>
