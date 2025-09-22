@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB Fit - Seu App de Treino Personalizado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        /* Tela de Login */
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            padding: 20px;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a2a6c;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #fdbb2d;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .user-selection {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .user-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-option:hover {
+            background-color: #e9e9e9;
+            transform: translateY(-3px);
+        }
+        
+        .user-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        /* Tela Principal */
+        .main-screen {
+            display: none;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            padding: 20px;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #1a2a6c;
+            border-bottom: 3px solid #1a2a6c;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: #fdbb2d;
+        }
+        
+        .workout-folder {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1a2a6c;
+        }
+        
+        .workout-folder h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .check-in-btn {
+            background-color: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .check-in-btn:hover {
+            background-color: #0d1a4a;
+        }
+        
+        .check-in-btn.checked {
+            background-color: #4CAF50;
+        }
+        
+        .workout-details {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .workout-details.active {
+            display: block;
+        }
+        
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .exercise-item:last-child {
+            border-bottom: none;
+        }
+        
+        .exercise-info h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .exercise-info p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        .exercise-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .check-btn {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .check-btn.checked {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+        
+        .calendar-header {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            font-size: 0.9rem;
+            position: relative;
+        }
+        
+        .calendar-day.today {
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+        
+        .calendar-day.workout-day {
+            background-color: #fff3e0;
+        }
+        
+        .calendar-day.checked {
+            background-color: #c8e6c9;
+        }
+        
+        .calendar-day.partial {
+            background-color: #ffecb3;
+        }
+        
+        .calendar-day.missed {
+            background-color: #ffcdd2;
+        }
+        
+        .day-number {
+            font-weight: bold;
+        }
+        
+        .day-status {
+            font-size: 0.7rem;
+            margin-top: 2px;
+        }
+        
+        .periodization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .periodization-table th, .periodization-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .periodization-table th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        
+        .periodization-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .running-plan {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .running-session {
+            background-color: #f0f7ff;
+            border-left: 4px solid #1a2a6c;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .running-session.next {
+            background-color: #e8f5e9;
+            border-left-color: #4CAF50;
+        }
+        
+        .running-session h3 {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .running-session .date {
+            font-weight: normal;
+            color: #666;
+        }
+        
+        .running-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .running-details.active {
+            display: block;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1a2a6c;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .user-selection {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 15px 10px;
+            }
+            
+            .tab-button {
+                padding: 12px 5px;
+                font-size: 0.9rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="logo">
+                <i class="fas fa-dumbbell"></i>
+                <h1>AB Fit</h1>
+            </div>
+            
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Usuário (3 primeiras letras do nome)</label>
+                    <input type="text" id="username" placeholder="Ex: AND para André">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Senha (3 primeiras letras do nome)</label>
+                    <input type="password" id="password" placeholder="Ex: AND para André">
+                </div>
+                
+                <button class="login-btn" id="loginBtn">Entrar</button>
+            </div>
+            
+            <p style="margin: 15px 0; font-weight: 600; color: #555;">Ou selecione um usuário:</p>
+            
+            <div class="user-selection" id="userSelection">
+                <!-- Os usuários serão carregados via JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tela Principal -->
+    <div class="main-screen" id="mainScreen">
+        <header>
+            <div class="user-info">
+                <img id="headerUserPhoto" src="" alt="Usuário">
+                <span id="headerUserName">Usuário</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </header>
+        
+        <div class="main-content">
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="workout">Treino</button>
+                <button class="tab-button" data-tab="periodization">Periodização</button>
+                <button class="tab-button" data-tab="running">Corrida</button>
+                <button class="tab-button" data-tab="calendar">Calendário</button>
+            </div>
+            
+            <div id="workout-tab" class="tab-content active">
+                <div class="card">
+                    <h2><i class="fas fa-dumbbell"></i> Meus Treinos</h2>
+                    
+                    <div class="workout-folder">
+                        <h3>
+                            <span><i class="fas fa-folder"></i> Treino A</span>
+                            <button class="check-in-btn" id="checkInA">Check-in A</button>
+                        </h3>
+                        <div class="workout-details" id="workoutA-details">
+                            <!-- Exercícios do Treino A serão carregados aqui -->
+                        </div>
+                    </div>
+                    
+                    <div class="workout-folder">
+                        <h3>
+                            <span><i class="fas fa-folder"></i> Treino B</span>
+                            <button class="check-in-btn" id="checkInB">Check-in B</button>
+                        </h3>
+                        <div class="workout-details" id="workoutB-details">
+                            <!-- Exercícios do Treino B serão carregados aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Estatísticas</h2>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="workouts-done">0</div>
+                            <div class="stat-label">Treinos Realizados</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="workouts-missed">0</div>
+                            <div class="stat-label">Treinos Perdidos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="attendance-rate">0%</div>
+                            <div class="stat-label">Taxa de Presença</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="last-workout">-</div>
+                            <div class="stat-label">Último Treino</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="periodization-tab" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-calendar-week"></i> Periodização</h2>
+                    <div id="periodization-table">
+                        <!-- A tabela de periodização será carregada via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="running-tab" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-running"></i> Próximo Treino de Corrida</h2>
+                    <div id="next-running">
+                        <!-- O próximo treino de corrida será carregado via JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-list-alt"></i> Planilha de Corrida</h2>
+                    <div class="running-plan" id="running-plan">
+                        <!-- A planilha de corrida será carregada via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div id="calendar-tab" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-calendar"></i> Calendário de Treinos</h2>
+                    <div id="calendar">
+                        <!-- O calendário será carregado via JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos usuários
+        const users = [
+            {
+                name: "André Brito",
+                email: "britodeandrade@gmail.com",
+                photo: "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg",
+                age: 36,
+                maxHR: 184,
+                lastWorkoutDate: "27/9",
+                lastWorkoutNumber: 5,
+                nextWorkoutDate: "30/09/2025, 12:00:00",
+                nextWorkoutMethod: "FARTLEK",
+                loginCode: "AND"
+            },
+            {
+                name: "Marcelly Bispo",
+                email: "marcellybispo92@gmail.com",
+                photo: "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg",
+                age: 33,
+                maxHR: 187,
+                lastWorkoutDate: "19/9",
+                lastWorkoutNumber: 5,
+                nextWorkoutDate: "22/09/2025, 12:00:00",
+                nextWorkoutMethod: "FARTLEK",
+                loginCode: "MAR"
+            },
+            {
+                name: "Marcia Brito",
+                email: "andrademarcia.ucam@gmail.com",
+                photo: "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg",
+                age: 59,
+                maxHR: 161,
+                loginCode: "MAR"
+            },
+            {
+                name: "Liliane Torres",
+                email: "lilicatorres@gmail.com",
+                photo: "",
+                age: null,
+                loginCode: "LIL"
+            }
+        ];
+
+        // Dados de treinos
+        const workouts = {
+            "britodeandrade@gmail.com": {
+                A: [
+                    { exercise: "Agachamento parcial no Smith", series: 4, reps: 10, load: 15, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre com HBC", series: 4, reps: 10, load: 14, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Cadeira extensora", series: 4, reps: 10, load: 3, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Supino inclinado com HBC", series: 3, reps: 10, load: 12, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Extensão de cotovelos no solo", series: 3, reps: 10, load: 0, method: "Método Simples (10 RM)", recovery: "30s" }
+                ],
+                B: [
+                    { exercise: "Agachamento sumô com HBC", series: 4, reps: 10, load: 22, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Stiff em pé com HBM", series: 4, reps: 10, load: 14, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Extensão de quadril com caneleira", series: 4, reps: 10, load: 7, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Remada curvada aberta com HBC", series: 3, reps: 10, load: 8, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo inverso curvado com HBC", series: 3, reps: 10, load: 4, method: "Método Simples (10 RM)", recovery: "30s" }
+                ]
+            },
+            "marcellybispo92@gmail.com": {
+                A: [
+                    { exercise: "Agachamento Livre", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre em isometria", series: 3, reps: 20, method: "Método Simples (20 RM)", recovery: "30s" },
+                    { exercise: "Agachamento Livre com HBC", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Agachamento em passada com HBC", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Cadeira extensora", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
+                ],
+                B: [
+                    { exercise: "Agachamento sumô com HBC", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Stiff em pé com HBM", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Extensão de quadril com caneleira", series: 4, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Remada aberta na máquina", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" },
+                    { exercise: "Crucifixo inverso com HBC", series: 3, reps: 10, method: "Método Simples (10 RM)", recovery: "30s" }
+                ]
+            }
+        };
+
+        // Dados de corrida
+        const runningPlans = {
+            "britodeandrade@gmail.com": [
+                { date: "30/09/2025", number: 1, method: "FARTLEK", targetHR: "147,2", pace: "7:00", duration: "30min", details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC" },
+                { date: "01/10/2025", number: 2, method: "INTERVALADO", targetHR: "156,4", pace: "6:19", duration: "30min", details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC" },
+                { date: "03/10/2025", number: 3, method: "LONGÃO", targetHR: "147,2", pace: "7:04", duration: "30min", details: "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC" }
+            ],
+            "marcellybispo92@gmail.com": [
+                { date: "22/09/2025", number: 1, method: "FARTLEK", targetHR: "149,6", pace: "8:00", duration: "30min", details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC" },
+                { date: "24/09/2025", number: 2, method: "INTERVALADO", targetHR: "158,95", pace: "7:04", duration: "30min", details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC" },
+                { date: "26/09/2025", number: 3, method: "LONGÃO", targetHR: "149,6", pace: "7:30", duration: "30min", details: "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC" }
+            ]
+        };
+
+        // Dados de periodização
+        const periodizations = {
+            "britodeandrade@gmail.com": [
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s" }
+            ],
+            "marcellybispo92@gmail.com": [
+                { weeks: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "10", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
+                { weeks: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", reps: "8-9", volume: "16 séries/grupo", intensity: "70-75% 1RM", recovery: "60-90s" },
+                { weeks: "5ª e 6ª", phase: "Força", method: "Método de execução Simples + Rest-Pause", reps: "6-7", volume: "14 séries/grupo", intensity: "80-85% 1RM", recovery: "90-120s" }
+            ]
+        };
+
+        // Estado da aplicação
+        let currentUser = null;
+        let workoutHistory = JSON.parse(localStorage.getItem('workoutHistory')) || {};
+        let exerciseCompletion = JSON.parse(localStorage.getItem('exerciseCompletion')) || {};
+
+        // Inicialização da aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            renderUserSelection();
+            setupLoginForm();
+            setupTabNavigation();
+            setupLogoutButton();
+        });
+
+        // Renderizar seleção de usuários na tela de login
+        function renderUserSelection() {
+            const userSelection = document.getElementById('userSelection');
+            userSelection.innerHTML = '';
+            
+            users.forEach(user => {
+                const userOption = document.createElement('div');
+                userOption.className = 'user-option';
+                userOption.innerHTML = `
+                    <img src="${user.photo || 'https://via.placeholder.com/70'}" alt="${user.name}" class="user-photo">
+                    <span class="user-name">${user.name}</span>
+                `;
+                userOption.addEventListener('click', () => {
+                    document.getElementById('username').value = user.loginCode;
+                    document.getElementById('password').value = user.loginCode;
+                    attemptLogin(user.loginCode, user.loginCode);
+                });
+                userSelection.appendChild(userOption);
+            });
+        }
+
+        // Configurar formulário de login
+        function setupLoginForm() {
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.addEventListener('click', function() {
+                const username = document.getElementById('username').value.toUpperCase();
+                const password = document.getElementById('password').value.toUpperCase();
+                attemptLogin(username, password);
+            });
+        }
+
+        // Tentar fazer login
+        function attemptLogin(username, password) {
+            if (username.length !== 3 || password.length !== 3) {
+                alert('Usuário e senha devem ter exatamente 3 caracteres.');
+                return;
+            }
+            
+            if (username !== password) {
+                alert('Usuário e senha devem ser iguais.');
+                return;
+            }
+            
+            const user = users.find(u => u.loginCode === username);
+            if (user) {
+                loginUser(user);
+            } else {
+                alert('Usuário não encontrado. Verifique as 3 primeiras letras do nome.');
+            }
+        }
+
+        // Fazer login do usuário
+        function loginUser(user) {
+            currentUser = user;
+            
+            // Mostrar tela principal e esconder tela de login
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainScreen').style.display = 'block';
+            
+            // Atualizar header com informações do usuário
+            document.getElementById('headerUserPhoto').src = user.photo || 'https://via.placeholder.com/40';
+            document.getElementById('headerUserName').textContent = user.name;
+            
+            // Carregar dados do usuário
+            loadUserData(user);
+        }
+
+        // Configurar botão de logout
+        function setupLogoutButton() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            logoutBtn.addEventListener('click', function() {
+                currentUser = null;
+                document.getElementById('mainScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                
+                // Limpar formulário de login
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+            });
+        }
+
+        // Configurar navegação por abas
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    
+                    // Ativar botão da aba
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Mostrar conteúdo da aba
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Carregar dados do usuário selecionado
+        function loadUserData(user) {
+            loadWorkoutTab(user);
+            loadRunningTab(user);
+            loadPeriodizationTab(user);
+            loadCalendarTab(user);
+        }
+
+        // Carregar aba de treino
+        function loadWorkoutTab(user) {
+            const userWorkouts = workouts[user.email];
+            
+            if (userWorkouts) {
+                // Configurar botões de check-in
+                setupCheckInButtons(user);
+                
+                // Carregar exercícios do Treino A
+                loadWorkoutExercises('A', userWorkouts.A, user);
+                
+                // Carregar exercícios do Treino B
+                loadWorkoutExercises('B', userWorkouts.B, user);
+            } else {
+                document.getElementById('workoutA-details').innerHTML = '<p>Nenhum treino cadastrado para este usuário.</p>';
+                document.getElementById('workoutB-details').innerHTML = '<p>Nenhum treino cadastrado para este usuário.</p>';
+            }
+            
+            updateStatistics(user.email);
+        }
+
+        // Configurar botões de check-in
+        function setupCheckInButtons(user) {
+            const checkInA = document.getElementById('checkInA');
+            const checkInB = document.getElementById('checkInB');
+            const workoutADetails = document.getElementById('workoutA-details');
+            const workoutBDetails = document.getElementById('workoutB-details');
+            
+            // Alternar visibilidade dos detalhes do treino
+            checkInA.parentElement.parentElement.addEventListener('click', function(e) {
+                if (e.target !== checkInA) {
+                    workoutADetails.classList.toggle('active');
+                    workoutBDetails.classList.remove('active');
+                }
+            });
+            
+            checkInB.parentElement.parentElement.addEventListener('click', function(e) {
+                if (e.target !== checkInB) {
+                    workoutBDetails.classList.toggle('active');
+                    workoutADetails.classList.remove('active');
+                }
+            });
+            
+            // Check-in para Treino A
+            checkInA.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const today = new Date().toISOString().split('T')[0];
+                recordWorkout(user.email, 'A', today, 'full');
+                this.classList.add('checked');
+                this.textContent = 'Concluído';
+                this.disabled = true;
+                updateStatistics(user.email);
+                loadCalendarTab(user);
+            });
+            
+            // Check-in para Treino B
+            checkInB.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const today = new Date().toISOString().split('T')[0];
+                recordWorkout(user.email, 'B', today, 'full');
+                this.classList.add('checked');
+                this.textContent = 'Concluído';
+                this.disabled = true;
+                updateStatistics(user.email);
+                loadCalendarTab(user);
+            });
+            
+            // Verificar se já fez check-in hoje
+            const today = new Date().toISOString().split('T')[0];
+            if (workoutHistory[user.email] && workoutHistory[user.email][today]) {
+                const todayWorkout = workoutHistory[user.email][today];
+                if (todayWorkout.type === 'A') {
+                    checkInA.classList.add('checked');
+                    checkInA.textContent = 'Concluído';
+                    checkInA.disabled = true;
+                } else if (todayWorkout.type === 'B') {
+                    checkInB.classList.add('checked');
+                    checkInB.textContent = 'Concluído';
+                    checkInB.disabled = true;
+                }
+            }
+        }
+
+        // Carregar exercícios de um treino
+        function loadWorkoutExercises(type, exercises, user) {
+            const workoutDetails = document.getElementById(`workout${type}-details`);
+            let exercisesHTML = '';
+            
+            exercises.forEach((exercise, index) => {
+                const exerciseId = `${user.email}-${type}-${index}`;
+                const isChecked = exerciseCompletion[exerciseId] || false;
+                
+                exercisesHTML += `
+                <div class="exercise-item">
+                    <div class="exercise-info">
+                        <h4>${index + 1}. ${exercise.exercise}</h4>
+                        <p>${exercise.series} séries de ${exercise.reps} repetições</p>
+                        ${exercise.load ? `<p>Carga: ${exercise.load}kg</p>` : ''}
+                        <p>Método: ${exercise.method} | Recuperação: ${exercise.recovery}</p>
+                    </div>
+                    <div class="exercise-check">
+                        <button class="check-btn ${isChecked ? 'checked' : ''}" data-exercise="${exerciseId}">
+                            ${isChecked ? '<i class="fas fa-check"></i>' : ''}
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+            
+            workoutDetails.innerHTML = exercisesHTML;
+            
+            // Adicionar event listeners aos botões de check dos exercícios
+            workoutDetails.querySelectorAll('.check-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const exerciseId = this.getAttribute('data-exercise');
+                    const isChecked = !exerciseCompletion[exerciseId];
+                    
+                    exerciseCompletion[exerciseId] = isChecked;
+                    localStorage.setItem('exerciseCompletion', JSON.stringify(exerciseCompletion));
+                    
+                    this.classList.toggle('checked');
+                    this.innerHTML = isChecked ? '<i class="fas fa-check"></i>' : '';
+                    
+                    // Verificar se todos os exercícios foram completados
+                    checkWorkoutCompletion(user.email, type, exercises.length);
+                });
+            });
+        }
+
+        // Verificar se todos os exercícios de um treino foram completados
+        function checkWorkoutCompletion(email, type, totalExercises) {
+            let completedExercises = 0;
+            
+            for (let i = 0; i < totalExercises; i++) {
+                const exerciseId = `${email}-${type}-${i}`;
+                if (exerciseCompletion[exerciseId]) {
+                    completedExercises++;
+                }
+            }
+            
+            // Se todos os exercícios foram completados, fazer check-in automático
+            if (completedExercises === totalExercises) {
+                const today = new Date().toISOString().split('T')[0];
+                recordWorkout(email, type, today, 'full');
+                updateStatistics(email);
+                loadCalendarTab(currentUser);
+                
+                // Atualizar botão de check-in
+                const checkInBtn = document.getElementById(`checkIn${type}`);
+                checkInBtn.classList.add('checked');
+                checkInBtn.textContent = 'Concluído';
+                checkInBtn.disabled = true;
+            } else if (completedExercises > 0) {
+                // Se alguns exercícios foram completados, marcar como parcial
+                const today = new Date().toISOString().split('T')[0];
+                if (!workoutHistory[email] || !workoutHistory[email][today]) {
+                    recordWorkout(email, type, today, 'partial');
+                    updateStatistics(email);
+                    loadCalendarTab(currentUser);
+                }
+            }
+        }
+
+        // Carregar aba de corrida
+        function loadRunningTab(user) {
+            const nextRunning = document.getElementById('next-running');
+            const runningPlan = document.getElementById('running-plan');
+            const userRunningPlan = runningPlans[user.email];
+            
+            if (userRunningPlan && userRunningPlan.length > 0) {
+                // Próximo treino de corrida
+                const nextSession = userRunningPlan[0];
+                nextRunning.innerHTML = `
+                    <div class="running-session next">
+                        <h3>Treino ${nextSession.number} - ${nextSession.method} <span class="date">${nextSession.date}</span></h3>
+                        <p><strong>FC Alvo:</strong> ${nextSession.targetHR} BPM</p>
+                        <p><strong>Pace:</strong> ${nextSession.pace} min/km</p>
+                        <p><strong>Duração:</strong> ${nextSession.duration}</p>
+                        <div class="running-details">
+                            <p><strong>Detalhes:</strong> ${nextSession.details}</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Planilha completa de corrida
+                runningPlan.innerHTML = '';
+                userRunningPlan.forEach(session => {
+                    const sessionHTML = `
+                    <div class="running-session">
+                        <h3>Treino ${session.number} - ${session.method} <span class="date">${session.date}</span></h3>
+                        <p><strong>FC Alvo:</strong> ${session.targetHR} BPM</p>
+                        <p><strong>Pace:</strong> ${session.pace} min/km</p>
+                        <p><strong>Duração:</strong> ${session.duration}</p>
+                        <div class="running-details">
+                            <p><strong>Detalhes:</strong> ${session.details}</p>
+                        </div>
+                    </div>
+                    `;
+                    runningPlan.innerHTML += sessionHTML;
+                });
+                
+                // Adicionar event listeners para mostrar/ocultar detalhes
+                document.querySelectorAll('.running-session').forEach(session => {
+                    session.addEventListener('click', function() {
+                        const details = this.querySelector('.running-details');
+                        details.classList.toggle('active');
+                    });
+                });
+            } else {
+                nextRunning.innerHTML = '<p>Nenhum treino de corrida cadastrado.</p>';
+                runningPlan.innerHTML = '<p>Nenhum treino de corrida cadastrado.</p>';
+            }
+        }
+
+        // Carregar aba de periodização
+        function loadPeriodizationTab(user) {
+            const periodizationTable = document.getElementById('periodization-table');
+            const userPeriodization = periodizations[user.email];
+            
+            if (userPeriodization) {
+                let tableHTML = `
+                <table class="periodization-table">
+                    <thead>
+                        <tr>
+                            <th>Semanas</th>
+                            <th>Fases</th>
+                            <th>Métodos</th>
+                            <th>Repetições</th>
+                            <th>Volume</th>
+                            <th>Intensidade</th>
+                            <th>Recuperação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+                
+                userPeriodization.forEach(phase => {
+                    tableHTML += `
+                    <tr>
+                        <td>${phase.weeks}</td>
+                        <td>${phase.phase}</td>
+                        <td>${phase.method}</td>
+                        <td>${phase.reps}</td>
+                        <td>${phase.volume}</td>
+                        <td>${phase.intensity}</td>
+                        <td>${phase.recovery}</td>
+                    </tr>
+                    `;
+                });
+                
+                tableHTML += '</tbody></table>';
+                periodizationTable.innerHTML = tableHTML;
+            } else {
+                periodizationTable.innerHTML = '<p>Nenhuma periodização cadastrada para este usuário.</p>';
+            }
+        }
+
+        // Carregar aba de calendário
+        function loadCalendarTab(user) {
+            const calendar = document.getElementById('calendar');
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            
+            // Criar cabeçalho do calendário
+            let calendarHTML = `
+            <div class="calendar-header">
+                <div>Dom</div>
+                <div>Seg</div>
+                <div>Ter</div>
+                <div>Qua</div>
+                <div>Qui</div>
+                <div>Sex</div>
+                <div>Sáb</div>
+            </div>
+            <div class="calendar">
+            `;
+            
+            // Primeiro dia do mês
+            const firstDay = new Date(year, month, 1);
+            // Último dia do mês
+            const lastDay = new Date(year, month + 1, 0);
+            // Dia da semana do primeiro dia (0 = Domingo, 1 = Segunda, etc.)
+            const firstDayOfWeek = firstDay.getDay();
+            
+            // Dias vazios no início do mês
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                calendarHTML += '<div class="calendar-day"></div>';
+            }
+            
+            // Dias do mês
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const hasWorkout = workoutHistory[user.email] && workoutHistory[user.email][dateStr];
+                
+                let dayClass = 'calendar-day';
+                let dayStatus = '';
+                
+                if (isToday) dayClass += ' today';
+                
+                if (hasWorkout) {
+                    if (hasWorkout.status === 'full') {
+                        dayClass += ' checked';
+                        dayStatus = 'Completo';
+                    } else if (hasWorkout.status === 'partial') {
+                        dayClass += ' partial';
+                        dayStatus = 'Parcial';
+                    }
+                } else {
+                    // Verificar se é um dia de treino (simplificação: dias pares A, ímpares B)
+                    if (day % 2 === 0) {
+                        dayClass += ' workout-day';
+                        dayStatus = 'Treino A';
+                    } else {
+                        dayClass += ' workout-day';
+                        dayStatus = 'Treino B';
+                    }
+                    
+                    // Verificar se é um dia que já passou e não foi feito check-in
+                    const dayDate = new Date(year, month, day);
+                    if (dayDate < today && dayDate.getDate() !== today.getDate()) {
+                        dayClass += ' missed';
+                        dayStatus = 'Faltou';
+                    }
+                }
+                
+                calendarHTML += `
+                <div class="${dayClass}">
+                    <div class="day-number">${day}</div>
+                    <div class="day-status">${dayStatus}</div>
+                </div>`;
+            }
+            
+            calendarHTML += '</div>';
+            calendar.innerHTML = calendarHTML;
+        }
+
+        // Registrar treino realizado
+        function recordWorkout(email, type, date, status) {
+            if (!workoutHistory[email]) {
+                workoutHistory[email] = {};
+            }
+            
+            workoutHistory[email][date] = {
+                type: type,
+                status: status,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory));
+        }
+
+        // Atualizar estatísticas
+        function updateStatistics(email) {
+            const workoutsDone = document.getElementById('workouts-done');
+            const workoutsMissed = document.getElementById('workouts-missed');
+            const attendanceRate = document.getElementById('attendance-rate');
+            const lastWorkout = document.getElementById('last-workout');
+            
+            const userHistory = workoutHistory[email] || {};
+            const workoutDates = Object.keys(userHistory);
+            const totalWorkouts = workoutDates.length;
+            
+            // Calcular dias de treino previstos (simplificado)
+            const today = new Date();
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            const daysSoFar = today.getDate();
+            const expectedWorkouts = Math.floor(daysSoFar / 2); // Simplificação: treino a cada 2 dias
+            
+            workoutsDone.textContent = totalWorkouts;
+            workoutsMissed.textContent = Math.max(0, expectedWorkouts - totalWorkouts);
+            
+            if (expectedWorkouts > 0) {
+                const rate = Math.round((totalWorkouts / expectedWorkouts) * 100);
+                attendanceRate.textContent = `${rate}%`;
+            } else {
+                attendanceRate.textContent = '0%';
+            }
+            
+            if (workoutDates.length > 0) {
+                const lastDate = new Date(Math.max(...workoutDates.map(d => new Date(d))));
+                lastWorkout.textContent = lastDate.toLocaleDateString('pt-BR');
+            } else {
+                lastWorkout.textContent = '-';
+            }
+        }
+    </script>
+</body>
+</html>
