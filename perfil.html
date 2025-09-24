@@ -4,57 +4,22 @@
   <meta charset="UTF-8">
   <title>Perfil do Aluno</title>
   <link rel="stylesheet" href="Estilo.css">
+  <script src="Script.js" defer></script>
 </head>
 <body>
-  <header>
-    <h1 id="nome-aluno">Perfil do Aluno</h1>
-  </header>
+  <h1 id="titulo-perfil">Perfil do Aluno</h1>
 
-  <main style="padding:1rem;">
-    <section id="botoes">
-      <button onclick="alert('Abrir Treino A')">Treino A</button>
-      <button onclick="alert('Abrir Treino B')">Treino B</button>
-      <button onclick="alert('Abrir Corrida')">Corrida</button>
-      <button onclick="alert('Abrir Periodização')">Periodização</button>
-    </section>
+  <div class="botoes">
+    <button onclick="abrirTreino('Treino A - Geral.csv')">Treino A</button>
+    <button onclick="abrirTreino('Treino B - Geral.csv')">Treino B</button>
+    <button onclick="abrirTreino('Treino de corrida de todos.csv')">Corrida</button>
+    <button onclick="abrirTreino('Resumo da Periodização - ' + alunoSelecionado + '.csv')">Periodização</button>
+  </div>
 
-    <h2>Calendário de Presenças</h2>
-    <div id="calendario"></div>
+  <div>
+    <button onclick="voltar()">Voltar para a Lista</button>
+  </div>
 
-    <br>
-    <button onclick="window.history.back()">Voltar para Lista</button>
-  </main>
-
-  <script>
-    // Pega o nome do aluno da URL
-    const params = new URLSearchParams(window.location.search);
-    const nome = params.get("aluno");
-    if (nome) {
-      document.getElementById("nome-aluno").innerText = "Perfil de " + nome;
-    }
-
-    // Criar calendário fake (30 dias)
-    const calendario = document.getElementById("calendario");
-    for (let i = 1; i <= 30; i++) {
-      const dia = document.createElement("div");
-      dia.textContent = i;
-      dia.style.display = "inline-block";
-      dia.style.width = "40px";
-      dia.style.height = "40px";
-      dia.style.lineHeight = "40px";
-      dia.style.margin = "5px";
-      dia.style.textAlign = "center";
-      dia.style.border = "1px solid #ccc";
-      dia.style.borderRadius = "8px";
-      dia.style.cursor = "pointer";
-      dia.style.background = "#f9f9f9";
-
-      dia.onclick = () => {
-        dia.style.background = dia.style.background === "lightgreen" ? "#f9f9f9" : "lightgreen";
-      };
-
-      calendario.appendChild(dia);
-    }
-  </script>
+  <pre id="conteudo-arquivo"></pre>
 </body>
 </html>
