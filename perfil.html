@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil do Aluno</title>
+  <link rel="stylesheet" href="Estilo.css">
+</head>
+<body>
+  <header>
+    <h1 id="nome-aluno">Perfil do Aluno</h1>
+  </header>
+
+  <main style="padding:1rem;">
+    <section id="botoes">
+      <button onclick="alert('Abrir Treino A')">Treino A</button>
+      <button onclick="alert('Abrir Treino B')">Treino B</button>
+      <button onclick="alert('Abrir Corrida')">Corrida</button>
+      <button onclick="alert('Abrir Periodização')">Periodização</button>
+    </section>
+
+    <h2>Calendário de Presenças</h2>
+    <div id="calendario"></div>
+
+    <br>
+    <button onclick="window.history.back()">Voltar para Lista</button>
+  </main>
+
+  <script>
+    // Pega o nome do aluno da URL
+    const params = new URLSearchParams(window.location.search);
+    const nome = params.get("aluno");
+    if (nome) {
+      document.getElementById("nome-aluno").innerText = "Perfil de " + nome;
+    }
+
+    // Criar calendário fake (30 dias)
+    const calendario = document.getElementById("calendario");
+    for (let i = 1; i <= 30; i++) {
+      const dia = document.createElement("div");
+      dia.textContent = i;
+      dia.style.display = "inline-block";
+      dia.style.width = "40px";
+      dia.style.height = "40px";
+      dia.style.lineHeight = "40px";
+      dia.style.margin = "5px";
+      dia.style.textAlign = "center";
+      dia.style.border = "1px solid #ccc";
+      dia.style.borderRadius = "8px";
+      dia.style.cursor = "pointer";
+      dia.style.background = "#f9f9f9";
+
+      dia.onclick = () => {
+        dia.style.background = dia.style.background === "lightgreen" ? "#f9f9f9" : "lightgreen";
+      };
+
+      calendario.appendChild(dia);
+    }
+  </script>
+</body>
+</html>
