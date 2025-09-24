@@ -44,6 +44,14 @@ button {
   color: white;
   cursor: pointer;
 }
+#calendario {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 300px;
+}
+#calendario div {
+  transition: background 0.3s;
+}
 
 button:hover {
   background: darkred;
