@@ -1,58 +1,35 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f5f5f5;
+  background: #f1f1f1;
+  margin: 20px;
+}
+
+h1 {
   color: #333;
 }
 
-header {
-  background: linear-gradient(to right, red, black);
-  color: white;
-  padding: 1rem;
-  text-align: center;
-}
-
-#alunos-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.card {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  padding: 1rem;
-  text-align: center;
-}
-
-.card img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
+.botoes {
+  margin-bottom: 20px;
 }
 
 button {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
+  margin: 5px;
+  padding: 10px 15px;
   border: none;
-  border-radius: 8px;
-  background: red;
+  border-radius: 5px;
+  background-color: #4CAF50;
   color: white;
   cursor: pointer;
 }
-#calendario {
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 300px;
-}
-#calendario div {
-  transition: background 0.3s;
-}
 
 button:hover {
-  background: darkred;
+  background-color: #45a049;
+}
+
+pre {
+  background: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  max-height: 400px;
+  overflow: auto;
 }
