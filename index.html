@@ -1,598 +1,93 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Torneio de Xadrez</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        
-        .controls {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        select, input, button {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        
-        button {
-            background-color: var(--secondary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #2980b9;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-card {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-        
-        .stat-card p {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--secondary);
-        }
-        
-        .table-container {
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-x: auto;
-            margin-bottom: 1rem;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: var(--primary);
-            color: white;
-            position: sticky;
-            top: 0;
-        }
-        
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .pagination button {
-            padding: 0.5rem 1rem;
-        }
-        
-        .pagination button.active {
-            background-color: var(--primary);
-        }
-        
-        footer {
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            color: #777;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-            }
-            
-            th, td {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Gestão de Torneio de Xadrez</h1>
-    </header>
-    
-    <div class="container">
-        <div class="controls">
-            <select id="tournamentSelect">
-                <option value="all">Todos os Torneios</option>
-                <option value="611">Torneio 611</option>
-                <option value="612">Torneio 612</option>
-                <option value="613">Torneio 613</option>
-                <option value="621">Torneio 621</option>
-                <option value="622">Torneio 622</option>
-                <option value="623">Torneio 623</option>
-            </select>
-            
-            <input type="text" id="searchInput" placeholder="Buscar por nome...">
-            
-            <select id="sortSelect">
-                <option value="pontos-desc">Pontos (Maior para Menor)</option>
-                <option value="pontos-asc">Pontos (Menor para Maior)</option>
-                <option value="nome-asc">Nome (A-Z)</option>
-                <option value="nome-desc">Nome (Z-A)</option>
-                <option value="vitorias-desc">Vitórias (Maior para Menor)</option>
-            </select>
-            
-            <button id="exportBtn">Exportar Dados</button>
-        </div>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <h3>Total de Participantes</h3>
-                <p id="totalParticipants">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Maior Pontuação</h3>
-                <p id="maxPoints">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Média de Pontos</h3>
-                <p id="avgPoints">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Participantes com Vitórias</h3>
-                <p id="winnersCount">0</p>
-            </div>
-        </div>
-        
-        <div class="table-container">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>Torneio</th>
-                        <th>Nome</th>
-                        <th>Vitórias</th>
-                        <th>Derrotas</th>
-                        <th>Empates</th>
-                        <th>Pontos</th>
-                        <th>Posição</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- Os dados serão inseridos aqui via JavaScript -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="pagination" id="pagination">
-            <!-- A paginação será gerada via JavaScript -->
-        </div>
-    </div>
-    
-    <footer>
-        <p>Sistema de Gestão de Torneio de Xadrez &copy; 2023</p>
-    </footer>
+// Aguarda o carregamento completo da página antes de executar o código
+document.addEventListener('DOMContentLoaded', () => {
 
-    <script>
-        // Dados dos torneios (extraídos das planilhas fornecidas)
-        const tournamentData = {
-            "611": [
-                { nome: "Alice Caldeira de Lima", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 1 },
-                { nome: "Bernardo Costa", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 2 },
-                { nome: "Danilo Felipe", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 3 },
-                { nome: "Davi Lucca Martins Pereira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 4 },
-                { nome: "Davi Senne", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 5 },
-                { nome: "Enzo Samuel", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Isabella Teixeira das Chagas", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 7 },
-                { nome: "Isadora Torres de Andrade", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 8 },
-                { nome: "Maria Eduarda dos Santos", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 9 },
-                { nome: "Miguel Roberto", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 10 },
-                { nome: "Nicolly Marques", vitorias: 0, derrotas: 0, empates: 1, pontos: 0.5, posicao: 11 },
-                { nome: "Nicolly Vitoria", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 12 },
-                { nome: "Otávio Pires", vitorias: 1, derrotas: 0, empates: 0, pontos: 1, posicao: 13 },
-                { nome: "Pietro Coutinho", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 14 },
-                { nome: "Ryan Bacelar", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 15 },
-                { nome: "Theo Machado", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 16 },
-                { nome: "Victor Pereira", vitorias: 0, derrotas: 0, empates: 1, pontos: 0.5, posicao: 17 },
-                { nome: "Wagner Ferreira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 18 },
-                { nome: "Yasmin da Silva Melo", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 19 },
-                { nome: "Yasmin Faquetin", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 20 }
-            ],
-            "612": [
-                { nome: "Agatha de Lima", vitorias: 1, derrotas: 2, empates: 2, pontos: 2, posicao: 1 },
-                { nome: "Alex Bruneis", vitorias: 0, derrotas: 0, empates: 2, pontos: 1, posicao: 2 },
-                { nome: "Alice Miranda", vitorias: 2, derrotas: 0, empates: 1, pontos: 2.5, posicao: 3 },
-                { nome: "Ana Beatriz", vitorias: 1, derrotas: 0, empates: 1, pontos: 1.5, posicao: 4 },
-                { nome: "Artur Tobinaga", vitorias: 2, derrotas: 1, empates: 3, pontos: 3.5, posicao: 5 },
-                { nome: "Carlos Alexandre", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Daniele Pereira de Oliveira", vitorias: 0, derrotas: 0, empates: 1, pontos: 0.5, posicao: 7 },
-                { nome: "Guilherme da Silva Alves", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 8 },
-                { nome: "Hadassa Gomes Travasso", vitorias: 0, derrotas: 2, empates: 0, pontos: -2, posicao: 9 },
-                { nome: "Heitor Chelles", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 10 },
-                { nome: "Hugo Tobinaga", vitorias: 4, derrotas: 1, empates: 0, pontos: 4, posicao: 11 },
-                { nome: "Jamylle Marcelo de Moraes", vitorias: 1, derrotas: 1, empates: 2, pontos: 2, posicao: 12 },
-                { nome: "Jorge William de Souza Lima", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 13 },
-                { nome: "Lorena Militão", vitorias: 0, derrotas: 1, empates: 0, pontos: -1, posicao: 14 },
-                { nome: "Luna Jéssica", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 15 },
-                { nome: "Maria Eduarda dos Santos Maciel", vitorias: 0, derrotas: 0, empates: 1, pontos: 0.5, posicao: 16 },
-                { nome: "Miguel Araújo", vitorias: 1, derrotas: 0, empates: 0, pontos: 1, posicao: 17 },
-                { nome: "Myrella Fontura", vitorias: 2, derrotas: 0, empates: 2, pontos: 3, posicao: 18 },
-                { nome: "Raphaela Schroedler", vitorias: 4, derrotas: 0, empates: 0, pontos: 4, posicao: 19 },
-                { nome: "Talita Reis", vitorias: 0, derrotas: 3, empates: 0, pontos: -3, posicao: 20 },
-                { nome: "Thaylor Barros", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 21 },
-                { nome: "Maria Luiza da Costa", vitorias: 0, derrotas: 1, empates: 0, pontos: -1, posicao: 22 },
-                { nome: "Vitória Salvaya", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 23 },
-                { nome: "Henrique Cerqueira", vitorias: 0, derrotas: 1, empates: 0, pontos: 0.5, posicao: 24 }
-            ],
-            "613": [
-                { nome: "Agatha Silva", vitorias: 0, derrotas: 0, empates: 1, pontos: 0.5, posicao: 1 },
-                { nome: "Alice do Nascimento", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 2 },
-                { nome: "Aysha Vitoria", vitorias: 0, derrotas: 5, empates: 0, pontos: -5, posicao: 3 },
-                { nome: "Davi Lucca Santos Mendonça", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 4 },
-                { nome: "Edgar de Carvalho Rodrigues", vitorias: 1, derrotas: 3, empates: 2, pontos: 2, posicao: 5 },
-                { nome: "Eduarda Moreira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Emanuelly Menezes de Oliveira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 7 },
-                { nome: "Ian Carlos da Silva Nascimento", vitorias: 0, derrotas: 1, empates: 0, pontos: -1, posicao: 8 },
-                { nome: "Jefferson Nery", vitorias: 3, derrotas: 2, empates: 0, pontos: 3, posicao: 9 },
-                { nome: "Jefferson Santos", vitorias: 5, derrotas: 3, empates: 3, pontos: 6.5, posicao: 10 },
-                { nome: "Joyce de Souza", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 11 },
-                { nome: "Julia Labre Mathias", vitorias: 10, derrotas: 0, empates: 2, pontos: 11, posicao: 12 },
-                { nome: "Larissa Sales", vitorias: 1, derrotas: 0, empates: 1, pontos: 1.5, posicao: 13 },
-                { nome: "Ketelen Julia", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 14 },
-                { nome: "Lucas Neres", vitorias: 11, derrotas: 2, empates: 0, pontos: 11, posicao: 15 },
-                { nome: "Luíza Araújo", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 16 },
-                { nome: "Manuela de Souza", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 17 },
-                { nome: "Murillo Toste de Souza", vitorias: 3, derrotas: 0, empates: 3, pontos: 4.5, posicao: 18 },
-                { nome: "Pietra Fernandes", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 19 },
-                { nome: "Rafaelle Pessanha", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 20 },
-                { nome: "Yago dos Anjos", vitorias: 0, derrotas: 4, empates: 2, pontos: 1, posicao: 21 },
-                { nome: "ANDRE BRITO", vitorias: 41, derrotas: 2, empates: 2, pontos: 42, posicao: 22 }
-            ],
-            "621": [
-                { nome: "Ana Julia Rangel", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 1 },
-                { nome: "Arthur de Paula Carvalho", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 2 },
-                { nome: "Davi Lucas Ribeiro", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 3 },
-                { nome: "Émerson Menezes", vitorias: 3, derrotas: 0, empates: 0, pontos: -3, posicao: 4 },
-                { nome: "Esther da Silva Lopes", vitorias: 2, derrotas: 0, empates: 0, pontos: 2, posicao: 5 },
-                { nome: "João Pedro Fidélis da Silva", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Kalyla Vitória da Silva de Souza", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 7 },
-                { nome: "Kethllen Manuella", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 8 },
-                { nome: "Lincoln Lopes", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 9 },
-                { nome: "Luiz Fellipe Silva Miranda", vitorias: 2, derrotas: 2, empates: 0, pontos: 2, posicao: 10 },
-                { nome: "Matheus Figueiredo de Oliveira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 11 },
-                { nome: "Miguel Neves", vitorias: 2, derrotas: 1, empates: 0, pontos: 2, posicao: 12 },
-                { nome: "Pedro Henrique da Conceição", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 13 },
-                { nome: "Pedro Miguel", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 14 },
-                { nome: "Pedro Nicolas da Silva", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 15 },
-                { nome: "Wanderson da Silva Gonçalves", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 16 },
-                { nome: "Yan Fonseca", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 17 }
-            ],
-            "622": [
-                { nome: "Alice Vitória", vitorias: 2, derrotas: 4, empates: 2, pontos: 3, posicao: 1 },
-                { nome: "Ana Julia Goulart", vitorias: 6, derrotas: 2, empates: 4, pontos: 8, posicao: 2 },
-                { nome: "Anne Vieira", vitorias: 0, derrotas: 1, empates: 1, pontos: 0.5, posicao: 3 },
-                { nome: "Bruno Junqueira", vitorias: 5, derrotas: 1, empates: 2, pontos: 6, posicao: 4 },
-                { nome: "Davi Marques", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 5 },
-                { nome: "Emanuelly Paixão", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Érick Patrick da Silva Trindade", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 7 },
-                { nome: "Felipe Araújo", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 8 },
-                { nome: "Gabriel do Nascimento", vitorias: 4, derrotas: 6, empates: 8, pontos: 8, posicao: 9 },
-                { nome: "Giovanni Netto", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 10 },
-                { nome: "Guilherme Santos", vitorias: 2, derrotas: 3, empates: 5, pontos: 4.5, posicao: 11 },
-                { nome: "Hagata Guimarães", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 12 },
-                { nome: "Heitor Araújo", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 13 },
-                { nome: "Isaias Alexsander", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 14 },
-                { nome: "Laura Soares", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 15 },
-                { nome: "Lívia Cabral", vitorias: 0, derrotas: 4, empates: 2, pontos: 2, posicao: 16 },
-                { nome: "Luis Eduardo Correa Farias", vitorias: 0, derrotas: 1, empates: 1, pontos: 0.5, posicao: 17 },
-                { nome: "Luisa Soares", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 18 },
-                { nome: "Matheus Figueiredo", vitorias: 1, derrotas: 0, empates: 0, pontos: 1, posicao: 19 },
-                { nome: "Melina da Costa", vitorias: 1, derrotas: 1, empates: 1, pontos: 1.5, posicao: 20 },
-                { nome: "Miguel Porcino da Silva", vitorias: 4, derrotas: 2, empates: 4, pontos: 6, posicao: 21 },
-                { nome: "Dominic de Albuquerque", vitorias: 0, derrotas: 1, empates: 2, pontos: 1, posicao: 22 },
-                { nome: "Tiago Ferreira", vitorias: 4, derrotas: 0, empates: 1, pontos: 4.5, posicao: 23 }
-            ],
-            "623": [
-                { nome: "Ana Heloiza Marcolina Porto", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 1 },
-                { nome: "Cauã Lanor", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 2 },
-                { nome: "Emilly da Silva", vitorias: 2, derrotas: 3, empates: 0, pontos: 1.5, posicao: 3 },
-                { nome: "Gabriella Sofia", vitorias: 0, derrotas: 2, empates: 0, pontos: 1, posicao: 4 },
-                { nome: "Henrique Siqueira", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 5 },
-                { nome: "Lucas Melo", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 6 },
-                { nome: "Maria Eduarda Costa", vitorias: 0, derrotas: 2, empates: 0, pontos: 1, posicao: 7 },
-                { nome: "Maria Roberta", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 8 },
-                { nome: "Mateus Messias Venâncio Lima", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 9 },
-                { nome: "Matheus Miguel", vitorias: 1, derrotas: 1, empates: 1, pontos: 1.5, posicao: 10 },
-                { nome: "Mirella Felix", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 11 },
-                { nome: "Moisés Rodrigues", vitorias: 1, derrotas: 0, empates: 3, pontos: 2.5, posicao: 12 },
-                { nome: "Mykaella Oliveira", vitorias: 0, derrotas: 2, empates: 1, pontos: 1, posicao: 13 },
-                { nome: "Nicolas Aparício", vitorias: 4, derrotas: 0, empates: 0, pontos: 4, posicao: 14 },
-                { nome: "Pyetro Miguel Prates", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 15 },
-                { nome: "Thaune Rodrigues", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 16 },
-                { nome: "Miguel Ferreira dos Santos", vitorias: 4, derrotas: 0, empates: 0, pontos: -4, posicao: 17 },
-                { nome: "Yago dos Anjos Silva", vitorias: 0, derrotas: 0, empates: 0, pontos: 0, posicao: 18 }
-            ]
-        };
+    // --- ELEMENTOS DA PÁGINA ---
+    const userListContainer = document.getElementById('user-list-container');
+    const profileContainer = document.getElementById('profile-container');
+    const profileContent = document.getElementById('profile-content');
+    const mainTitle = document.getElementById('main-title');
+    const backButton = document.getElementById('back-button');
 
-        // Variáveis globais
-        let currentData = [];
-        let currentPage = 1;
-        const itemsPerPage = 10;
+    // --- BANCO DE DADOS (SIMULADO COM CSV) ---
+    let users = [];
+    let treinoA = [];
+    let treinoB = [];
+    // Adicione outras variáveis para os demais CSVs
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAllData();
-            setupEventListeners();
-            updateStats();
-            renderTable();
+    // Função principal que inicia o aplicativo
+    async function init() {
+        // Carrega todos os dados dos arquivos CSV
+        // A função fetch() busca o arquivo, e Papa.parse() o transforma em dados que o JS entende
+        const usersResponse = await fetch('Users.csv');
+        const usersText = await usersResponse.text();
+        users = Papa.parse(usersText, { header: true }).data;
+
+        const treinoAResponse = await fetch('Treino A - Geral.csv');
+        const treinoAText = await treinoAResponse.text();
+        treinoA = Papa.parse(treinoAText, { header: true }).data;
+
+        // (Faça o mesmo para 'Treino B', 'Corridas', etc.)
+        
+        // Exibe a lista de usuários na tela inicial
+        displayUserList();
+    }
+
+    // Função para mostrar a lista de usuários
+    function displayUserList() {
+        userListContainer.innerHTML = ''; // Limpa a lista antes de recriar
+        profileContainer.classList.add('hidden');
+        userListContainer.classList.remove('hidden');
+        mainTitle.innerText = 'Meus Alunos';
+
+        users.forEach(user => {
+            if (user.Nome) { // Garante que não criamos cards para linhas vazias no CSV
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                userCard.innerText = user.Nome; // 'Nome' deve ser o nome da coluna no seu Users.csv
+                userCard.addEventListener('click', () => showUserProfile(user));
+                userListContainer.appendChild(userCard);
+            }
+        });
+    }
+
+    // Função para mostrar o perfil de um usuário específico
+    function showUserProfile(user) {
+        userListContainer.classList.add('hidden');
+        profileContainer.classList.remove('hidden');
+        mainTitle.innerText = `Perfil: ${user.Nome}`;
+        
+        // Limpa o conteúdo anterior e constrói o novo perfil
+        profileContent.innerHTML = `
+            <h2>Treino A</h2>
+            <div id="treino-a-list"></div>
+            
+            <h2>Calendário</h2>
+            <div id="calendar" class="calendar">
+                </div>
+        `;
+        
+        // Exibe os exercícios do Treino A
+        const treinoAList = document.getElementById('treino-a-list');
+        treinoA.forEach(exercicio => {
+            const item = document.createElement('div');
+            item.className = 'exercise-item';
+            item.innerHTML = `
+                <span>${exercicio['Nome do Exercício']}</span> 
+                <input type="checkbox" id="${exercicio.ID}">
+            `; // Use os nomes corretos das colunas do seu CSV
+            treinoAList.appendChild(item);
         });
 
-        // Carregar todos os dados
-        function loadAllData() {
-            currentData = [];
-            for (const tournamentId in tournamentData) {
-                tournamentData[tournamentId].forEach(participant => {
-                    currentData.push({
-                        torneio: tournamentId,
-                        ...participant
-                    });
-                });
-            }
-        }
+        // AQUI ENTRARIA A LÓGICA COMPLEXA PARA:
+        // 1. Gerar o calendário visualmente.
+        // 2. Ler os 'checks' e salvar o progresso (usando localStorage do navegador).
+        // 3. Pintar o calendário com as cores corretas (amarelo, verde, vermelho).
+        // 4. Mostrar as outras seções (Treino B, Corrida, Periodização).
+    }
 
-        // Configurar event listeners
-        function setupEventListeners() {
-            document.getElementById('tournamentSelect').addEventListener('change', filterData);
-            document.getElementById('searchInput').addEventListener('input', filterData);
-            document.getElementById('sortSelect').addEventListener('change', sortData);
-            document.getElementById('exportBtn').addEventListener('click', exportData);
-        }
+    // Evento do botão "Voltar"
+    backButton.addEventListener('click', displayUserList);
 
-        // Filtrar dados
-        function filterData() {
-            const tournamentFilter = document.getElementById('tournamentSelect').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            currentData = [];
-            
-            // Aplicar filtro de torneio
-            if (tournamentFilter === 'all') {
-                for (const tournamentId in tournamentData) {
-                    tournamentData[tournamentId].forEach(participant => {
-                        currentData.push({
-                            torneio: tournamentId,
-                            ...participant
-                        });
-                    });
-                }
-            } else {
-                tournamentData[tournamentFilter].forEach(participant => {
-                    currentData.push({
-                        torneio: tournamentFilter,
-                        ...participant
-                    });
-                });
-            }
-            
-            // Aplicar filtro de busca
-            if (searchTerm) {
-                currentData = currentData.filter(participant => 
-                    participant.nome.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            // Reaplicar ordenação
-            sortData();
-            updateStats();
-            renderTable();
-        }
-
-        // Ordenar dados
-        function sortData() {
-            const sortOption = document.getElementById('sortSelect').value;
-            
-            currentData.sort((a, b) => {
-                switch (sortOption) {
-                    case 'pontos-desc':
-                        return b.pontos - a.pontos;
-                    case 'pontos-asc':
-                        return a.pontos - b.pontos;
-                    case 'nome-asc':
-                        return a.nome.localeCompare(b.nome);
-                    case 'nome-desc':
-                        return b.nome.localeCompare(a.nome);
-                    case 'vitorias-desc':
-                        return b.vitorias - a.vitorias;
-                    default:
-                        return 0;
-                }
-            });
-            
-            renderTable();
-        }
-
-        // Atualizar estatísticas
-        function updateStats() {
-            const totalParticipants = currentData.length;
-            const maxPoints = Math.max(...currentData.map(p => p.pontos));
-            const avgPoints = totalParticipants > 0 ? 
-                (currentData.reduce((sum, p) => sum + p.pontos, 0) / totalParticipants).toFixed(2) : 0;
-            const winnersCount = currentData.filter(p => p.vitorias > 0).length;
-            
-            document.getElementById('totalParticipants').textContent = totalParticipants;
-            document.getElementById('maxPoints').textContent = maxPoints;
-            document.getElementById('avgPoints').textContent = avgPoints;
-            document.getElementById('winnersCount').textContent = winnersCount;
-        }
-
-        // Renderizar tabela
-        function renderTable() {
-            const tableBody = document.getElementById('tableBody');
-            const pagination = document.getElementById('pagination');
-            
-            // Limpar tabela
-            tableBody.innerHTML = '';
-            
-            // Calcular páginas
-            const totalPages = Math.ceil(currentData.length / itemsPerPage);
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, currentData.length);
-            const pageData = currentData.slice(startIndex, endIndex);
-            
-            // Preencher tabela
-            pageData.forEach(participant => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>Torneio ${participant.torneio}</td>
-                    <td>${participant.nome}</td>
-                    <td>${participant.vitorias}</td>
-                    <td>${participant.derrotas}</td>
-                    <td>${participant.empates}</td>
-                    <td>${participant.pontos}</td>
-                    <td>${participant.posicao}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-            
-            // Atualizar paginação
-            updatePagination(totalPages);
-        }
-
-        // Atualizar paginação
-        function updatePagination(totalPages) {
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-            
-            if (totalPages <= 1) return;
-            
-            // Botão anterior
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Anterior';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderTable();
-                }
-            });
-            pagination.appendChild(prevButton);
-            
-            // Números das páginas
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i;
-                pageButton.classList.toggle('active', i === currentPage);
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    renderTable();
-                });
-                pagination.appendChild(pageButton);
-            }
-            
-            // Botão próximo
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Próximo';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderTable();
-                }
-            });
-            pagination.appendChild(nextButton);
-        }
-
-        // Exportar dados
-        function exportData() {
-            let csvContent = "Torneio,Nome,Vitórias,Derrotas,Empates,Pontos,Posição\n";
-            
-            currentData.forEach(participant => {
-                csvContent += `Torneio ${participant.torneio},${participant.nome},${participant.vitorias},${participant.derrotas},${participant.empates},${participant.pontos},${participant.posicao}\n`;
-            });
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', 'dados_torneio_xadrez.csv');
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
-</body>
-</html>
+    // Inicia o aplicativo
+    init();
+});
