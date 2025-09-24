@@ -36,7 +36,7 @@ async function montarAlunos() {
 
 // Perfil (aqui ainda é simulação)
 function abrirPerfil(nome) {
-  alert(`Abrindo perfil de ${nome}...\nAqui entraria Treino A, B, Corrida e Periodização.`);
+  // Redireciona para perfil.html passando o nome do aluno na URL
+  window.location.href = `perfil.html?aluno=${encodeURIComponent(nome)}`;
 }
 
-montarAlunos();
