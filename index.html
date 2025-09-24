@@ -1,27 +1,179 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App de Treino</title>
-    <link rel="stylesheet" href="./style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Prompt - AB Fit (HTML)</title>
+  <style>
+    :root{
+      --bg:#0f0f10;
+      --card:#fff;
+      --muted:#666;
+      --accent-gradient: linear-gradient(90deg, #ff0000 0%, #000000 100%);
+      --box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      font-family: Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    html,body{height:100%;margin:0;background: linear-gradient(180deg,#fafafa,#f3f3f3);color:#111}
+    .wrap{max-width:980px;margin:28px auto;padding:20px;background:var(--card);border-radius:12px;box-shadow:var(--box-shadow)}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:56px;height:56px;border-radius:12px;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:8px 0 18px;color:var(--muted)}
+    .controls{display:flex;gap:8px;margin-bottom:14px}
+    button{background:#e33;color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+    button.ghost{background:transparent;color:#e33;border:1px solid #e33}
+    .note{font-size:13px;color:#666;margin-bottom:10px}
+    .prompt-box{display:flex;gap:12px;align-items:flex-start}
+    textarea#prompt{width:100%;height:520px;padding:14px;border-radius:10px;border:1px solid #eee;box-shadow:inset 0 2px 6px rgba(0,0,0,0.03);font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;font-size:13px;white-space:pre-wrap;overflow:auto}
+    .side{width:220px;flex:0 0 220px}
+    .side small{display:block;color:var(--muted);margin-bottom:8px}
+    .meta{background:#fafafa;border-radius:8px;padding:10px;border:1px solid #f0f0f0}
+    footer{font-size:13px;color:#444;margin-top:16px}
+    .legend{margin-top:10px;padding:8px;border-radius:8px;background:#fff9e6;border:1px solid #ffe7a8}
+  </style>
 </head>
 <body>
-    <header class="gradient-banner">
-        <h1 id="main-title">Meus Alunos</h1>
+  <div class="wrap" role="main">
+    <header>
+      <div class="logo">AB</div>
+      <div>
+        <h1>Prompt: AB Fit — Especificação para Dev / Glide</h1>
+        <p class="lead">HTML pronto para copiar & colar. Mantive todas as regras de UI/UX e comportamento lógico que você pediu.</p>
+      </div>
     </header>
 
-    <main id="app-container">
-        <div id="user-list-container"></div>
+    <div class="controls" aria-hidden="true">
+      <button id="copyBtn">Copiar prompt</button>
+      <button id="downloadBtn" class="ghost">Baixar .txt</button>
+    </div>
 
-        <div id="profile-container" class="hidden">
-            <div id="profile-content">
-                </div>
-            <button id="back-button">Voltar para a Lista</button>
+    <div class="note">Dica: abra no navegador, copie o conteúdo do campo abaixo e cole no ticket do dev / prompt de IA / repositório.</div>
+
+    <div class="prompt-box">
+      <textarea id="prompt" aria-label="Prompt AB Fit (texto)">
+Quero que meu app AB Fit siga este padrão:
+
+1) Aparência geral
+- Fundo do app deve adaptar-se ao tema do sistema do usuário (modo claro/escuro).
+- Topo: degradê da esquerda para a direita: **vermelho → preto**.
+- Menu principal (página inicial) mostra usuários como cards com foto + nome, igual à imagem de referência.
+
+2) Perfil do usuário
+- Ao clicar num cliente, abrir o perfil desse aluno.
+- No perfil: botões para **Treino A**, **Treino B**, **Corrida**, **Periodização**.
+- Abaixo: calendário interativo.
+
+3) Treino A / Treino B
+- Ao clicar em Treino A: abrir lista de exercícios.
+- Substituir as "•••" por uma **caixa de marcação (check)** para cada exercício.
+- Se o aluno marcar todos os checks, o app considera o treino concluído naquele dia.
+
+4) Lógica do calendário
+- Estados das datas:
+  - **Amarelo** → Dia de treino proposto (mostra qual treino está proposto).
+  - **Verde** → Treino concluído (todos os exercícios daquele dia checados). Mostrar o nome do treino concluído.
+  - **Vermelho** → Faltou (não houve checks).
+- Se o aluno completar apenas alguns exercícios, considerar como **incompleto** (exibir tooltip/indicador parcial) — ideal detalhar na UI; mas regra principal é: todos checks = concluído (verde), nenhum check = faltou (vermelho), check parcial = amarelo com badge.
+
+5) Corrida
+- Ao clicar em Corrida: abrir calendário do tipo treino.
+- Cada dia mostra o treino proposto (em amarelo).
+- Se o aluno der *check* no dia e preencher dados reais → dia fica verde.
+- Se não: fica vermelho com label "FALTOU".
+- Dentro do treino de corrida o usuário poderá inserir dados reais:
+  - Distância (km)
+  - Velocidade média
+  - Tempo total
+  - Gasto calórico real
+- Exibir também uma legenda dos tipos de treino (ex.: Treino 1 - Fartlek; Treino 2 - Rodagem; ...). A legenda deve mapear o nome do treino para a cor do calendário.
+
+6) Periodização
+- Dentro do perfil do aluno, ter aba "Periodização" com resumo por semanas: séries, repetições, método, %RM, observações — igual à imagem de referência.
+
+7) Mini-app de corrida (opcional/avançado)
+- Desejo um "app de corrida" no perfil, inspirado em Nike Run Club / Samsung Health:
+  - Registrar rota via GPS em tempo real
+  - Distância, velocidade, tempo, calorias
+  - Mostrar percurso no mapa
+- Observação técnica: Glide não possui rastreamento GPS em background com alta precisão — para isso integrar API/SDK externa (ex.: Strava API, Mapbox + backend, ou fazer um módulo em React Native/Expo). Se possível, integrar/clonar funcionalidades via API/SDK.
+
+8) Integração dos dados
+- Todos os dados já estão nas CSVs no GitHub (referência: repositório com as CSVs).
+- O app deve puxar os CSVs/planilhas e manter lógica:
+  - Calendário lê o CSV com os treinos propostos por dia.
+  - Ao dar check e gravar dados reais, gravar por usuário (linha separada / tabela de registros) para montar o histórico.
+
+9) Regras técnicas e UX
+- Tema do sistema (light/dark) deve pautar cores de fundo e fontes; o topo mantém degradê fixo (vermelho→preto).
+- Usar badges no calendário com legenda curta (ex.: "Treino A", "Treino B", "Corrida").
+- Quando o usuário abrir a lista de exercícios e marcar check num exercício: salvar evento com timestamp e user_id.
+- Se todos os exercícios do dia marcados → gravar registro de "treino concluído" com nome do treino e massa de dados (se aplicável, ex.: kms, kcal).
+- Se o usuário editar os dados reais do treino de corrida, atualizar o registro do dia e recalcular cor/estado.
+
+10) Padrões visuais e acessibilidade
+- Contraste das fontes alto (AA/AAA quando possível).
+- Botões grandes (toque), textos legíveis.
+- Cores do calendário:
+  - Vermelho: #ff4d4d (FALTOU)
+  - Amarelo: #ffd24d (Dia de treino proposto / parcial)
+  - Verde: #4cd964 (Concluído)
+- Topo: degradê linear 90deg: from #ff0000 to #000000.
+
+11) Observações finais (dev notes)
+- Glide pode construir a UI principal (cards, perfis, calendários), mas funcionalidades de GPS/rodagem em background e métricas avançadas exigem integração externa ou app nativo.
+- Se optar por integração com Strava/Mapbox/Google Maps/Mapbox Directions, documentar endpoints e scopes.
+- Implementar logs de treino: user_id, date, treino_proposto_id, treino_real_id, exercises_checked[], distance_km, time_s, kcal_real, gps_path_url.
+- Agilidade: priorizar primeiro o fluxo Core (perfil → treino A/B → checks → calendário colorido). Depois, desenvolver corrida com dados reais e integração GPS.
+
+CSV: os dados necessários já estão no GitHub. O app deve consumir essas CSVs como fonte inicial e gravar registros de treino em uma tabela separada (por usuário).
+
+Fim do prompt.
+      </textarea>
+
+      <div class="side" aria-hidden="true">
+        <div class="meta">
+          <small>Resumo rápido</small>
+          <strong>Prioridade</strong>
+          <p style="margin:6px 0 8px">1) UI/Fluxo: perfil → treino → checks → calendário colorido.<br>2) Salvar registros por usuário.<br>3) Corrida com GPS: integração externa.</p>
+          <div class="legend">
+            <strong>Calendário:</strong>
+            <div style="margin-top:6px">Vermelho = FALTOU • Amarelo = Proposto/Parcial • Verde = Concluído</div>
+          </div>
         </div>
-    </main>
+      </div>
+    </div>
 
-    <script src="./script.js"></script>
+    <footer>
+      <div>Quer que eu gere também a versão em Markdown, JSON para ticket do GitHub, ou um checklist técnico passo-a-passo?</div>
+    </footer>
+  </div>
+
+  <script>
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const promptEl = document.getElementById('prompt');
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(promptEl.value);
+        copyBtn.textContent = 'Copiado!';
+        setTimeout(()=>copyBtn.textContent='Copiar prompt',1200);
+      } catch(e){
+        alert('Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.');
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const blob = new Blob([promptEl.value], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'prompt-ab-fit.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  </script>
 </body>
 </html>
