@@ -3,337 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AB Fit - Assessoria de Treinamento</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Chess Club App</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
-    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, getDocs, updateDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.firebase = {
+            initializeApp, getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken,
+            getFirestore, doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, getDocs, updateDoc, serverTimestamp, orderBy
+        };
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .mobile-shell {
-            max-width: 420px;
-            width: 100%;
-            height: 896px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 30px;
-            border: 8px solid #1f2937;
-            overflow: hidden;
-            position: relative;
-        }
-        .screen { display: none; }
-        .screen.active { display: block; }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #ef4444;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        body { font-family: 'Inter', sans-serif; background-color: #050a14; color: #e0e0e0; }
+        [x-cloak] { display: none !important; }
+        .piece-white { fill: #ffffff; stroke: #333; stroke-width: 1.5; }
+        .piece-black { fill: #2c2c2c; stroke: #ccc; stroke-width: 1.5; }
+        .splash-screen {
+            background-color: #050a14;
+            cursor: pointer;
         }
     </style>
-</head>
-<body class="bg-gray-200 flex items-center justify-center min-h-screen p-4">
-
-    <div class="mobile-shell bg-white">
-        <main class="h-full w-full overflow-y-auto bg-gray-50">
-
-            <!-- ======================= TELA DE ABERTURA (SPLASH) ======================= -->
-            <div id="splashScreen" class="screen active p-8 flex flex-col h-full bg-black text-white cursor-pointer">
-                <div class="flex-grow flex flex-col items-center justify-center pt-8 text-center">
-                    <img src="https://i.ibb.co/dKq8p0S/logo-andre-brito-final.jpg" alt="Logo André Brito" class="w-32 h-32 rounded-full mb-4 object-cover shadow-lg">
-                    <h1 class="text-xl font-bold text-white">ANDRÉ BRITO</h1>
-                    <p class="text-sm text-gray-300">Assessoria em Treinamentos Físicos</p>
-                </div>
-            </div>
-
-            <!-- ======================= TELA LISTA DE ALUNOS ======================= -->
-            <div id="studentListScreen" class="screen">
-                 <header class="bg-red-600 text-white p-5 flex items-center justify-between sticky top-0 shadow-md z-10">
-                    <h1 class="text-xl font-bold">Menu Principal</h1>
-                </header>
-                <div class="p-4">
-                    <div class="bg-gradient-to-r from-red-500 to-red-700 text-white p-4 rounded-lg mb-4 shadow-lg">
-                        <div class="flex items-center mb-2">
-                             <i data-feather="star" class="w-5 h-5 mr-2"></i>
-                            <h3 class="font-bold text-lg">✨ Dica do Dia</h3>
-                        </div>
-                        <p id="daily-tip" class="text-sm">Carregando dica...</p>
-                    </div>
-                    <div class="relative mb-4">
-                        <input type="text" placeholder="Procurar aluno..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-                        <i data-feather="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                    <div id="student-list-container" class="space-y-3"></div>
-                </div>
-            </div>
-
-            <!-- ======================= TELA PERFIL DO ALUNO ======================= -->
-            <div id="studentProfileScreen" class="screen">
-                <header class="bg-white p-4 flex items-center sticky top-0 z-10 border-b">
-                    <button class="back-to-list-btn p-2 rounded-full hover:bg-gray-100">
-                        <i data-feather="arrow-left" class="text-gray-700"></i>
-                    </button>
-                    <h1 class="text-xl font-bold text-gray-800 ml-4">Perfil do Aluno</h1>
-                </header>
-                <div class="p-4 space-y-3">
-                    <div id="student-profile-info" class="flex items-center mb-3">
-                        <!-- Student info will be populated by JS -->
-                    </div>
-                    <button id="openAiModalBtn" class="w-full bg-gray-800 text-white font-bold py-3 rounded-lg hover:bg-gray-900 transition-colors shadow-md flex items-center justify-center">
-                       ✨ Gerar Treino com IA
-                    </button>
-                    <div id="student-profile-buttons" class="grid grid-cols-2 gap-3"></div>
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 mt-3">
-                        <div id="calendar-header" class="flex justify-between items-center mb-4">
-                            <button class="p-2 rounded-full hover:bg-gray-100"><i data-feather="chevron-left"></i></button>
-                            <h2 class="font-bold text-lg text-gray-800">Setembro 2025</h2>
-                            <button class="p-2 rounded-full hover:bg-gray-100"><i data-feather="chevron-right"></i></button>
-                        </div>
-                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- ======================= TELA DE TREINO ======================= -->
-            <div id="trainingScreen" class="screen">
-                 <header class="bg-red-600 text-white p-5 flex items-center sticky top-0 shadow-md z-10">
-                     <button class="back-to-profile-btn p-2 rounded-full hover:bg-red-700 -ml-2">
-                        <i data-feather="arrow-left" class="text-white"></i>
-                    </button>
-                    <h1 id="training-title" class="text-xl font-bold text-center flex-grow">Treino</h1>
-                </header>
-                <div id="training-content" class="p-4 space-y-3"></div>
-            </div>
-
-        </main>
-        
-        <!-- ======================= MODAL GERADOR DE TREINO IA ======================= -->
-        <div id="aiGeneratorModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
-                <button id="closeModalBtn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i data-feather="x"></i></button>
-                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center"><i data-feather="zap" class="mr-2 text-red-500"></i>Gerador de Treino Rápido</h2>
-                <form id="aiWorkoutForm" class="space-y-4">
-                     <div>
-                        <label for="goal" class="text-sm font-medium text-gray-600">Objetivo Principal</label>
-                        <select id="goal" class="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
-                            <option>Hipertrofia</option>
-                            <option>Resistência Muscular</option>
-                            <option>Força</option>
-                            <option>Perda de Peso</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label for="muscle_group" class="text-sm font-medium text-gray-600">Grupo Muscular</label>
-                        <input type="text" id="muscle_group" placeholder="Ex: Peito e Tríceps" class="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
-                    </div>
-                     <div>
-                        <label for="duration" class="text-sm font-medium text-gray-600">Duração (minutos)</label>
-                        <input type="number" id="duration" value="45" class="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
-                    </div>
-                    <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md">Gerar Treino ✨</button>
-                </form>
-                <div id="aiResult" class="mt-6 hidden">
-                    <h3 class="font-bold text-lg mb-2">Sugestão de Treino:</h3>
-                    <div id="aiResultContent" class="text-sm text-gray-700 bg-gray-100 p-4 rounded-lg max-h-48 overflow-y-auto whitespace-pre-wrap"></div>
-                </div>
-                 <div id="aiLoader" class="mt-6 hidden flex items-center justify-center flex-col">
-                    <div class="loader"></div>
-                    <p class="text-gray-600 mt-2 text-sm">Aguarde, a IA está criando o treino...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', () => {
-            feather.replace();
-
-            async function callGemini(prompt) {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                const payload = { contents: [{ parts: [{ text: prompt }] }] };
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
-                    return result.candidates?.[0]?.content?.parts?.[0]?.text || "Não foi possível gerar uma resposta.";
-                } catch (error) {
-                    console.error("Falha na chamada da API Gemini:", error);
-                    return "Ocorreu um erro ao contatar a IA.";
-                }
-            }
-
-            const students = [
-                { id: 1, name: 'André Brito', img: 'https://placehold.co/100x100/1f2937/FFFFFF?text=AB', trainings: [{ id: 'A', name: 'Treino A', icon: 'check-square' },{ id: 'B', name: 'Treino B', icon: 'check-square' },{ id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },{ id: 'periodizacao', name: 'Periodização', icon: 'calendar' }] },
-                { id: 2, name: 'Marcelly Lopes', img: 'https://placehold.co/100x100/ef4444/FFFFFF?text=ML', trainings: [] },
-                { id: 3, name: 'Liliane Torres', img: 'https://placehold.co/100x100/1f2937/FFFFFF?text=LT', trainings: [] },
-                { id: 4, name: 'Marcus Brito', img: 'https://placehold.co/100x100/ef4444/FFFFFF?text=MB', trainings: [] },
-            ];
-            
-            const trainingData = {
-                'A': { title: 'Treino A', exercises: [{ name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Leg Press 45', details: '3 Séries | 12 Rep | REC 30"' },{ name: 'Extensão de cotovelos no solo', details: '3 Séries | 10 Rep | REC 30"' },{ name: 'Stiff com Halteres', details: '4 Séries | 12 Rep | REC 30"' }, { name: 'Cadeira Adutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Cadeira Abdutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Panturrilha no Leg Press', details: '4 Séries | 20 Rep | REC 30"' }] },
-                'B': { title: 'Treino B', exercises: [{ name: 'Supino Reto', details: '4 Séries | 8 Rep | REC 60"' },{ name: 'Puxada Frontal', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Elevação Lateral', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Remada Curvada', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Rosca Direta com Barra', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Tríceps Pulley', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Desenvolvimento com Halteres', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Crucifixo Invertido', details: '3 Séries | 15 Rep | REC 45"' }] },
-                'periodizacao': { title: 'Resumo da Periodização', exercises: [{ name: '1ª e 2ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '3ª e 4ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '5ª e 6ª | Força', details: 'Método de execução Simples - Rest-Pause | 60-80% 1RM' },{ name: '7ª e 8ª | Força', details: 'Método de execução Simples - Pirâmide | 70-75 % 1RM' }] },
-                'corrida': { title: 'Treino de Corrida', exercises: [{ name: 'Aquecimento', details: '10 minutos de caminhada leve' },{ name: 'Tiros', details: '5x 200m em ritmo forte com 1 min de descanso' },{ name: 'Desaceleração', details: '10 minutos de caminhada leve' }] }
-            };
-
-            const screens = document.querySelectorAll('.screen');
-            let currentStudentId = null;
-
-            function showScreen(screenId) {
-                screens.forEach(screen => screen.classList.remove('active'));
-                document.getElementById(screenId).classList.add('active');
-                document.querySelector('.mobile-shell main').scrollTop = 0;
-            }
-            
-            async function getDailyTip() {
-                const tipElement = document.getElementById('daily-tip');
-                const prompt = "Me dê uma dica rápida e motivacional sobre fitness ou nutrição, em português. A dica deve ter no máximo 2 frases e ser inspiradora para quem treina.";
-                tipElement.textContent = await callGemini(prompt);
-            }
-            
-            function populateStudentList() {
-                const container = document.getElementById('student-list-container');
-                container.innerHTML = students.map(student => `
-                    <div class="student-card flex items-center p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition shadow-sm" data-student-id="${student.id}">
-                        <img src="${student.img}" alt="Foto de ${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
-                        <div>
-                            <p class="font-semibold text-gray-800">${student.name}</p>
-                            <span class="text-sm text-gray-500">Ver perfil</span>
-                        </div>
-                        <i data-feather="chevron-right" class="ml-auto text-gray-400"></i>
-                    </div>
-                `).join('');
-                feather.replace();
-                document.querySelectorAll('.student-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        currentStudentId = e.currentTarget.dataset.studentId;
-                        populateStudentProfile(currentStudentId);
-                        showScreen('studentProfileScreen');
-                    });
-                });
-            }
-            
-            function populateStudentProfile(studentId) {
-                const student = students.find(s => s.id == studentId);
-                if (!student) return;
-
-                const infoContainer = document.getElementById('student-profile-info');
-                infoContainer.innerHTML = `<img src="${student.img}" alt="Foto de ${student.name}" class="w-16 h-16 rounded-full object-cover shadow-md"><h2 class="text-2xl font-bold text-gray-800 ml-4">${student.name}</h2>`;
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('chessClub', () => ({
+                showSplash: true,
+                db: null, auth: null, user: null, userId: null,
+                activeTab: 'play',
+                game: { players: { white: { name: 'Brancas', elo: '----' }, black: { name: 'Pretas', elo: '----' } }, time: { white: 0, black: 0 } },
+                board: [],
+                chess: new Chess(),
+                gameId: null,
+                playerColor: null,
+                isOpponentTurn: false,
+                gameStatus: 'Inicie um novo jogo.',
+                selectedPiece: null,
+                possibleMoves: [],
+                pgnMoves: [],
+                opponentId: '',
+                invitation: null,
+                promotion: { show: false, from: '', to: '' },
+                gameTimer: null,
+                newGameSettings: { mode: 'player', time: 10 },
+                turmas: [
+                    { nome: 'Turma 611', alunos: ["Yasmin Faquetin", "Davi Lucca Martins Pereira", "Theo Machado", "Heitor Velasco", "Isaque de Medeiros", "Maria Liz", "Davi Lucas", "Ana Clara", "Nicolas Ferreira", "Pietro Coutinho", "Miguel Roberto", "Bernardo Costa", "Yasmin da Silva Melo", "Yuri Nascimento", "Isabella Teixeira das Chagas", "Isadora Torres de Andrade", "Alice Caldeira de Lima", "Nicolly Marques"] },
+                    { nome: 'Turma 612', alunos: ["Lorena Militão", "Thaylor Barros", "Davi Luiz", "Isaac de Oliveira", "Pérola de Souza", "João Gabriel", "Miguel Araújo", "Ana Beatriz", "Jamylle Marcelo de Moraes", "Talita Reis", "Maria Eduarda dos Santos Maciel", "Hadassa Gomes Travasso", "Daniele Pereira de Oliveira", "Carlos Alexandre"] },
+                    { nome: 'Turma 613', alunos: ["Agatha Silva", "Alice do Nascimento", "Aysha Vitoria", "Davi Lucca Santos Mendonça", "Edgar de Carvalho Rodrigues", "Eduarda Moreira", "Emanuelly Menezes de Oliveira", "Ian Carlos da Silva Nascimento", "Jefferson Nery", "Jefferson Santos", "Joyce de Souza", "Kamilly Santos", "Lara Beatriz", "Laura de Oliveira", "Laura Vitoria", "Maria Alice", "Maria Clara", "Maria Fernanda", "Miguel da Silva", "Ruan Pablo", "Ryan da Conceição", "Samuel Carlos", "Théo Alves", "Victor Hugo"] },
+                    { nome: 'Turma 621', alunos: ["Luiz Fellipe Silva Miranda", "Lincoln Lopes", "Émerson Menezes", "Pedro Nicolas da Silva", "Pedro Henrique da Conceição", "Yan Fonseca", "Arthur de Paula Carvalho", "João Pedro Fidélis da Silva", "Davi Lucas Ribeiro", "Esther da Silva"] },
+                    { nome: 'Turma 622', alunos: ["Alice Victoria", "Ana Julia Goulart", "Anthony Gabriel", "Arthur Patrick da Silva Trindade", "Felipe Araújo", "Gabriel do Nascimento", "Giovanna Netto", "Guilherme Santos", "Hagata Guimarães", "Heitor Araújo"] },
+                    { nome: 'Turma 623', alunos: ["Ana Heloiza Marcolina Porto", "Cauã Lanor", "Emilly da Silva", "Gabriella Sofia", "Henrique Siqueira", "Lucas Melo", "Maria Eduarda Costa", "Maria Roberta"] },
+                ],
+                attendance: {
+                    "611": [
+                        { "name": "Yasmin Faquetin", "lastStatus": "F" }, { "name": "Davi Lucca Martins Pereira", "lastStatus": "P" }, { "name": "Theo Machado", "lastStatus": "P" }, { "name": "Heitor Velasco", "lastStatus": "F" }, { "name": "Isaque de Medeiros", "lastStatus": "F" }, { "name": "Maria Liz", "lastStatus": "P" }, { "name": "Davi Lucas", "lastStatus": "P" }, { "name": "Ana Clara", "lastStatus": "P" }, { "name": "Nicolas Ferreira", "lastStatus": "F" }, { "name": "Pietro Coutinho", "lastStatus": "F" }, { "name": "Miguel Roberto", "lastStatus": "F" }, { "name": "Bernardo Costa", "lastStatus": "F" }, { "name": "Yasmin da Silva Melo", "lastStatus": "F" }, { "name": "Yuri Nascimento", "lastStatus": "P" }, { "name": "Isabella Teixeira das Chagas", "lastStatus": "P" }, { "name": "Isadora Torres de Andrade", "lastStatus": "P" }, { "name": "Alice Caldeira de Lima", "lastStatus": "P" }, { "name": "Nicolly Marques", "lastStatus": "F" }
+                    ],
+                    "612": [
+                        { "name": "Lorena Militão", "lastStatus": "P" }, { "name": "Thaylor Barros", "lastStatus": "F" }, { "name": "Davi Luiz", "lastStatus": "P" }, { "name": "Isaac de Oliveira", "lastStatus": "P" }, { "name": "Pérola de Souza", "lastStatus": "F" }, { "name": "João Gabriel", "lastStatus": "P" }, { "name": "Miguel Araújo", "lastStatus": "P" }, { "name": "Ana Beatriz", "lastStatus": "P" }, { "name": "Jamylle Marcelo de Moraes", "lastStatus": "P" }, { "name": "Talita Reis", "lastStatus": "P" }, { "name": "Maria Eduarda dos Santos Maciel", "lastStatus": "P" }, { "name": "Hadassa Gomes Travasso", "lastStatus": "P" }, { "name": "Daniele Pereira de Oliveira", "lastStatus": "P" }, { "name": "Carlos Alexandre", "lastStatus": "F" }
+                    ],
+                    "613": [
+                        { "name": "Agatha Silva", "lastStatus": "P" }, { "name": "Alice do Nascimento", "lastStatus": "P" }, { "name": "Aysha Vitoria", "lastStatus": "P" }, { "name": "Davi Lucca Santos Mendonça", "lastStatus": "F" }, { "name": "Edgar de Carvalho Rodrigues", "lastStatus": "P" }, { "name": "Eduarda Moreira", "lastStatus": "P" }, { "name": "Emanuelly Menezes de Oliveira", "lastStatus": "F" }, { "name": "Ian Carlos da Silva Nascimento", "lastStatus": "P" }, { "name": "Jefferson Nery", "lastStatus": "P" }, { "name": "Jefferson Santos", "lastStatus": "P" }, { "name": "Joyce de Souza", "lastStatus": "P" }, { "name": "Kamilly Santos", "lastStatus": "F" }, { "name": "Lara Beatriz", "lastStatus": "P" }, { "name": "Laura de Oliveira", "lastStatus": "F" }, { "name": "Laura Vitoria", "lastStatus": "F" }, { "name": "Maria Alice", "lastStatus": "P" }, { "name": "Maria Clara", "lastStatus": "F" }, { "name": "Maria Fernanda", "lastStatus": "P" }, { "name": "Miguel da Silva", "lastStatus": "F" }, { "name": "Ruan Pablo", "lastStatus": "P" }, { "name": "Ryan da Conceição", "lastStatus": "F" }, { "name": "Samuel Carlos", "lastStatus": "P" }, { "name": "Théo Alves", "lastStatus": "P" }, { "name": "Victor Hugo", "lastStatus": "P" }
+                    ],
+                    "621": [
+                        { "name": "Luiz Fellipe Silva Miranda", "lastStatus": "P" }, { "name": "Lincoln Lopes", "lastStatus": "P" }, { "name": "Émerson Menezes", "lastStatus": "F" }, { "name": "Pedro Nicolas da Silva", "lastStatus": "F" }, { "name": "Pedro Henrique da Conceição", "lastStatus": "P" }, { "name": "Yan Fonseca", "lastStatus": "F" }, { "name": "Arthur de Paula Carvalho", "lastStatus": "P" }, { "name": "João Pedro Fidélis da Silva", "lastStatus": "F" }, { "name": "Davi Lucas Ribeiro", "lastStatus": "F" }, { "name": "Esther da Silva", "lastStatus": "F" }
+                    ],
+                    "622": [
+                        { "name": "Alice Victoria", "lastStatus": "P" }, { "name": "Ana Julia Goulart", "lastStatus": "P" }, { "name": "Anthony Gabriel", "lastStatus": "P" }, { "name": "Arthur Patrick da Silva Trindade", "lastStatus": "F" }, { "name": "Felipe Araújo", "lastStatus": "F" }, { "name": "Gabriel do Nascimento", "lastStatus": "P" }, { "name": "Giovanna Netto", "lastStatus": "F" }, { "name": "Guilherme Santos", "lastStatus": "F" }, { "name": "Hagata Guimarães", "lastStatus": "F" }, { "name": "Heitor Araújo", "lastStatus": "F" }
+                    ],
+                    "623": [
+                        { "name": "Ana Heloiza Marcolina Porto", "lastStatus": "P" }, { "name": "Cauã Lanor", "lastStatus": "F" }, { "name": "Emilly da Silva", "lastStatus": "F" }, { "name": "Gabriella Sofia", "lastStatus": "F" }, { "name": "Henrique Siqueira", "lastStatus": "F" }, { "name": "Lucas Melo", "lastStatus": "F" }, { "name": "Maria Eduarda Costa", "lastStatus": "F" }, { "name": "Maria Roberta", "lastStatus": "F" }
+                    ]
+                },
+                currentAttendance: {},
+                attendanceDate: new Date().toISOString().slice(0, 10),
+                rankedPlayers: [],
+                tournaments: [],
+                newTournament: { name: '', date: ''},
                 
-                const buttonsContainer = document.getElementById('student-profile-buttons');
-                buttonsContainer.innerHTML = student.trainings.map(training => `<button class="training-btn flex items-center justify-start text-left p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition" data-training-id="${training.id}"><i data-feather="${training.icon}" class="w-5 h-5 mr-3"></i><span class="font-semibold">${training.name}</span></button>`).join('');
+                init() {
+                    this.initializeBoard();
+                    this.generateRankings();
+                    this.initializeFirebase();
+                },
                 
-                feather.replace();
-                generateCalendar();
+                async initializeFirebase() {
+                    // Firebase initialization logic...
+                },
 
-                 document.querySelectorAll('.training-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const trainingId = e.currentTarget.dataset.trainingId;
-                        populateTrainingScreen(trainingId);
-                        showScreen('trainingScreen');
+                get pgnNotationTable() {
+                    const pairs = [];
+                    for (let i = 0; i < this.pgnMoves.length; i += 2) {
+                        pairs.push({ white: this.pgnMoves[i], black: this.pgnMoves[i + 1] || '' });
+                    }
+                    return pairs;
+                },
+
+                generateRankings(){
+                    let allStudents = [];
+                    Object.values(this.attendance).flat().forEach(aluno => {
+                         allStudents.push({
+                            id: aluno.name.toLowerCase().replace(/\s+/g, ''),
+                            name: aluno.name,
+                            elo: Math.floor(Math.random() * 800) + 800,
+                            games: Math.floor(Math.random() * 100),
+                            wins: Math.floor(Math.random() * 40),
+                            losses: Math.floor(Math.random() * 40),
+                            draws: Math.floor(Math.random() * 20),
+                        });
                     });
-                });
-            }
-            
-            function populateTrainingScreen(trainingId) {
-                const data = trainingData[trainingId];
-                if (!data) return;
-                document.getElementById('training-title').textContent = data.title;
-                const contentContainer = document.getElementById('training-content');
-                contentContainer.innerHTML = data.exercises.map((ex, index) => `
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                        <div class="flex items-center">
-                            <span class="text-lg font-bold text-red-500 mr-4">${index + 1}</span>
-                            <div class="flex-grow">
-                                <p class="font-bold text-gray-800">${ex.name}</p>
-                                <p class="text-sm text-gray-600 mt-1">${ex.details}</p>
-                            </div>
-                            <button class="p-2 rounded-full hover:bg-green-100 text-gray-400 hover:text-green-500 transition-colors ml-4 check-btn">
-                                <i data-feather="check-circle" class="w-6 h-6"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+                    
+                    this.rankedPlayers = [...new Map(allStudents.map(item => [item.name, item])).values()]
+                                        .sort((a,b) => b.elo - a.elo);
+                },
+
+                async createTournament() {
+                    if (!this.newTournament.name || !this.newTournament.date) return;
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const tournamentsRef = window.firebase.collection(this.db, 'artifacts', appId, 'public', 'data', 'tournaments');
+                    await window.firebase.addDoc(tournamentsRef, {
+                        name: this.newTournament.name,
+                        date: this.newTournament.date,
+                        createdAt: window.firebase.serverTimestamp()
+                    });
+                    this.newTournament = { name: '', date: '' };
+                },
+
+                listenForTournaments() {
+                     if(!this.db) return;
+                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                     const q = window.firebase.query(window.firebase.collection(this.db, 'artifacts', appId, 'public', 'data', 'tournaments'), window.firebase.orderBy('createdAt', 'desc'));
+                     window.firebase.onSnapshot(q, (snapshot) => {
+                        this.tournaments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                     });
+                },
                 
-                feather.replace();
+                startNewGame() {
+                    this.chess = new Chess();
+                    this.gameId = `local_${Date.now()}`;
+                    this.playerColor = 'w';
+                    this.game.time.white = this.newGameSettings.time * 60;
+                    this.game.time.black = this.newGameSettings.time * 60;
+                    if (this.newGameSettings.mode === 'computer') {
+                        this.game.players.white.name = this.user?.displayName || 'Você';
+                        this.game.players.black.name = 'Computador';
+                    } else {
+                        this.game.players.white.name = 'Jogador 1';
+                        this.game.players.black.name = 'Jogador 2';
+                    }
+                    this.initializeBoard();
+                    this.startGameTimer();
+                },
 
-                document.querySelectorAll('.check-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.currentTarget.classList.toggle('text-green-500');
-                        e.currentTarget.classList.toggle('text-gray-400');
-                    });
-                });
-            }
+                formatTime(seconds) {
+                    if (seconds === null || isNaN(seconds)) return "00:00";
+                    const min = Math.floor(seconds / 60);
+                    const sec = seconds % 60;
+                    return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+                },
 
-            const modal = document.getElementById('aiGeneratorModal'), modalContent = document.getElementById('modal-content'), openModalBtn = document.getElementById('openAiModalBtn'), closeModalBtn = document.getElementById('closeModalBtn'), aiForm = document.getElementById('aiWorkoutForm'), aiLoader = document.getElementById('aiLoader'), aiResult = document.getElementById('aiResult'), aiResultContent = document.getElementById('aiResultContent');
-            const openModal = () => { modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95', 'opacity-0'); }, 10); };
-            const closeModal = () => { modalContent.classList.add('scale-95', 'opacity-0'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); aiResult.classList.add('hidden'); aiLoader.classList.add('hidden'); aiForm.reset(); }, 300); };
-            openModalBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-            aiForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                aiResult.classList.add('hidden');
-                aiLoader.classList.remove('hidden');
-                const goal = document.getElementById('goal').value, muscle_group = document.getElementById('muscle_group').value, duration = document.getElementById('duration').value;
-                const prompt = `Crie um treino de ${duration} minutos com foco em ${goal} para o grupo muscular: ${muscle_group}. O treino é para um aluno de nível intermediário. Liste os exercícios com número de séries, repetições e tempo de descanso. Formate a resposta como uma lista clara e simples, usando Markdown para negrito e listas. Não inclua títulos desnecessários, apenas a lista de exercícios.`;
-                aiResultContent.innerText = await callGemini(prompt);
-                aiLoader.classList.add('hidden');
-                aiResult.classList.remove('hidden');
-            });
-            
-            document.querySelectorAll('.back-to-list-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentListScreen')));
-            document.querySelectorAll('.back-to-profile-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentProfileScreen')));
+                startGameTimer() {
+                    if (this.gameTimer) clearInterval(this.gameTimer);
+                    this.gameTimer = setInterval(() => {
+                        if(this.chess.isGameOver()) { clearInterval(this.gameTimer); return; }
+                        const turn = this.chess.turn();
+                        if (turn === 'w') { if(this.game.time.white > 0) this.game.time.white--; if(this.game.time.white <= 0) this.handleTimeout('w'); } 
+                        else { if(this.game.time.black > 0) this.game.time.black--; if(this.game.time.black <= 0) this.handleTimeout('b'); }
+                    }, 1000);
+                },
+                
+                handleTimeout(player) {
+                    clearInterval(this.gameTimer);
+                    this.gameStatus = `Tempo esgotado! ${player === 'w' ? 'Pretas' : 'Brancas'} vencem.`;
+                },
+                
+                computerMove() {
+                    if (this.chess.isGameOver()) return;
+                    this.isOpponentTurn = true;
+                    setTimeout(() => {
+                        const moves = this.chess.moves();
+                        const move = moves[Math.floor(Math.random() * moves.length)];
+                        this.chess.move(move);
+                        this.isOpponentTurn = false;
+                        this.initializeBoard();
+                    }, 700);
+                },
+                
+                initializeBoard() { const fen = this.chess.fen(); const boardData = fen.split(' ')[0]; const rows = boardData.split('/'); const newBoard = []; for (let i = 0; i < 8; i++) { const row = []; let fileIndex = 0; for (const char of rows[i]) { if (isNaN(char)) { const piece = this.fenToPiece(char); row.push({ rank: i, file: fileIndex, piece: piece }); fileIndex++; } else { for (let j = 0; j < parseInt(char); j++) { row.push({ rank: i, file: fileIndex, piece: null }); fileIndex++; } } } newBoard.push(row); } this.board = newBoard; this.updateGameStatus(); this.pgnMoves = this.chess.pgn().split(/\d+\./).filter(n => n).map(n => n.trim().split(' ')).flat().filter(s => s); },
+                fenToPiece(fenChar) { const color = fenChar === fenChar.toUpperCase() ? 'w' : 'b'; const type = fenChar.toLowerCase(); return { type, color }; },
+                async inviteToGame() { if (!this.opponentId || !this.userId || this.opponentId === this.userId) return; const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; try { const newGameRef = window.firebase.doc(window.firebase.collection(this.db, 'artifacts', appId, 'public', 'data', 'games')); const newGameId = newGameRef.id; const gameData = { fen: new Chess().fen(), pgn: '', players: { white: this.userId, black: this.opponentId }, whiteName: this.user.displayName || 'Anônimo', turn: 'w', status: 'pending', time: this.newGameSettings.time * 60, createdAt: window.firebase.serverTimestamp() }; await window.firebase.setDoc(newGameRef, gameData); const invitationRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'invitations', this.opponentId); await window.firebase.setDoc(invitationRef, { from: this.userId, fromName: this.user.displayName || "Anônimo", gameId: newGameId }); this.joinGame(newGameId, 'w'); } catch(error) { console.error("Error creating game invitation: ", error); } },
+                listenForInvitations() { if (this.invitationUnsubscribe) this.invitationUnsubscribe(); if (!this.userId || !this.db) return; const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; const invitationRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'invitations', this.userId); this.invitationUnsubscribe = window.firebase.onSnapshot(invitationRef, (doc) => { this.invitation = doc.exists() && doc.data().from ? doc.data() : null; }); },
+                async acceptInvitation() { if (!this.invitation) return; const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; const gameRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'games', this.invitation.gameId); await window.firebase.updateDoc(gameRef, { status: 'active', blackName: this.user.displayName || 'Anônimo' }); this.joinGame(this.invitation.gameId, 'b'); const invitationRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'invitations', this.userId); await window.firebase.setDoc(invitationRef, {}); },
+                async declineInvitation() { if (!this.invitation) return; const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; const invitationRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'invitations', this.userId); await window.firebase.setDoc(invitationRef, {}); },
+                joinGame(gameId, color) { this.gameId = gameId; this.playerColor = color; this.activeTab = 'play'; this.listenForGameUpdates(); },
+                listenForGameUpdates() { if (this.gameDocUnsubscribe) this.gameDocUnsubscribe(); if (!this.gameId) return; const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; const gameRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'games', this.gameId); this.gameDocUnsubscribe = window.firebase.onSnapshot(gameRef, (doc) => { if (doc.exists()) { const gameData = doc.data(); this.chess.load(gameData.fen); this.pgnMoves = this.chess.pgn().split(/\d+\./).filter(n => n).map(n => n.trim().split(' ')).flat().filter(s => s); this.game.players.white.name = gameData.whiteName || 'Brancas'; this.game.players.black.name = gameData.blackName || 'Pretas'; this.game.time.white = gameData.time; this.game.time.black = gameData.time; this.initializeBoard(); this.isOpponentTurn = (this.playerColor !== this.chess.turn()); if(!this.gameTimer && gameData.status === 'active') this.startGameTimer(); } }); },
+                handleSquareClick(rank, file) {
+                    const isLocalGame = this.gameId && this.gameId.startsWith('local_');
+                    if (isLocalGame) {
+                        const turn = this.chess.turn();
+                        const canMove = (this.newGameSettings.mode === 'player') || (this.newGameSettings.mode === 'computer' && turn === 'w');
+                        if (!canMove) return;
 
-            function generateCalendar() {
-                const calendarGrid = document.getElementById('calendar-grid');
-                calendarGrid.innerHTML = '';
-                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                days.forEach(day => calendarGrid.innerHTML += `<div class="font-bold text-gray-600 text-xs">${day}</div>`);
-                calendarGrid.innerHTML += `<div></div>`; 
-                for (let day = 1; day <= 30; day++) {
-                    let specialClass = [3, 9, 15, 21, 27].includes(day) ? 'bg-red-600 text-white font-bold rounded-full' : (day === 24 ? 'bg-gray-800 text-white font-bold rounded-full' : '');
-                    calendarGrid.innerHTML += `<div class="p-2 flex items-center justify-center h-8 ${specialClass}">${day}</div>`;
-                }
-            }
-
-            // --- App Startup Logic ---
-            let appStarted = false;
-            const splashScreenEl = document.getElementById('splashScreen');
-
-            function startApp() {
-                if (appStarted) return;
-                appStarted = true;
-                populateStudentList();
-                showScreen('studentListScreen');
-                getDailyTip();
-            }
-
-            // Show splash screen for 2 seconds then start the app
-            const splashTimeout = setTimeout(startApp, 2000);
-            
-            // Add click listener to enter immediately
-            splashScreenEl.addEventListener('click', () => {
-                clearTimeout(splashTimeout);
-                startApp();
-            });
+                        const algebraic = this.toAlgebraic(rank, file);
+                        const square = this.board[rank][file];
+                        
+                        if (this.selectedPiece) {
+                            const from = this.toAlgebraic(this.selectedPiece.rank, this.selectedPiece.file);
+                            this.makeMove(from, algebraic);
+                        } else if (square && square.piece && square.piece.color === turn) {
+                            this.selectedPiece = { rank, file };
+                            const moves = this.chess.moves({ square: algebraic, verbose: true });
+                            this.possibleMoves = moves.map(move => this.fromAlgebraic(move.to));
+                        }
+                    } else { // Online game logic
+                        if (this.isOpponentTurn) return;
+                        const algebraic = this.toAlgebraic(rank, file);
+                        const square = this.board[rank][file];
+                        if (this.selectedPiece) {
+                            const from = this.toAlgebraic(this.selectedPiece.rank, this.selectedPiece.file);
+                             const piece = this.chess.get(from);
+                             if (piece.type === 'p' && ((piece.color === 'w' && rank === 0) || (piece.color === 'b' && rank === 7))) {
+                                this.promotion = { show: true, from, to: algebraic }; return;
+                            }
+                            this.makeMove(from, algebraic);
+                        } else if (square && square.piece && square.piece.color === this.playerColor) {
+                            this.selectedPiece = { rank, file };
+                            const moves = this.chess.moves({ square: algebraic, verbose: true });
+                            this.possibleMoves = moves.map(move => this.fromAlgebraic(move.to));
+                        }
+                    }
+                },
+                promotePawn(piece) { const { from, to } = this.promotion; this.makeMove(from, to, piece); this.promotion = { show: false, from: '', to: '' }; },
+                async makeMove(from, to, promotion) { let move; try { move = this.chess.move({ from, to, promotion }); } catch(e) {} if (move) { if (this.gameId.startsWith('local_')) { this.initializeBoard(); if (this.newGameSettings.mode === 'computer' && this.chess.turn() === 'b') this.computerMove();} else if(this.gameId) { const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'; const gameRef = window.firebase.doc(this.db, 'artifacts', appId, 'public', 'data', 'games', this.gameId); await window.firebase.updateDoc(gameRef, { fen: this.chess.fen(), pgn: this.chess.pgn(), turn: this.chess.turn() }); } } this.selectedPiece = null; this.possibleMoves = []; this.updateGameStatus(); },
+                updateGameStatus() { let status = ''; const turn = this.chess.turn() === 'w' ? 'Brancas' : 'Pretas'; if (this.chess.isCheckmate()) { status = `Xeque-mate! ${turn === 'Brancas' ? 'Pretas' : 'Brancas'} vencem.`; clearInterval(this.gameTimer); } else if (this.chess.isDraw()) { status = 'Empate!'; clearInterval(this.gameTimer); } else { status = `${turn} jogam.`; if (this.chess.isCheck()) { status += ` ${turn} estão em xeque.`; } } this.gameStatus = status; },
+                toAlgebraic(rank, file) { return String.fromCharCode(97 + file) + (8 - rank); },
+                fromAlgebraic(alg) { const file = alg.charCodeAt(0) - 97; const rank = 8 - parseInt(alg[1]); return { rank, file }; },
+                isPossibleMove(rank, file) { return this.possibleMoves.some(move => move.rank === rank && move.file === file); },
+                getPieceSVG(type, color) { const symbolId = {p: 'pawn', r: 'rook', n: 'knight', b: 'bishop', q: 'queen', k: 'king'}[type.toLowerCase()]; const svgClass = color === 'w' ? 'piece-white' : 'piece-black'; if (!symbolId) return ''; return `<svg class="w-full h-full" viewBox="0 0 45 45"><use href="#${symbolId}" class="${svgClass}"/></svg>`; }
+            }));
         });
     </script>
 </body>
