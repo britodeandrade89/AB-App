@@ -175,5 +175,142 @@
             
             const trainingData = {
                 'A': { title: 'Treino A', exercises: [{ name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Leg Press 45', details: '3 Séries | 12 Rep | REC 30"' },{ name: 'Extensão de cotovelos no solo', details: '3 Séries | 10 Rep | REC 30"' },{ name: 'Stiff com Halteres', details: '4 Séries | 12 Rep | REC 30"' }, { name: 'Cadeira Adutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Cadeira Abdutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Panturrilha no Leg Press', details: '4 Séries | 20 Rep | REC 30"' }] },
-// ... existing code ... -->
+                'B': { title: 'Treino B', exercises: [{ name: 'Supino Reto', details: '4 Séries | 8 Rep | REC 60"' },{ name: 'Puxada Frontal', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Elevação Lateral', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Remada Curvada', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Rosca Direta com Barra', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Tríceps Pulley', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Desenvolvimento com Halteres', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Crucifixo Invertido', details: '3 Séries | 15 Rep | REC 45"' }] },
+                'periodizacao': { title: 'Resumo da Periodização', exercises: [{ name: '1ª e 2ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '3ª e 4ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '5ª e 6ª | Força', details: 'Método de execução Simples - Rest-Pause | 60-80% 1RM' },{ name: '7ª e 8ª | Força', details: 'Método de execução Simples - Pirâmide | 70-75 % 1RM' }] },
+                'corrida': { title: 'Treino de Corrida', exercises: [{ name: 'Aquecimento', details: '10 minutos de caminhada leve' },{ name: 'Tiros', details: '5x 200m em ritmo forte com 1 min de descanso' },{ name: 'Desaceleração', details: '10 minutos de caminhada leve' }] }
+            };
+
+            const screens = document.querySelectorAll('.screen');
+            let currentStudentId = null;
+
+            function showScreen(screenId) {
+                screens.forEach(screen => screen.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+                document.querySelector('.mobile-shell main').scrollTop = 0;
+            }
+            
+            async function getDailyTip() {
+                const tipElement = document.getElementById('daily-tip');
+                const prompt = "Me dê uma dica rápida e motivacional sobre fitness ou nutrição, em português. A dica deve ter no máximo 2 frases e ser inspiradora para quem treina.";
+                tipElement.textContent = await callGemini(prompt);
+            }
+            
+            function populateStudentList() {
+                const container = document.getElementById('student-list-container');
+                container.innerHTML = students.map(student => `
+                    <div class="student-card flex items-center p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition shadow-sm" data-student-id="${student.id}">
+                        <img src="${student.img}" alt="Foto de ${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
+                        <div>
+                            <p class="font-semibold text-gray-800">${student.name}</p>
+                            <span class="text-sm text-gray-500">Ver perfil</span>
+                        </div>
+                        <i data-feather="chevron-right" class="ml-auto text-gray-400"></i>
+                    </div>
+                `).join('');
+                feather.replace();
+                document.querySelectorAll('.student-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        currentStudentId = e.currentTarget.dataset.studentId;
+                        populateStudentProfile(currentStudentId);
+                        showScreen('studentProfileScreen');
+                    });
+                });
+            }
+            
+            function populateStudentProfile(studentId) {
+                const student = students.find(s => s.id == studentId);
+                if (!student) return;
+
+                const infoContainer = document.getElementById('student-profile-info');
+                infoContainer.innerHTML = `<img src="${student.img}" alt="Foto de ${student.name}" class="w-16 h-16 rounded-full object-cover shadow-md"><h2 class="text-2xl font-bold text-gray-800 ml-4">${student.name}</h2>`;
+                
+                const buttonsContainer = document.getElementById('student-profile-buttons');
+                buttonsContainer.innerHTML = student.trainings.map(training => `<button class="training-btn flex items-center justify-start text-left p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition" data-training-id="${training.id}"><i data-feather="${training.icon}" class="w-5 h-5 mr-3"></i><span class="font-semibold">${training.name}</span></button>`).join('');
+                
+                feather.replace();
+                generateCalendar();
+
+                 document.querySelectorAll('.training-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const trainingId = e.currentTarget.dataset.trainingId;
+                        populateTrainingScreen(trainingId);
+                        showScreen('trainingScreen');
+                    });
+                });
+            }
+            
+            function populateTrainingScreen(trainingId) {
+                const data = trainingData[trainingId];
+                if (!data) return;
+                const wrapper = document.getElementById('training-content-wrapper');
+                
+                const exercisesHtml = data.exercises.map((ex, index) => `
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-red-500 mr-4">${index + 1}</span>
+                            <div class="flex-grow">
+                                <p class="font-bold text-gray-800">${ex.name}</p>
+                                <p class="text-sm text-gray-600 mt-1">${ex.details}</p>
+                            </div>
+                            <button class="p-2 rounded-full hover:bg-green-100 text-gray-400 hover:text-green-500 transition-colors ml-4 check-btn">
+                                <i data-feather="check-circle" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                wrapper.innerHTML = `
+                    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${data.title}</h1>
+                    <div class="space-y-3">${exercisesHtml}</div>
+                `;
+                
+                feather.replace();
+
+                document.querySelectorAll('.check-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.currentTarget.classList.toggle('text-green-500');
+                        e.currentTarget.classList.toggle('text-gray-400');
+                    });
+                });
+            }
+
+            const modal = document.getElementById('aiGeneratorModal'), modalContent = document.getElementById('modal-content'), openModalBtn = document.getElementById('openAiModalBtn'), closeModalBtn = document.getElementById('closeModalBtn'), aiForm = document.getElementById('aiWorkoutForm'), aiLoader = document.getElementById('aiLoader'), aiResult = document.getElementById('aiResult'), aiResultContent = document.getElementById('aiResultContent');
+            const openModal = () => { modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95', 'opacity-0'); }, 10); };
+            const closeModal = () => { modalContent.classList.add('scale-95', 'opacity-0'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); aiResult.classList.add('hidden'); aiLoader.classList.add('hidden'); aiForm.reset(); }, 300); };
+            openModalBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+            aiForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                aiResult.classList.add('hidden');
+                aiLoader.classList.remove('hidden');
+                const goal = document.getElementById('goal').value, muscle_group = document.getElementById('muscle_group').value, duration = document.getElementById('duration').value;
+                const prompt = `Crie um treino de ${duration} minutos com foco em ${goal} para o grupo muscular: ${muscle_group}. O treino é para um aluno de nível intermediário. Liste os exercícios com número de séries, repetições e tempo de descanso. Formate a resposta como uma lista clara e simples, usando Markdown para negrito e listas. Não inclua títulos desnecessários, apenas a lista de exercícios.`;
+                aiResultContent.innerText = await callGemini(prompt);
+                aiLoader.classList.add('hidden');
+                aiResult.classList.remove('hidden');
+            });
+            
+            document.querySelectorAll('.back-to-list-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentListScreen')));
+            document.querySelectorAll('.back-to-profile-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentProfileScreen')));
+
+            function generateCalendar() {
+                const calendarGrid = document.getElementById('calendar-grid');
+                calendarGrid.innerHTML = '';
+                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                days.forEach(day => calendarGrid.innerHTML += `<div class="font-bold text-gray-600 text-xs">${day}</div>`);
+                calendarGrid.innerHTML += `<div></div>`; 
+                for (let day = 1; day <= 30; day++) {
+                    let specialClass = [3, 9, 15, 21, 27].includes(day) ? 'bg-red-600 text-white font-bold rounded-full' : (day === 24 ? 'bg-gray-800 text-white font-bold rounded-full' : '');
+                    calendarGrid.innerHTML += `<div class="p-2 flex items-center justify-center h-8 ${specialClass}">${day}</div>`;
+                }
+            }
+
+            // --- App Startup ---
+            populateStudentList();
+            getDailyTip();
+        });
+    </script>
+</body>
+</html>
 
