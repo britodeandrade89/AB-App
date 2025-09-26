@@ -146,7 +146,7 @@
         </main>
         
         <!-- ======================= MODAIS ======================= -->
-        <div id="aiGeneratorModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300">
+        <div id="aiGeneratorModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
             <!-- Conteúdo do Modal IA -->
         </div>
         <div id="exerciseDetailModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
@@ -251,13 +251,13 @@
                         'B': allExercisesB.filter(ex => ex.email === user.email),
                         'runningLog': {},
                         'periodizacao': [
-                            { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia" },
-                            { week: "3ª e 4ª", phase: "Adaptação/Hipertrofia" },
-                            { week: "5ª e 6ª", phase: "Força" },
-                            { week: "7ª e 8ª", phase: "Força" },
-                            { week: "9ª e 10ª", phase: "Hipertrofia" },
-                            { week: "11ª e 12ª", phase: "Resistência" },
-                            { week: "13ª", phase: "Recuperação Ativa" }
+                            { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia", methods: 'Método de execução Simples', reps: '10', volume: '16 séries/grupo', intensity: '70-75% 1RM', recovery: '60-90s' },
+                            { week: "3ª e 4ª", phase: "Adaptação/Hipertrofia", methods: 'Método de execução Simples', reps: '8-9', volume: '16 séries/grupo', intensity: '70-75% 1RM', recovery: '60-90s' },
+                            { week: "5ª e 6ª", phase: "Força", methods: 'Simples + Rest-Pause', reps: '6-7', volume: '14 séries/grupo', intensity: '80-85% 1RM', recovery: '90-120s' },
+                            { week: "7ª e 8ª", phase: "Força", methods: 'Simples + Rest-Pause', reps: '5-6', volume: '12 séries/grupo', intensity: '80-85% 1RM', recovery: '90-120s' },
+                            { week: "9ª e 10ª", phase: "Hipertrofia", methods: 'Método Pirâmide', reps: '8-10', volume: '15 séries/grupo', intensity: '75-80% 1RM', recovery: '60-90s' },
+                            { week: "11ª e 12ª", phase: "Resistência", methods: 'Drop-set', reps: '12-15', volume: '18 séries/grupo', intensity: '60-70% 1RM', recovery: '30-60s' },
+                            { week: "13ª", phase: "Recuperação Ativa", methods: 'Leve', reps: '15-20', volume: '10 séries/grupo', intensity: '40-50% 1RM', recovery: '30s' }
                         ],
                         'attendance': {}
                     };
@@ -351,23 +351,74 @@
                             showScreen('evolutionScreen');
                             populateEvolutionScreen(student.email);
                         } else {
-                            populateTrainingScreen(student.email, btnId);
                             showScreen('trainingScreen');
+                            populateTrainingScreen(student.email, btnId);
                         }
                     });
                 });
             }
             
-             function populateTrainingScreen(email, trainingId) {
-                 const plan = database.trainingPlans[email];
-                 const wrapper = document.getElementById('training-content-wrapper');
-                 let contentHtml = '', title = '';
+            function populateTrainingScreen(email, trainingId) {
+                const plan = database.trainingPlans[email];
+                const wrapper = document.getElementById('training-content-wrapper');
+                if (!plan || !wrapper) return;
 
-                 if (trainingId === 'A' || trainingId === 'B') {
-                    // ... (código existente)
-                 } else if (trainingId === 'corrida') {
-                    // ... (código existente)
-                 } else if (trainingId === 'periodizacao') {
+                let contentHtml = '', title = '';
+
+                if (trainingId === 'A' || trainingId === 'B') {
+                    title = `Treino ${trainingId}`;
+                    contentHtml = (plan[trainingId] || []).map((ex, index) => {
+                        const cardStateClasses = ex.completed ? 'bg-green-50 border-green-200 opacity-70' : 'bg-white border-gray-200';
+                        const iconState = ex.completed ? '<i data-feather="check-circle" class="text-green-500"></i>' : '<i data-feather="chevron-right" class="text-gray-400"></i>';
+                        return `
+                        <div class="exercise-card ${cardStateClasses} p-4 rounded-lg border shadow-sm flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow" data-email="${email}" data-training-id="${trainingId}" data-index="${index}">
+                            <img src="${ex.img}" alt="Imagem do exercício" class="w-20 h-20 object-cover rounded-lg bg-gray-200 pointer-events-none">
+                            <div class="flex-grow pointer-events-none">
+                                <p class="font-bold text-gray-800">${index + 1}. ${ex.name}</p>
+                                <p class="text-sm text-gray-600 mt-1">${ex.details}</p>
+                                <p class="text-sm text-red-600 font-semibold mt-1">Carga Atual: ${ex.carga} kg</p>
+                            </div>
+                            <div class="self-center pointer-events-none">${iconState}</div>
+                        </div>`;
+                    }).join('');
+                } else if (trainingId === 'corrida') {
+                    const now = new Date(2025, 8, 26);
+                    const year = now.getFullYear();
+                    const month = now.getMonth();
+                    const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(now);
+                    title = `Treinos de Corrida - ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
+
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const runningLog = plan.runningLog || {};
+
+                    let monthScheduleHtml = '';
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new Date(year, month, day);
+                        const dateStr = date.toISOString().split('T')[0];
+                        const workoutIndex = (day - 1) % database.baseRunningWorkouts.length;
+                        const workout = database.baseRunningWorkouts[workoutIndex];
+                        const logData = runningLog[dateStr];
+
+                        const completedClass = logData ? 'bg-green-50' : 'bg-white';
+                        const logDetailsHtml = logData 
+                            ? `<div class="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-600 grid grid-cols-2 gap-1">
+                                <span><b>Distância:</b> ${logData.distance} km</span>
+                                <span><b>Pace:</b> ${logData.pace} /km</span>
+                                <span><b>Tempo:</b> ${logData.time.min}m ${logData.time.sec}s</span>
+                                <span><b>Kcal:</b> ${logData.kcal}</span>
+                               </div>` 
+                            : '';
+
+                        monthScheduleHtml += `
+                            <div class="running-session-card ${completedClass} p-4 rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" data-email="${email}" data-date="${dateStr}" data-workout-index="${workoutIndex}">
+                                <h3 class="font-bold text-gray-800">${String(day).padStart(2,'0')}/${String(month + 1).padStart(2,'0')} - ${workout.method}</h3>
+                                <p class="text-sm text-gray-600 mt-1 whitespace-pre-wrap">${workout.details}</p>
+                                ${logDetailsHtml}
+                            </div>
+                        `;
+                    }
+                    contentHtml = monthScheduleHtml;
+                } else if (trainingId === 'periodizacao') {
                     title = 'Resumo da Periodização';
                     contentHtml = (plan.periodizacao || []).map((item) => `
                         <div class="periodization-item bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -384,23 +435,23 @@
                             </div>
                         </div>
                     `).join('');
-                 }
+                }
                 
-                 wrapper.innerHTML = `<h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${title}</h1><div class="space-y-3">${contentHtml}</div>`;
-                 feather.replace();
+                wrapper.innerHTML = `<h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${title}</h1><div class="space-y-3">${contentHtml}</div>`;
+                feather.replace();
                 
-                 document.querySelectorAll('.exercise-card, .running-session-card').forEach(card => {
-                     card.addEventListener('click', (e) => {
-                         const target = e.currentTarget;
-                         if (target.classList.contains('exercise-card')) {
-                             openExerciseModal(target.dataset.email, target.dataset.trainingId, parseInt(target.dataset.index));
-                         } else {
-                             openRunningLogModal(target.dataset.email, target.dataset.date, parseInt(target.dataset.workoutIndex));
-                         }
-                     });
-                 });
-                 
-                 document.querySelectorAll('.periodization-header').forEach(header => {
+                wrapper.querySelectorAll('.exercise-card, .running-session-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const target = e.currentTarget;
+                        if (target.classList.contains('exercise-card')) {
+                            openExerciseModal(target.dataset.email, target.dataset.trainingId, parseInt(target.dataset.index));
+                        } else {
+                            openRunningLogModal(target.dataset.email, target.dataset.date, parseInt(target.dataset.workoutIndex));
+                        }
+                    });
+                });
+                
+                wrapper.querySelectorAll('.periodization-header').forEach(header => {
                     header.addEventListener('click', (e) => {
                         const details = e.currentTarget.nextElementSibling;
                         const icon = e.currentTarget.querySelector('i');
@@ -408,30 +459,234 @@
                         icon.classList.toggle('rotate-180');
                     });
                 });
-             }
+            }
 
             function openExerciseModal(email, trainingId, index) {
-                // ... (código existente)
+                const exercise = database.trainingPlans[email]?.[trainingId]?.[index];
+                if (!exercise) return;
+                
+                const modalBody = document.getElementById('exercise-modal-body');
+                modalBody.innerHTML = `
+                    <img src="${exercise.img}" alt="${exercise.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">${exercise.name}</h2>
+                    <p class="text-gray-600 mt-1">${exercise.details}</p>
+                    <hr class="my-4">
+                    <div class="bg-gray-100 p-3 rounded-lg mb-4">
+                        <p class="text-sm font-medium text-gray-600">Última Carga Registrada</p>
+                        <p class="text-lg font-bold text-gray-800">${exercise.carga} kg</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label for="load-input" class="text-sm font-medium text-gray-600">Registrar Carga de Hoje (kg)</label>
+                        <div class="flex items-center gap-2">
+                            <button id="decrease-load" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">-</button>
+                            <input type="number" id="load-input" value="${exercise.carga}" class="w-full p-2 text-center font-bold text-lg border border-gray-300 rounded-lg">
+                            <button id="increase-load" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">+</button>
+                        </div>
+                    </div>
+                    <button id="save-load-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md mt-4">Salvar Carga</button>
+                    <button id="get-technique-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-md mt-2">✨ Analisar Técnica</button>
+                `;
+
+                const modal = document.getElementById('exerciseDetailModal');
+                const modalContent = document.getElementById('exercise-modal-content');
+                modal.classList.remove('hidden', 'opacity-0');
+                setTimeout(() => modalContent.classList.remove('scale-95', 'opacity-0'), 10);
+                
+                document.getElementById('decrease-load').addEventListener('click', () => { /* ... */ });
+                document.getElementById('increase-load').addEventListener('click', () => { /* ... */ });
+                document.getElementById('save-load-btn').addEventListener('click', () => { /* ... */ });
             }
             
             function openRunningLogModal(email, dateStr, workoutIndex) {
-                 // ... (código existente)
+                 const workout = database.baseRunningWorkouts[workoutIndex];
+                 const log = database.trainingPlans[email].runningLog[dateStr] || {};
+                 const modalBody = document.getElementById('running-log-modal-body');
+
+                 modalBody.innerHTML = `
+                     <h2 class="text-xl font-bold text-gray-800">${new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR')} - ${workout.method}</h2>
+                     <p class="text-sm text-gray-600 mt-1 mb-4 whitespace-pre-wrap">${workout.details}</p>
+                     <hr class="my-4">
+                     <div class="grid grid-cols-2 gap-4">
+                         <div>
+                             <label class="text-sm font-medium text-gray-600">Distância (km)</label>
+                             <input type="number" id="run-distance" value="${log.distance || ''}" class="w-full mt-1 p-2 border rounded-lg">
+                         </div>
+                          <div>
+                             <label class="text-sm font-medium text-gray-600">Kcal Gastas</label>
+                             <input type="number" id="run-kcal" value="${log.kcal || ''}" class="w-full mt-1 p-2 border rounded-lg">
+                         </div>
+                         <div>
+                             <label class="text-sm font-medium text-gray-600">Tempo (min)</label>
+                             <input type="number" id="run-time-min" value="${log.time?.min || ''}" class="w-full mt-1 p-2 border rounded-lg">
+                         </div>
+                         <div>
+                             <label class="text-sm font-medium text-gray-600">Tempo (seg)</label>
+                             <input type="number" id="run-time-sec" value="${log.time?.sec || ''}" class="w-full mt-1 p-2 border rounded-lg">
+                         </div>
+                     </div>
+                     <div class="mt-4 bg-gray-100 p-3 rounded-lg">
+                         <p class="text-sm font-medium text-gray-600">Pace Calculado</p>
+                         <p id="run-pace" class="text-lg font-bold text-gray-800">${log.pace || '0:00 /km'}</p>
+                     </div>
+                     <button id="save-run-log-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md mt-4">Salvar Registro</button>
+                 `;
+
+                 const modal = document.getElementById('runningLogModal');
+                 const modalContent = document.getElementById('running-modal-content');
+                 modal.classList.remove('hidden', 'opacity-0');
+                 setTimeout(() => modalContent.classList.remove('scale-95', 'opacity-0'), 10);
+
+                 const distInput = document.getElementById('run-distance');
+                 const minInput = document.getElementById('run-time-min');
+                 const secInput = document.getElementById('run-time-sec');
+                 const paceDisplay = document.getElementById('run-pace');
+
+                 function calculatePace() {
+                     const dist = parseFloat(distInput.value) || 0;
+                     const min = parseInt(minInput.value) || 0;
+                     const sec = parseInt(secInput.value) || 0;
+                     if (dist <= 0 || (min === 0 && sec === 0)) {
+                         paceDisplay.textContent = '0:00 /km';
+                         return;
+                     }
+                     const totalSeconds = (min * 60) + sec;
+                     const paceSeconds = totalSeconds / dist;
+                     const paceMin = Math.floor(paceSeconds / 60);
+                     const paceSec = Math.round(paceSeconds % 60);
+                     paceDisplay.textContent = `${paceMin}:${String(paceSec).padStart(2, '0')} /km`;
+                 }
+
+                 [distInput, minInput, secInput].forEach(el => el.addEventListener('input', calculatePace));
+
+                 document.getElementById('save-run-log-btn').addEventListener('click', () => {
+                      database.trainingPlans[email].runningLog[dateStr] = {
+                         kcal: parseInt(document.getElementById('run-kcal').value) || 0,
+                         distance: parseFloat(distInput.value) || 0,
+                         time: {
+                             min: parseInt(minInput.value) || 0,
+                             sec: parseInt(secInput.value) || 0
+                         },
+                         pace: paceDisplay.textContent
+                     };
+                     closeRunningLogModal();
+                     populateTrainingScreen(email, 'corrida');
+                 });
              }
 
             function closeRunningLogModal() {
-                 // ... (código existente)
-             }
+                const modal = document.getElementById('runningLogModal');
+                const modalContent = document.getElementById('running-modal-content');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
 
             function populateEvolutionScreen(email) {
-                // ... (código existente)
+                const plan = database.trainingPlans[email];
+                if (!plan) return;
+
+                const generateChart = (canvasId, trainingType) => {
+                    const ctx = document.getElementById(canvasId);
+                    if(!ctx) return;
+                    const chartContext = ctx.getContext('2d');
+                    const exercises = plan[trainingType] || [];
+
+                    if (charts[trainingType]) {
+                        charts[trainingType].destroy();
+                    }
+
+                    const datasets = exercises
+                        .filter(ex => ex.cargaHistoria && ex.cargaHistoria.length > 0)
+                        .map((ex, index) => {
+                            const color = `hsl(${(index * 60) % 360}, 70%, 50%)`;
+                            return {
+                                label: ex.name,
+                                data: ex.cargaHistoria.map(h => ({ x: h.data, y: h.peso })),
+                                borderColor: color,
+                                backgroundColor: color,
+                                fill: false,
+                                tension: 0.1
+                            };
+                        });
+                    
+                    const allDates = [...new Set(datasets.flatMap(ds => ds.data.map(d => d.x)))].sort();
+                    
+                    charts[trainingType] = new Chart(chartContext, {
+                        type: 'line',
+                        data: {
+                            labels: allDates,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: { unit: 'day', tooltipFormat: 'dd/MM/yy' },
+                                    title: { display: true, text: 'Data' }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: { display: true, text: 'Carga (kg)' }
+                                }
+                            }
+                        }
+                    });
+                };
+                
+                generateChart('treinoAChart', 'A');
+                generateChart('treinoBChart', 'B');
             }
 
             function closeExerciseModal() {
-                // ... (código existente)
+                const modal = document.getElementById('exerciseDetailModal');
+                const modalContent = document.getElementById('exercise-modal-content');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                modal.classList.add('opacity-0');
+                setTimeout(() => modal.classList.add('hidden'), 300);
             }
 
-             function generateCalendar(email) {
-                // ... (código existente)
+            function generateCalendar(email) {
+                const calendarGrid = document.getElementById('calendar-grid');
+                if (!calendarGrid) return;
+                calendarGrid.innerHTML = '';
+                
+                const attendance = database.trainingPlans[email]?.attendance || {};
+                const today = new Date();
+                const currentDay = 25; // Hardcoded for September 2025
+                
+                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                days.forEach(day => calendarGrid.innerHTML += `<div class="font-bold text-gray-600 text-xs">${day}</div>`);
+                
+                const firstDayOffset = 1; 
+                for(let i = 0; i < firstDayOffset; i++) {
+                    calendarGrid.innerHTML += `<div></div>`; 
+                }
+                
+                for (let day = 1; day <= 30; day++) {
+                    const isToday = day === currentDay;
+                    let dayContent = day;
+                    let specialClass = 'hover:bg-gray-100 rounded-full flex items-center justify-center h-9';
+                    
+                    if (isToday) {
+                        specialClass += ' ring-2 ring-red-500';
+                    }
+
+                    const status = attendance[day.toString()];
+                    
+                    if (status === 'A') {
+                        dayContent = 'A';
+                        specialClass += ' bg-blue-500 text-white font-bold';
+                    } else if (status === 'B') {
+                        dayContent = 'B';
+                        specialClass += ' bg-green-500 text-white font-bold';
+                    } else if (status === 'F') {
+                        dayContent = 'F';
+                        specialClass += ' bg-red-500 text-white font-bold';
+                    }
+
+                    calendarGrid.innerHTML += `<div class="${specialClass}">${dayContent}</div>`;
+                }
             }
             
             document.querySelectorAll('.back-to-list-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentListScreen')));
