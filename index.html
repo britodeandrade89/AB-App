@@ -18,16 +18,6 @@
     
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .mobile-shell {
-            max-width: 420px;
-            width: 100%;
-            height: 896px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 30px;
-            border: 8px solid #1f2937;
-            overflow: hidden;
-            position: relative;
-        }
         .screen { display: none; }
         .screen.active { display: block; }
         .loader {
@@ -44,23 +34,23 @@
         }
     </style>
 </head>
-<body class="bg-gray-200 flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-100">
 
-    <div class="mobile-shell bg-white">
-        <main class="h-full w-full overflow-y-auto bg-gray-50">
+    <div class="container mx-auto max-w-4xl">
+        <main class="h-full w-full bg-gray-50 min-h-screen">
 
             <!-- ======================= TELA LISTA DE ALUNOS ======================= -->
-            <div id="studentListScreen" class="screen active">
-                <div class="p-4 pt-8">
-                    <h1 class="text-2xl font-bold text-gray-800 mb-4">Menu Principal</h1>
-                    <div class="bg-gradient-to-r from-red-500 to-red-700 text-white p-4 rounded-lg mb-4 shadow-lg">
+            <div id="studentListScreen" class="screen">
+                 <div class="p-4 md:p-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Menu Principal</h1>
+                    <div class="bg-gradient-to-r from-red-500 to-red-700 text-white p-5 rounded-lg mb-6 shadow-lg">
                         <div class="flex items-center mb-2">
                              <i data-feather="star" class="w-5 h-5 mr-2"></i>
                             <h3 class="font-bold text-lg">✨ Dica do Dia</h3>
                         </div>
                         <p id="daily-tip" class="text-sm">Carregando dica...</p>
                     </div>
-                    <div class="relative mb-4">
+                    <div class="relative mb-6">
                         <input type="text" placeholder="Procurar aluno..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
                         <i data-feather="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     </div>
@@ -70,18 +60,18 @@
 
             <!-- ======================= TELA PERFIL DO ALUNO ======================= -->
             <div id="studentProfileScreen" class="screen">
-                <div class="p-4 pt-6 space-y-3 relative">
-                    <button class="back-to-list-btn p-2 rounded-full hover:bg-gray-100 absolute top-4 left-2">
+                 <div class="p-4 md:p-8 space-y-4 relative">
+                    <button class="back-to-list-btn p-2 rounded-full hover:bg-gray-200 absolute top-6 left-4 md:top-8 md:left-6">
                         <i data-feather="arrow-left" class="text-gray-700"></i>
                     </button>
-                    <div id="student-profile-info" class="flex items-center pt-8 mb-3">
+                    <div id="student-profile-info" class="flex items-center pt-12 md:pt-8 mb-4">
                         <!-- Student info will be populated by JS -->
                     </div>
                     <button id="openAiModalBtn" class="w-full bg-gray-800 text-white font-bold py-3 rounded-lg hover:bg-gray-900 transition-colors shadow-md flex items-center justify-center">
                        ✨ Gerar Treino com IA
                     </button>
-                    <div id="student-profile-buttons" class="grid grid-cols-2 gap-3"></div>
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 mt-3">
+                    <div id="student-profile-buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 mt-4">
                         <div id="calendar-header" class="flex justify-between items-center mb-4">
                             <button class="p-2 rounded-full hover:bg-gray-100"><i data-feather="chevron-left"></i></button>
                             <h2 class="font-bold text-lg text-gray-800">Setembro 2025</h2>
@@ -94,11 +84,11 @@
             
             <!-- ======================= TELA DE TREINO ======================= -->
             <div id="trainingScreen" class="screen">
-                <div class="p-4 pt-6 relative">
-                    <button class="back-to-profile-btn p-2 rounded-full hover:bg-gray-100 absolute top-4 left-2">
+                 <div class="p-4 md:p-8 relative">
+                    <button class="back-to-profile-btn p-2 rounded-full hover:bg-gray-200 absolute top-6 left-4 md:top-8 md:left-6">
                         <i data-feather="arrow-left" class="text-gray-700"></i>
                     </button>
-                    <div id="training-content-wrapper" class="pt-8">
+                    <div id="training-content-wrapper" class="pt-12 md:pt-8">
                         <!-- JS will populate this -->
                     </div>
                 </div>
@@ -144,8 +134,14 @@
     </div>
 
     <script type="module">
-        document.addEventListener('DOMContentLoaded', () => {
-            feather.replace();
+        // Função principal do aplicativo para garantir que tudo seja executado após o DOM estar pronto.
+        function mainApp() {
+            // Verificação de segurança para garantir que os ícones foram carregados
+            if (typeof feather === 'undefined') {
+                console.error("Feather Icons não carregou. Ícones não serão exibidos.");
+            } else {
+                feather.replace();
+            }
 
             async function callGemini(prompt) {
                 const apiKey = "";
@@ -166,40 +162,156 @@
                 }
             }
 
-            const students = [
-                { id: 1, name: 'André Brito', img: 'https://placehold.co/100x100/1f2937/FFFFFF?text=AB', trainings: [{ id: 'A', name: 'Treino A', icon: 'check-square' },{ id: 'B', name: 'Treino B', icon: 'check-square' },{ id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },{ id: 'periodizacao', name: 'Periodização', icon: 'calendar' }] },
-                { id: 2, name: 'Marcelly Bispo', img: 'https://placehold.co/100x100/ef4444/FFFFFF?text=MB', trainings: [{ id: 'A', name: 'Treino A', icon: 'check-square' },{ id: 'B', name: 'Treino B', icon: 'check-square' },{ id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },{ id: 'periodizacao', name: 'Periodização', icon: 'calendar' }] },
-                { id: 3, name: 'Liliane Torres', img: 'https://placehold.co/100x100/1f2937/FFFFFF?text=LT', trainings: [{ id: 'A', name: 'Treino A', icon: 'check-square' },{ id: 'B', name: 'Treino B', icon: 'check-square' },{ id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },{ id: 'periodizacao', name: 'Periodização', icon: 'calendar' }] },
-                { id: 4, name: 'Marcia Brito', img: 'https://placehold.co/100x100/ef4444/FFFFFF?text=MB', trainings: [{ id: 'A', name: 'Treino A', icon: 'check-square' },{ id: 'B', name: 'Treino B', icon: 'check-square' },{ id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },{ id: 'periodizacao', name: 'Periodização', icon: 'calendar' }] },
-            ];
-            
-            const trainingData = {
-                'A': { title: 'Treino A', exercises: [{ name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },{ name: 'Leg Press 45', details: '3 Séries | 12 Rep | REC 30"' },{ name: 'Extensão de cotovelos no solo', details: '3 Séries | 10 Rep | REC 30"' },{ name: 'Stiff com Halteres', details: '4 Séries | 12 Rep | REC 30"' }, { name: 'Cadeira Adutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Cadeira Abdutora', details: '3 Séries | 15 Rep | REC 30"' }, { name: 'Panturrilha no Leg Press', details: '4 Séries | 20 Rep | REC 30"' }] },
-                'B': { title: 'Treino B', exercises: [{ name: 'Supino Reto', details: '4 Séries | 8 Rep | REC 60"' },{ name: 'Puxada Frontal', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Elevação Lateral', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Remada Curvada', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Rosca Direta com Barra', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Tríceps Pulley', details: '3 Séries | 12 Rep | REC 45"' },{ name: 'Desenvolvimento com Halteres', details: '4 Séries | 10 Rep | REC 60"' },{ name: 'Crucifixo Invertido', details: '3 Séries | 15 Rep | REC 45"' }] },
-                'periodizacao': { title: 'Resumo da Periodização', exercises: [{ name: '1ª e 2ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '3ª e 4ª | Adaptação/Hipertrofia', details: 'Método de execução Simples | 50-60% 1RM' },{ name: '5ª e 6ª | Força', details: 'Método de execução Simples - Rest-Pause | 60-80% 1RM' },{ name: '7ª e 8ª | Força', details: 'Método de execução Simples - Pirâmide | 70-75 % 1RM' }] },
-                'corrida': { title: 'Treino de Corrida', exercises: [{ name: 'Aquecimento', details: '10 minutos de caminhada leve' },{ name: 'Tiros', details: '5x 200m em ritmo forte com 1 min de descanso' },{ name: 'Desaceleração', details: '10 minutos de caminhada leve' }] }
+            const database = {
+                users: [
+                    { id: 1, name: 'André Brito', email: 'britodeandrade@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg' },
+                    { id: 2, name: 'Marcelly Bispo', email: 'marcellybispo92@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg' },
+                    { id: 3, name: 'Marcia Brito', email: 'andrademarcia.ucam@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg' },
+                    { id: 4, name: 'Liliane Torres', email: 'lilicatorres@gmail.com', photo: 'https://i.ibb.co/7j6x0gG/liliane-torres.jpg' }
+                ],
+                trainingPlans: {
+                    'britodeandrade@gmail.com': {
+                        'A': [
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/dMXSfHrCe2BQAKRvIvIg.png', name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lik7g55hYpUjX2Rs6ASg.png', name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/CGVAnjor7i6F1Xj1IQoK.png', name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/WyYlLuQ2Ch6WAXdVcwHL.png', name: 'Supino inclinado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de cotovelos no solo (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC no banco 75º (CONJUGADO 2)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo aberto na máquina (CONJUGADO 2)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo aberto com HBC no banco 75º', details: '3 Séries | 10 Rep | REC 30"' }
+                        ],
+                        'B': [
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Agachamento sumô com HBC', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Stiff em pé com HBM', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de quadril com caneleira', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Remada curvada aberta com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo inverso curvado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo inverso na máquina', details: '6 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Puxada aberta no pulley alto', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Bíceps em pé no cross barra reta', details: '6 Séries | 10 Rep | REC 30"' }
+                        ],
+                         'periodizacao': [
+                            { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", details: "10 reps, 16 séries/grupo, 70-75% 1RM" },
+                            { week: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", details: "8-9 reps, 16 séries/grupo, 70-75% 1RM" },
+                            { week: "5ª e 6ª", phase: "Força", method: "Simples + Rest-Pause", details: "6-7 reps, 14 séries/grupo, 80-85% 1RM" },
+                            { week: "7ª e 8ª", phase: "Força", method: "Simples + Rest-Pause", details: "5-6 reps, 12 séries/grupo, 80-85% 1RM" },
+                            { week: "9ª e 10ª", phase: "Hipertrofia", method: "Método Pirâmide", details: "8-10 reps, 15 séries/grupo, 75-80% 1RM" },
+                            { week: "11ª e 12ª", phase: "Resistência", method: "Drop-set", details: "12-15 reps, 18 séries/grupo, 60-70% 1RM" },
+                            { week: "13ª", phase: "Recuperação Ativa", method: "Método de execução Simples (Leve)", details: "15-20 reps, 10 séries/grupo, 40-50% 1RM" }
+                        ]
+                    },
+                    'marcellybispo92@gmail.com': {
+                        'A': [
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/dMXSfHrCe2BQAKRvIvIg.png', name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lik7g55hYpUjX2Rs6ASg.png', name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/CGVAnjor7i6F1Xj1IQoK.png', name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/WyYlLuQ2Ch6WAXdVcwHL.png', name: 'Supino inclinado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de cotovelos no solo (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Leg Press 45', details: '3 Séries | 12 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Stiff com Halteres', details: '4 Séries | 12 Rep | REC 30"' }
+                        ],
+                        'B': [
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Agachamento sumô com HBC', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Stiff em pé com HBM', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de quadril com caneleira', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Remada curvada aberta com HBC', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo inverso curvado com HBC', details: '3 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo inverso na máquina', details: '6 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Puxada aberta no pulley alto', details: '4 Séries | 10 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Bíceps em pé no cross', details: '6 Séries | 10 Rep | REC 30"' }
+                        ]
+                    },
+                    'andrademarcia.ucam@gmail.com': {
+                        'A': [
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lSKqgGqYChpRHitndPVZ.png', name: 'Cadeira extensora', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/TYYs8dYewPrOA5MB0LKt.png', name: 'Leg press horizontal', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Abdominal supra no banco reto ou inclinado 30º', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/7yRR2CeoHxGPlbi3mw89.png', name: 'Leg press horizontal + flexão plantar', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC no banco 75º', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/dMXSfHrCe2BQAKRvIvIg.png', name: 'Agachamento no Smith', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Supino Reto com Halteres', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Afundo com Halteres', details: '3 Séries | 15 Rep | REC 30"' }
+                        ],
+                        'B': [
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de quadril em pé (caneleira) ou máquina', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Remada aberta sentada em máquina', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Cadeira abdutora', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Puxada aberta no pulley alto', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Cadeira flexora', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Equilíbrio unilateral em pé em isometria', details: '3 Séries | 15 segundos | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Remada Curvada com barra', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo Invertido com halteres', details: '3 Séries | 15 Rep | REC 30"' }
+                        ]
+                    },
+                     'lilicatorres@gmail.com': {
+                        'A': [
+                             { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/TYYs8dYewPrOA5MB0LKt.png', name: 'Leg press horizontal', details: '3 Séries | 15 Rep | REC 30"' },
+                             { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Supino reto aberto na máquina', details: '3 Séries | 15 Rep | REC 30"' },
+                             { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Abdominal supra no banco reto ou inclinado 30º', details: '3 Séries | 15 Rep | REC 30"' },
+                             { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/BDBVsJS1WneT1BvLSW9S.png', name: 'Cadeira extensora', details: '3 Séries | 15 Rep | REC 30"' },
+                             { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC no banco 75º', details: '3 Séries | 15 Rep | REC 30"' },
+                             { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Cadeira adutora', details: '3 Séries | 15 Rep | REC 30"' }
+                        ],
+                        'B': [
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/u3PKU8ZtUUSdtG0c9g6A.png', name: 'Extensão de quadril em pé com caneleira', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/hGUY7h8KaJpKuH1m21qJ.png', name: 'Remada aberta no cross com barra reta polia média', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Cadeira abdutora', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Puxada aberta no pulley alto', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Cadeira flexora', details: '3 Séries | 15 Rep | REC 30"' },
+                            { img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Mata-borrão isométrico no solo em isometria', details: '3 Séries | 15 segundos | REC 30"' }
+                        ]
+                    }
+                }
             };
+
+            const commonData = {
+                'corrida': [ { method: "FARTLEK", details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC", speed: "8,5 Km/h", pace: "7:00/Km", date: "10/09" }, { method: "INTERVALADO", details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", speed: "9,5 Km/h", pace: "6:19/Km", date: "12/09" }, { method: "LONGÃO", details: "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC", speed: "8,5 Km/h", pace: "7:04/Km", date: "15/09" } ],
+                'periodizacao': [ { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", details: "10 reps, 16 séries/grupo, 70-75% 1RM" }, { week: "3ª e 4ª", phase: "Adaptação/Hipertrofia", method: "Método de execução Simples", details: "8-9 reps, 16 séries/grupo, 70-75% 1RM" }, { week: "5ª e 6ª", phase: "Força", method: "Simples + Rest-Pause", details: "6-7 reps, 14 séries/grupo, 80-85% 1RM" }, { week: "7ª e 8ª", phase: "Força", method: "Simples + Rest-Pause", details: "5-6 reps, 12 séries/grupo, 80-85% 1RM" }, { week: "9ª e 10ª", phase: "Hipertrofia", method: "Método Pirâmide", details: "8-10 reps, 15 séries/grupo, 75-80% 1RM" }, { week: "11ª e 12ª", phase: "Resistência", method: "Drop-set", details: "12-15 reps, 18 séries/grupo, 60-70% 1RM" } ],
+                'attendance': { '8': 'A', '9': 'B', '12': 'B', '15': 'F', '17': 'A' }
+            };
+
+            // Assign common data to all users, except for Andre's periodization which is custom
+            database.users.forEach(user => {
+                if(database.trainingPlans[user.email]){
+                    database.trainingPlans[user.email].corrida = commonData.corrida;
+                    if(user.email !== 'britodeandrade@gmail.com') {
+                       database.trainingPlans[user.email].periodizacao = commonData.periodizacao;
+                    }
+                    database.trainingPlans[user.email].attendance = commonData.attendance;
+                }
+            });
+
 
             const screens = document.querySelectorAll('.screen');
             let currentStudentId = null;
 
             function showScreen(screenId) {
+                if (!document.getElementById(screenId)) {
+                    console.error(`Tela com ID "${screenId}" não encontrada.`);
+                    return;
+                }
                 screens.forEach(screen => screen.classList.remove('active'));
                 document.getElementById(screenId).classList.add('active');
-                document.querySelector('.mobile-shell main').scrollTop = 0;
+                const mainContainer = document.querySelector('main');
+                if (mainContainer) mainContainer.scrollTop = 0;
             }
             
             async function getDailyTip() {
                 const tipElement = document.getElementById('daily-tip');
+                if (!tipElement) return;
                 const prompt = "Me dê uma dica rápida e motivacional sobre fitness ou nutrição, em português. A dica deve ter no máximo 2 frases e ser inspiradora para quem treina.";
                 tipElement.textContent = await callGemini(prompt);
             }
             
             function populateStudentList() {
                 const container = document.getElementById('student-list-container');
-                container.innerHTML = students.map(student => `
+                if (!container) return;
+
+                container.innerHTML = database.users.map(student => `
                     <div class="student-card flex items-center p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition shadow-sm" data-student-id="${student.id}">
-                        <img src="${student.img}" alt="Foto de ${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
+                        <img src="${student.photo}" alt="Foto de ${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
                         <div>
                             <p class="font-semibold text-gray-800">${student.name}</p>
                             <span class="text-sm text-gray-500">Ver perfil</span>
@@ -207,7 +319,7 @@
                         <i data-feather="chevron-right" class="ml-auto text-gray-400"></i>
                     </div>
                 `).join('');
-                feather.replace();
+                if (typeof feather !== 'undefined') feather.replace();
                 document.querySelectorAll('.student-card').forEach(card => {
                     card.addEventListener('click', (e) => {
                         currentStudentId = e.currentTarget.dataset.studentId;
@@ -218,56 +330,95 @@
             }
             
             function populateStudentProfile(studentId) {
-                const student = students.find(s => s.id == studentId);
+                const student = database.users.find(s => s.id == studentId);
                 if (!student) return;
 
                 const infoContainer = document.getElementById('student-profile-info');
-                infoContainer.innerHTML = `<img src="${student.img}" alt="Foto de ${student.name}" class="w-16 h-16 rounded-full object-cover shadow-md"><h2 class="text-2xl font-bold text-gray-800 ml-4">${student.name}</h2>`;
-                
+                if (infoContainer) {
+                    infoContainer.innerHTML = `<img src="${student.photo}" alt="Foto de ${student.name}" class="w-16 h-16 rounded-full object-cover shadow-md"><h2 class="text-2xl font-bold text-gray-800 ml-4">${student.name}</h2>`;
+                }
+
+                const buttons = [
+                    { id: 'A', name: 'Treino A', icon: 'check-square' },
+                    { id: 'B', name: 'Treino B', icon: 'check-square' },
+                    { id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },
+                    { id: 'periodizacao', name: 'Periodização', icon: 'calendar' }
+                ];
+
                 const buttonsContainer = document.getElementById('student-profile-buttons');
-                buttonsContainer.innerHTML = student.trainings.map(training => `<button class="training-btn flex items-center justify-start text-left p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition" data-training-id="${training.id}"><i data-feather="${training.icon}" class="w-5 h-5 mr-3"></i><span class="font-semibold">${training.name}</span></button>`).join('');
+                if (buttonsContainer) {
+                    buttonsContainer.innerHTML = buttons.map(btn => `<button class="training-btn flex items-center justify-start text-left p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 hover:bg-red-100 transition" data-training-id="${btn.id}"><i data-feather="${btn.icon}" class="w-5 h-5 mr-3"></i><span class="font-semibold">${btn.name}</span></button>`).join('');
+                }
                 
-                feather.replace();
-                generateCalendar();
+                if (typeof feather !== 'undefined') feather.replace();
+                generateCalendar(student.email);
 
                  document.querySelectorAll('.training-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const trainingId = e.currentTarget.dataset.trainingId;
-                        populateTrainingScreen(trainingId);
+                        populateTrainingScreen(student.email, trainingId);
                         showScreen('trainingScreen');
                     });
                 });
             }
             
-            function populateTrainingScreen(trainingId) {
-                const data = trainingData[trainingId];
-                if (!data) return;
+            function populateTrainingScreen(email, trainingId) {
+                const plan = database.trainingPlans[email];
+                if (!plan || !plan[trainingId]) return;
+
                 const wrapper = document.getElementById('training-content-wrapper');
+                if (!wrapper) return;
                 
-                const exercisesHtml = data.exercises.map((ex, index) => `
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                        <div class="flex items-center">
-                            <span class="text-lg font-bold text-red-500 mr-4">${index + 1}</span>
+                let contentHtml = '';
+                let title = '';
+
+                if (trainingId === 'A' || trainingId === 'B') {
+                    title = `Treino ${trainingId}`;
+                    contentHtml = plan[trainingId].map((ex, index) => `
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex items-start gap-4">
+                            <img src="${ex.img}" alt="Imagem do exercício" class="w-20 h-20 object-cover rounded-lg bg-gray-200">
                             <div class="flex-grow">
-                                <p class="font-bold text-gray-800">${ex.name}</p>
+                                <p class="font-bold text-gray-800">${index + 1}. ${ex.name}</p>
                                 <p class="text-sm text-gray-600 mt-1">${ex.details}</p>
                             </div>
-                            <button class="p-2 rounded-full hover:bg-green-100 text-gray-400 hover:text-green-500 transition-colors ml-4 check-btn">
+                            <button class="p-2 rounded-full hover:bg-green-100 text-gray-400 hover:text-green-500 transition-colors self-center check-btn">
                                 <i data-feather="check-circle" class="w-6 h-6"></i>
                             </button>
                         </div>
-                    </div>
-                `).join('');
-                
+                    `).join('');
+                } else if (trainingId === 'periodizacao') {
+                    title = 'Resumo da Periodização';
+                    contentHtml = plan[trainingId].map((item, index) => `
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                             <p class="font-bold text-gray-800">${item.week} - ${item.phase}</p>
+                             <p class="text-sm text-gray-600 mt-1">${item.method}</p>
+                             <p class="text-xs text-gray-500 mt-1">${item.details}</p>
+                        </div>
+                    `).join('');
+                } else if (trainingId === 'corrida') {
+                    title = 'Treino de Corrida';
+                    contentHtml = plan[trainingId].map((item, index) => `
+                         <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                             <p class="font-bold text-gray-800">Sessão ${index + 1} (${item.date}) - ${item.method}</p>
+                             <p class="text-sm text-gray-600 mt-1">${item.details}</p>
+                             <div class="flex justify-between mt-2 text-xs text-gray-500">
+                                 <span>Velocidade: ${item.speed}</span>
+                                 <span>Pace: ${item.pace}</span>
+                             </div>
+                        </div>
+                    `).join('');
+                }
+
                 wrapper.innerHTML = `
-                    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${data.title}</h1>
-                    <div class="space-y-3">${exercisesHtml}</div>
+                    <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${title}</h1>
+                    <div class="space-y-3">${contentHtml}</div>
                 `;
                 
-                feather.replace();
+                if (typeof feather !== 'undefined') feather.replace();
 
                 document.querySelectorAll('.check-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
+                        const icon = e.currentTarget.querySelector('i');
                         e.currentTarget.classList.toggle('text-green-500');
                         e.currentTarget.classList.toggle('text-gray-400');
                     });
@@ -275,40 +426,87 @@
             }
 
             const modal = document.getElementById('aiGeneratorModal'), modalContent = document.getElementById('modal-content'), openModalBtn = document.getElementById('openAiModalBtn'), closeModalBtn = document.getElementById('closeModalBtn'), aiForm = document.getElementById('aiWorkoutForm'), aiLoader = document.getElementById('aiLoader'), aiResult = document.getElementById('aiResult'), aiResultContent = document.getElementById('aiResultContent');
-            const openModal = () => { modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95', 'opacity-0'); }, 10); };
-            const closeModal = () => { modalContent.classList.add('scale-95', 'opacity-0'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); aiResult.classList.add('hidden'); aiLoader.classList.add('hidden'); aiForm.reset(); }, 300); };
-            openModalBtn.addEventListener('click', openModal);
-            closeModalBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
-            aiForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                aiResult.classList.add('hidden');
-                aiLoader.classList.remove('hidden');
-                const goal = document.getElementById('goal').value, muscle_group = document.getElementById('muscle_group').value, duration = document.getElementById('duration').value;
-                const prompt = `Crie um treino de ${duration} minutos com foco em ${goal} para o grupo muscular: ${muscle_group}. O treino é para um aluno de nível intermediário. Liste os exercícios com número de séries, repetições e tempo de descanso. Formate a resposta como uma lista clara e simples, usando Markdown para negrito e listas. Não inclua títulos desnecessários, apenas a lista de exercícios.`;
-                aiResultContent.innerText = await callGemini(prompt);
-                aiLoader.classList.add('hidden');
-                aiResult.classList.remove('hidden');
-            });
+            if (modal && openModalBtn && closeModalBtn) {
+                const openModal = () => { modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); if(modalContent) modalContent.classList.remove('scale-95', 'opacity-0'); }, 10); };
+                const closeModal = () => { if(modalContent) modalContent.classList.add('scale-95', 'opacity-0'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); if(aiResult) aiResult.classList.add('hidden'); if(aiLoader) aiLoader.classList.add('hidden'); if(aiForm) aiForm.reset(); }, 300); };
+                openModalBtn.addEventListener('click', openModal);
+                closeModalBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+                if (aiForm) {
+                    aiForm.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        if (aiResult) aiResult.classList.add('hidden');
+                        if (aiLoader) aiLoader.classList.remove('hidden');
+                        const goal = document.getElementById('goal').value, muscle_group = document.getElementById('muscle_group').value, duration = document.getElementById('duration').value;
+                        const prompt = `Crie um treino de ${duration} minutos com foco em ${goal} para o grupo muscular: ${muscle_group}. O treino é para um aluno de nível intermediário. Liste os exercícios com número de séries, repetições e tempo de descanso. Formate a resposta como uma lista clara e simples, usando Markdown para negrito e listas. Não inclua títulos desnecessários, apenas a lista de exercícios.`;
+                        if (aiResultContent) aiResultContent.innerText = await callGemini(prompt);
+                        if (aiLoader) aiLoader.classList.add('hidden');
+                        if (aiResult) aiResult.classList.remove('hidden');
+                    });
+                }
+            }
             
             document.querySelectorAll('.back-to-list-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentListScreen')));
             document.querySelectorAll('.back-to-profile-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentProfileScreen')));
 
-            function generateCalendar() {
+            function generateCalendar(email) {
                 const calendarGrid = document.getElementById('calendar-grid');
+                if (!calendarGrid) return;
                 calendarGrid.innerHTML = '';
+                
+                const attendance = database.trainingPlans[email]?.attendance || {};
+
                 const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
                 days.forEach(day => calendarGrid.innerHTML += `<div class="font-bold text-gray-600 text-xs">${day}</div>`);
-                calendarGrid.innerHTML += `<div></div>`; 
+                
+                // Simulating September 2025 which starts on a Monday
+                const firstDayOffset = 1; 
+                for(let i = 0; i < firstDayOffset; i++) {
+                    calendarGrid.innerHTML += `<div></div>`; 
+                }
+                
                 for (let day = 1; day <= 30; day++) {
-                    let specialClass = [3, 9, 15, 21, 27].includes(day) ? 'bg-red-600 text-white font-bold rounded-full' : (day === 24 ? 'bg-gray-800 text-white font-bold rounded-full' : '');
-                    calendarGrid.innerHTML += `<div class="p-2 flex items-center justify-center h-8 ${specialClass}">${day}</div>`;
+                    let dayContent = day;
+                    let specialClass = 'hover:bg-gray-100 rounded-full';
+                    const status = attendance[day.toString()];
+                    
+                    if (status === 'A' || status === 'B') {
+                        specialClass = 'bg-gray-800 text-white font-bold rounded-full';
+                        dayContent = status;
+                    } else if (status === 'F') {
+                        specialClass = 'bg-red-500 text-white font-bold rounded-full';
+                        dayContent = 'F';
+                    }
+
+                    calendarGrid.innerHTML += `<div class="p-2 flex items-center justify-center h-8 ${specialClass}">${dayContent}</div>`;
                 }
             }
 
             // --- App Startup ---
+            showScreen('studentListScreen');
             populateStudentList();
             getDailyTip();
+        }
+
+        // Event listener que inicia o aplicativo com segurança.
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                // Verificação final para garantir que a estrutura básica do HTML existe.
+                if (!document.getElementById('studentListScreen')) {
+                    throw new Error("A estrutura principal do aplicativo (HTML) não foi encontrada.");
+                }
+                mainApp(); // Executa o aplicativo.
+            } catch (error) {
+                console.error("Erro fatal na inicialização:", error);
+                const shell = document.querySelector('.container');
+                if (shell) {
+                     shell.innerHTML = `<div class="p-4 bg-red-100 text-red-700 border border-red-400 rounded-lg m-4">
+                                        <h3 class="font-bold">Erro Crítico ao Carregar</h3>
+                                        <p>O aplicativo não pôde ser iniciado. Por favor, recarregue a página ou contate o suporte.</p>
+                                        <p class="text-xs mt-2">Detalhe: ${error.message}</p>
+                                      </div>`;
+                }
+            }
         });
     </script>
 </body>
