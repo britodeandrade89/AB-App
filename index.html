@@ -142,6 +142,60 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- ======================= TELA TREINOS DE CORRIDA ======================= -->
+            <div id="runningWorkoutsScreen" class="screen">
+                 <div class="p-4 md:p-8 relative">
+                    <button class="back-to-profile-btn p-2 rounded-full hover:bg-gray-200 absolute top-6 left-4 md:top-8 md:left-6">
+                        <i data-feather="arrow-left" class="text-gray-700"></i>
+                    </button>
+                    <div class="pt-12 md:pt-8">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Treinos de Corrida</h1>
+                        <div id="running-workouts-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= TELA PERIODIZAÇÃO ======================= -->
+            <div id="periodizationScreen" class="screen">
+                 <div class="p-4 md:p-8 relative">
+                    <button class="back-to-profile-btn p-2 rounded-full hover:bg-gray-200 absolute top-6 left-4 md:top-8 md:left-6">
+                        <i data-feather="arrow-left" class="text-gray-700"></i>
+                    </button>
+                    <div class="pt-12 md:pt-8">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Periodização</h1>
+                        <div id="periodization-list" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= TELA CONTROLE DE PESO ======================= -->
+            <div id="weightControlScreen" class="screen">
+                 <div class="p-4 md:p-8 relative">
+                    <button class="back-to-profile-btn p-2 rounded-full hover:bg-gray-200 absolute top-6 left-4 md:top-8 md:left-6">
+                        <i data-feather="arrow-left" class="text-gray-700"></i>
+                    </button>
+                    <div class="pt-12 md:pt-8">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Controle de Peso</h1>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                            <h2 class="text-xl font-bold text-gray-700 mb-4">Adicionar Novo Registro</h2>
+                            <div class="flex items-center gap-2">
+                                <input type="number" step="0.1" id="weight-input" placeholder="Ex: 85.5" class="w-full p-3 border border-gray-300 rounded-lg">
+                                <span class="font-semibold text-gray-600">kg</span>
+                                <button id="save-weight-btn" class="bg-red-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-700 transition-colors">Salvar</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6">
+                            <h2 class="text-xl font-bold text-gray-700 mb-4">Evolução do Peso</h2>
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                         <div class="bg-white p-4 rounded-lg border border-gray-200">
+                            <h2 class="text-xl font-bold text-gray-700 mb-4">Histórico de Peso</h2>
+                            <div id="weight-history-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </main>
         
@@ -188,515 +242,336 @@
                 ]
             };
 
+            let currentStudentId = null;
+
             function initializeDatabase() {
                 const today = new Date().toISOString().split('T')[0];
                 const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
                 
-                const rawTreinoA = [
-                    { email: 'britodeandrade@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/dMXSfHrCe2BQAKRvIvIg.png', name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lik7g55hYpUjX2Rs6ASg.png', name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/CGVAnjor7i6F1Xj1IQoK.png', name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/WyYlLuQ2Ch6WAXdVcwHL.png', name: 'Supino inclinado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de cotovelos no solo (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC no banco 75º (CONJUGADO 2)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo aberto na máquina (CONJUGADO 2)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Crucifixo aberto com HBC no banco 75º', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/dMXSfHrCe2BQAKRvIvIg.png', name: 'Agachamento parcial no Smith', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lik7g55hYpUjX2Rs6ASg.png', name: 'Agachamento Livre com HBC', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/CGVAnjor7i6F1Xj1IQoK.png', name: 'Cadeira extensora', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/WyYlLuQ2Ch6WAXdVcwHL.png', name: 'Supino inclinado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Extensão de cotovelos no solo (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lSKqgGqYChpRHitndPVZ.png', name: 'Cadeira extensora', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/TYYs8dYewPrOA5MB0LKt.png', name: 'Leg press horizontal', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Abdominal supra no banco reto ou inclinado 30º', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/7yRR2CeoHxGPlbi3mw89.png', name: 'Leg press horizontal + flexão plantar', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Desenvolvimento aberto com HBC no banco 75º', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/lSKqgGqYChpRHitndPVZ.png', name: 'Cadeira extensora', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/TYYs8dYewPrOA5MB0LKt.png', name: 'Leg press horizontal', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', img: 'https://placehold.co/80x80/e0e0e0/333?text=EX', name: 'Abdominal supra no banco reto ou inclinado 30º', details: '3 Séries | 15 Rep | REC 30"' },
-                ];
-                const rawTreinoB = [
-                    { email: 'britodeandrade@gmail.com', name: 'Agachamento sumô com HBC', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Stiff em pé com HBM', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Extensão de quadril com caneleira', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Remada curvada aberta com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Crucifixo inverso curvado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Crucifixo inverso na máquina', details: '6 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Puxada aberta no pulley alto', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'britodeandrade@gmail.com', name: 'Bíceps em pé no cross barra reta', details: '6 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Agachamento sumô com HBC', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Stiff em pé com HBM', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Extensão de quadril com caneleira', details: '4 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Remada curvada aberta com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Crucifixo inverso curvado com HBC (CONJUGADO 1)', details: '3 Séries | 10 Rep | REC 30"' },
-                    { email: 'marcellybispo92@gmail.com', name: 'Crucifixo inverso na máquina', details: '6 Séries | 10 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Extensão de quadril em pé (caneleira) ou máquina', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Remada aberta sentada em máquina', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Cadeira abdutora', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Puxada aberta no pulley alto', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Cadeira flexora', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'andrademarcia.ucam@gmail.com', name: 'Equilíbrio unilateral em pé em isometria', details: '3 Séries | 15 segundos | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', img: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/u3PKU8ZtUUSdtG0c9g6A.png', name: 'Extensão de quadril em pé com caneleira', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', name: 'Remada aberta sentada em máquina', details: '3 Séries | 15 Rep | REC 30"' },
-                    { email: 'lilicatorres@gmail.com', name: 'Cadeira abdutora', details: '3 Séries | 15 Rep | REC 30"' },
-                ];
+                // Inicializar dados de peso para demonstração
+                database.trainingPlans['britodeandrade@gmail.com'] = {
+                    weight: [
+                        { date: '2025-09-20', value: 85.2 },
+                        { date: '2025-09-22', value: 84.8 },
+                        { date: '2025-09-24', value: 84.5 },
+                        { date: today, value: 84.3 }
+                    ]
+                };
                 
-                const processExercises = (rawExercises) => rawExercises.map(ex => ({ ...ex, img: ex.img || 'https://placehold.co/80x80/e0e0e0/333?text=EX', carga: ex.carga || 0, cargaHistoria: [], completed: false }));
-                const allExercisesA = processExercises(rawTreinoA);
-                const allExercisesB = processExercises(rawTreinoB);
-
-                database.users.forEach(user => {
-                    database.trainingPlans[user.email] = {
-                        'A': allExercisesA.filter(ex => ex.email === user.email),
-                        'B': allExercisesB.filter(ex => ex.email === user.email),
-                        'runningLog': {},
-                        'periodizacao': [
-                            { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia", methods: 'Método de execução Simples', reps: '10', volume: '16 séries/grupo', intensity: '70-75% 1RM', recovery: '60-90s' },
-                            { week: "3ª e 4ª", phase: "Adaptação/Hipertrofia", methods: 'Método de execução Simples', reps: '8-9', volume: '16 séries/grupo', intensity: '70-75% 1RM', recovery: '60-90s' },
-                            { week: "5ª e 6ª", phase: "Força", methods: 'Simples + Rest-Pause', reps: '6-7', volume: '14 séries/grupo', intensity: '80-85% 1RM', recovery: '90-120s' },
-                            { week: "7ª e 8ª", phase: "Força", methods: 'Simples + Rest-Pause', reps: '5-6', volume: '12 séries/grupo', intensity: '80-85% 1RM', recovery: '90-120s' },
-                            { week: "9ª e 10ª", phase: "Hipertrofia", methods: 'Método Pirâmide', reps: '8-10', volume: '15 séries/grupo', intensity: '75-80% 1RM', recovery: '60-90s' },
-                            { week: "11ª e 12ª", phase: "Resistência", methods: 'Drop-set', reps: '12-15', volume: '18 séries/grupo', intensity: '60-70% 1RM', recovery: '30-60s' },
-                            { week: "13ª", phase: "Recuperação Ativa", methods: 'Leve', reps: '15-20', volume: '10 séries/grupo', intensity: '40-50% 1RM', recovery: '30s' }
-                        ],
-                        'attendance': {}
-                    };
-                });
-                
-                database.trainingPlans['britodeandrade@gmail.com'].attendance = { '9': 'A', '12': 'B', '22': 'A', '23': 'B', '24': 'F', '25': 'B' };
+                database.trainingPlans["marcellybispo92@gmail.com"] = {
+                    weight: [
+                        { date: '2025-09-18', value: 62.5 },
+                        { date: '2025-09-21', value: 62.2 },
+                        { date: '2025-09-23', value: 62.0 },
+                        { date: yesterday, value: 61.8 }
+                    ],
+                    runningWorkouts: [
+                        { date: '2025-09-20', type: 'FARTLEK', distance: 5, duration: '00:30:00', avgPace: '6:00/km', completed: true },
+                        { date: '2025-09-22', type: 'INTERVALADO', distance: 4, duration: '00:25:00', avgPace: '6:15/km', completed: false },
+                        { date: '2025-09-24', type: 'LONGÃO', distance: 10, duration: '01:00:00', avgPace: '6:00/km', completed: true }
+                    ],
+                    periodization: [
+                        { month: 'Setembro', year: 2025, focus: 'Resistência', details: 'Foco em treinos de longa duração e intervalados.' },
+                        { month: 'Outubro', year: 2025, focus: 'Força', details: 'Foco em treinos de tiro e subidas.' }
+                    ]
+                };
             }
 
-            let currentStudentId = null;
-            let charts = { A: null, B: null };
-            
             function showScreen(screenId) {
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                const screen = document.getElementById(screenId);
-                if (screen) {
-                    screen.classList.add('active');
-                    document.querySelector('main').scrollTop = 0;
+                document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+                document.getElementById(screenId).classList.add('active');
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
                 }
             }
-            
+
             function populateStudentList() {
                 const container = document.getElementById('student-list-container');
-                if (!container) return;
-
-                container.innerHTML = database.users.map(student => `
-                    <div class="student-card flex items-center p-3 bg-white rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-100 transition shadow-sm" data-student-id="${student.id}">
-                        <img src="${student.photo}" alt="Foto de ${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
-                        <div>
-                            <p class="font-semibold text-gray-800">${student.name}</p>
-                            <span class="text-sm text-gray-500">Ver perfil</span>
+                container.innerHTML = '';
+                
+                database.users.forEach(user => {
+                    const studentCard = document.createElement('div');
+                    studentCard.className = 'bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer';
+                    studentCard.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${user.photo}" alt="${user.name}" class="w-12 h-12 rounded-full object-cover mr-4">
+                            <div>
+                                <h3 class="font-semibold text-gray-800">${user.name}</h3>
+                                <p class="text-sm text-gray-600">${user.email}</p>
+                            </div>
                         </div>
-                        <i data-feather="chevron-right" class="ml-auto text-gray-400"></i>
-                    </div>
-                `).join('');
-                if (typeof feather !== 'undefined') feather.replace();
-                document.querySelectorAll('.student-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        populateStudentProfile(e.currentTarget.dataset.studentId);
+                    `;
+                    studentCard.addEventListener('click', () => {
+                        currentStudentId = user.id;
+                        populateStudentProfile(user.id);
                         showScreen('studentProfileScreen');
                     });
+                    container.appendChild(studentCard);
                 });
             }
 
-            function populateStudentProfile(studentId) {
-                currentStudentId = studentId;
-                const student = database.users.find(s => s.id == studentId);
-                if (!student) return;
-                
-                const studentPlan = database.trainingPlans[student.email];
-                if (studentPlan) {
-                    ['A', 'B'].forEach(planKey => {
-                        if (studentPlan[planKey]) {
-                            studentPlan[planKey].forEach(ex => ex.completed = false);
-                        }
-                    });
-                }
+            function populateStudentProfile(userId) {
+                const user = database.users.find(u => u.id === userId);
+                if (!user) return;
 
-                const infoContainer = document.getElementById('student-profile-info');
-                infoContainer.innerHTML = `<img src="${student.photo}" alt="Foto de ${student.name}" class="w-16 h-16 rounded-full object-cover shadow-md"><h2 class="text-2xl font-bold text-gray-800 ml-4">${student.name}</h2>`;
-                
-                const buttons = [
-                    { id: 'A', name: 'Treino A', icon: 'check-square' },
-                    { id: 'B', name: 'Treino B', icon: 'check-square' },
-                    { id: 'corrida', name: 'Treino de corrida', icon: 'trending-up' },
-                    { id: 'periodizacao', name: 'Periodização', icon: 'calendar' },
-                    { id: 'evolution', name: 'Evolução de Carga', icon: 'bar-chart-2'}
-                ];
-
-                const buttonsContainer = document.getElementById('student-profile-buttons');
-                buttonsContainer.innerHTML = buttons.map(btn => {
-                    let bgColor = '';
-                    if (btn.id === 'A') {
-                        bgColor = 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100';
-                    } else if (btn.id === 'B') {
-                        bgColor = 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100';
-                    } else if (btn.id === 'evolution') {
-                        bgColor = 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100';
-                    } else {
-                        bgColor = 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
-                    }
-                    return `<button class="profile-btn flex items-center justify-start text-left p-4 rounded-lg border ${bgColor} transition" data-btn-id="${btn.id}"><i data-feather="${btn.icon}" class="w-5 h-5 mr-3"></i><span class="font-semibold">${btn.name}</span></button>`
-                }).join('');
-                
-                feather.replace();
-                generateCalendar(student.email);
-
-                document.querySelectorAll('.profile-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const btnId = e.currentTarget.dataset.btnId;
-                        if(btnId === 'evolution') {
-                            showScreen('evolutionScreen');
-                            populateEvolutionScreen(student.email);
-                        } else {
-                            showScreen('trainingScreen');
-                            populateTrainingScreen(student.email, btnId);
-                        }
-                    });
-                });
-            }
-            
-            function populateTrainingScreen(email, trainingId) {
-                const plan = database.trainingPlans[email];
-                const wrapper = document.getElementById('training-content-wrapper');
-                if (!plan || !wrapper) return;
-
-                let contentHtml = '', title = '';
-
-                if (trainingId === 'A' || trainingId === 'B') {
-                    title = `Treino ${trainingId}`;
-                    contentHtml = (plan[trainingId] || []).map((ex, index) => {
-                        const cardStateClasses = ex.completed ? 'bg-green-50 border-green-200 opacity-70' : 'bg-white border-gray-200';
-                        const iconState = ex.completed ? '<i data-feather="check-circle" class="text-green-500"></i>' : '<i data-feather="chevron-right" class="text-gray-400"></i>';
-                        return `
-                        <div class="exercise-card ${cardStateClasses} p-4 rounded-lg border shadow-sm flex items-start gap-4 cursor-pointer hover:shadow-md transition-shadow" data-email="${email}" data-training-id="${trainingId}" data-index="${index}">
-                            <img src="${ex.img}" alt="Imagem do exercício" class="w-20 h-20 object-cover rounded-lg bg-gray-200 pointer-events-none">
-                            <div class="flex-grow pointer-events-none">
-                                <p class="font-bold text-gray-800">${index + 1}. ${ex.name}</p>
-                                <p class="text-sm text-gray-600 mt-1">${ex.details}</p>
-                                <p class="text-sm text-red-600 font-semibold mt-1">Carga Atual: ${ex.carga} kg</p>
-                            </div>
-                            <div class="self-center pointer-events-none">${iconState}</div>
-                        </div>`;
-                    }).join('');
-                } else if (trainingId === 'corrida') {
-                    const now = new Date(2025, 8, 26);
-                    const year = now.getFullYear();
-                    const month = now.getMonth();
-                    const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(now);
-                    title = `Treinos de Corrida - ${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`;
-
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const runningLog = plan.runningLog || {};
-
-                    let monthScheduleHtml = '';
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const date = new Date(year, month, day);
-                        const dateStr = date.toISOString().split('T')[0];
-                        const workoutIndex = (day - 1) % database.baseRunningWorkouts.length;
-                        const workout = database.baseRunningWorkouts[workoutIndex];
-                        const logData = runningLog[dateStr];
-
-                        const completedClass = logData ? 'bg-green-50' : 'bg-white';
-                        const logDetailsHtml = logData 
-                            ? `<div class="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-600 grid grid-cols-2 gap-1">
-                                <span><b>Distância:</b> ${logData.distance} km</span>
-                                <span><b>Pace:</b> ${logData.pace} /km</span>
-                                <span><b>Tempo:</b> ${logData.time.min}m ${logData.time.sec}s</span>
-                                <span><b>Kcal:</b> ${logData.kcal}</span>
-                               </div>` 
-                            : '';
-
-                        monthScheduleHtml += `
-                            <div class="running-session-card ${completedClass} p-4 rounded-lg border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" data-email="${email}" data-date="${dateStr}" data-workout-index="${workoutIndex}">
-                                <h3 class="font-bold text-gray-800">${String(day).padStart(2,'0')}/${String(month + 1).padStart(2,'0')} - ${workout.method}</h3>
-                                <p class="text-sm text-gray-600 mt-1 whitespace-pre-wrap">${workout.details}</p>
-                                ${logDetailsHtml}
-                            </div>
-                        `;
-                    }
-                    contentHtml = monthScheduleHtml;
-                } else if (trainingId === 'periodizacao') {
-                    title = 'Resumo da Periodização';
-                    contentHtml = (plan.periodizacao || []).map((item) => `
-                        <div class="periodization-item bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                            <div class="periodization-header p-4 cursor-pointer flex justify-between items-center hover:bg-gray-50">
-                                <p class="font-bold text-gray-800">${item.week} - ${item.phase}</p>
-                                <i data-feather="chevron-down" class="transition-transform"></i>
-                            </div>
-                            <div class="periodization-details p-4 border-t border-gray-200 hidden text-sm text-gray-600 space-y-1">
-                                <p><b>Métodos:</b> ${item.methods || 'N/A'}</p>
-                                <p><b>Repetições:</b> ${item.reps || 'N/A'}</p>
-                                <p><b>Volume:</b> ${item.volume || 'N/A'}</p>
-                                <p><b>Intensidade:</b> ${item.intensity || 'N/A'}</p>
-                                <p><b>Recuperação:</b> ${item.recovery || 'N/A'}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-                
-                wrapper.innerHTML = `<h1 class="text-2xl font-bold text-center text-gray-800 mb-4">${title}</h1><div class="space-y-3">${contentHtml}</div>`;
-                feather.replace();
-                
-                wrapper.querySelectorAll('.exercise-card, .running-session-card').forEach(card => {
-                    card.addEventListener('click', (e) => {
-                        const target = e.currentTarget;
-                        if (target.classList.contains('exercise-card')) {
-                            openExerciseModal(target.dataset.email, target.dataset.trainingId, parseInt(target.dataset.index));
-                        } else {
-                            openRunningLogModal(target.dataset.email, target.dataset.date, parseInt(target.dataset.workoutIndex));
-                        }
-                    });
-                });
-                
-                wrapper.querySelectorAll('.periodization-header').forEach(header => {
-                    header.addEventListener('click', (e) => {
-                        const details = e.currentTarget.nextElementSibling;
-                        const icon = e.currentTarget.querySelector('i');
-                        details.classList.toggle('hidden');
-                        icon.classList.toggle('rotate-180');
-                    });
-                });
-            }
-
-            function openExerciseModal(email, trainingId, index) {
-                const exercise = database.trainingPlans[email]?.[trainingId]?.[index];
-                if (!exercise) return;
-                
-                const modalBody = document.getElementById('exercise-modal-body');
-                modalBody.innerHTML = `
-                    <img src="${exercise.img}" alt="${exercise.name}" class="w-full h-48 object-cover rounded-lg mb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">${exercise.name}</h2>
-                    <p class="text-gray-600 mt-1">${exercise.details}</p>
-                    <hr class="my-4">
-                    <div class="bg-gray-100 p-3 rounded-lg mb-4">
-                        <p class="text-sm font-medium text-gray-600">Última Carga Registrada</p>
-                        <p class="text-lg font-bold text-gray-800">${exercise.carga} kg</p>
+                const profileInfo = document.getElementById('student-profile-info');
+                profileInfo.innerHTML = `
+                    <img src="${user.photo}" alt="${user.name}" class="w-16 h-16 rounded-full object-cover mr-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">${user.name}</h2>
+                        <p class="text-gray-600">${user.email}</p>
                     </div>
-                    <div class="space-y-2">
-                        <label for="load-input" class="text-sm font-medium text-gray-600">Registrar Carga de Hoje (kg)</label>
-                        <div class="flex items-center gap-2">
-                            <button id="decrease-load" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">-</button>
-                            <input type="number" id="load-input" value="${exercise.carga}" class="w-full p-2 text-center font-bold text-lg border border-gray-300 rounded-lg">
-                            <button id="increase-load" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">+</button>
-                        </div>
-                    </div>
-                    <button id="save-load-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md mt-4">Salvar Carga</button>
-                    <button id="get-technique-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-md mt-2">✨ Analisar Técnica</button>
                 `;
 
-                const modal = document.getElementById('exerciseDetailModal');
-                const modalContent = document.getElementById('exercise-modal-content');
-                modal.classList.remove('hidden', 'opacity-0');
-                setTimeout(() => modalContent.classList.remove('scale-95', 'opacity-0'), 10);
+                const buttonsContainer = document.getElementById('student-profile-buttons');
+                buttonsContainer.innerHTML = `
+                    <button class="bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md" onclick="showTraining('A')">
+                        Treino A
+                    </button>
+                    <button class="bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md" onclick="showTraining('B')">
+                        Treino B
+                    </button>
+                    <button class="bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors shadow-md" onclick="showEvolution()">
+                        Evolução
+                    </button>
+                    <button class="bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors shadow-md" onclick="showWeightControl()">
+                        Controle de Peso
+                    </button>
+                    <button class="bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-700 transition-colors shadow-md" onclick="showRunningWorkouts()">
+                        Treinos de Corrida
+                    </button>
+                    <button class="bg-yellow-600 text-white font-bold py-3 rounded-lg hover:bg-yellow-700 transition-colors shadow-md" onclick="showPeriodization()">
+                        Periodização
+                    </button>
+                `;
+            }
+
+            function populateWeightControlScreen(email) {
+                const weightData = database.trainingPlans[email]?.weight || [];
                 
-                document.getElementById('decrease-load').addEventListener('click', () => { /* ... */ });
-                document.getElementById('increase-load').addEventListener('click', () => { /* ... */ });
-                document.getElementById('save-load-btn').addEventListener('click', () => { /* ... */ });
-            }
-            
-            function openRunningLogModal(email, dateStr, workoutIndex) {
-                 const workout = database.baseRunningWorkouts[workoutIndex];
-                 const log = database.trainingPlans[email].runningLog[dateStr] || {};
-                 const modalBody = document.getElementById('running-log-modal-body');
-
-                 modalBody.innerHTML = `
-                     <h2 class="text-xl font-bold text-gray-800">${new Date(dateStr + 'T00:00:00').toLocaleDateString('pt-BR')} - ${workout.method}</h2>
-                     <p class="text-sm text-gray-600 mt-1 mb-4 whitespace-pre-wrap">${workout.details}</p>
-                     <hr class="my-4">
-                     <div class="grid grid-cols-2 gap-4">
-                         <div>
-                             <label class="text-sm font-medium text-gray-600">Distância (km)</label>
-                             <input type="number" id="run-distance" value="${log.distance || ''}" class="w-full mt-1 p-2 border rounded-lg">
-                         </div>
-                          <div>
-                             <label class="text-sm font-medium text-gray-600">Kcal Gastas</label>
-                             <input type="number" id="run-kcal" value="${log.kcal || ''}" class="w-full mt-1 p-2 border rounded-lg">
-                         </div>
-                         <div>
-                             <label class="text-sm font-medium text-gray-600">Tempo (min)</label>
-                             <input type="number" id="run-time-min" value="${log.time?.min || ''}" class="w-full mt-1 p-2 border rounded-lg">
-                         </div>
-                         <div>
-                             <label class="text-sm font-medium text-gray-600">Tempo (seg)</label>
-                             <input type="number" id="run-time-sec" value="${log.time?.sec || ''}" class="w-full mt-1 p-2 border rounded-lg">
-                         </div>
-                     </div>
-                     <div class="mt-4 bg-gray-100 p-3 rounded-lg">
-                         <p class="text-sm font-medium text-gray-600">Pace Calculado</p>
-                         <p id="run-pace" class="text-lg font-bold text-gray-800">${log.pace || '0:00 /km'}</p>
-                     </div>
-                     <button id="save-run-log-btn" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition-colors shadow-md mt-4">Salvar Registro</button>
-                 `;
-
-                 const modal = document.getElementById('runningLogModal');
-                 const modalContent = document.getElementById('running-modal-content');
-                 modal.classList.remove('hidden', 'opacity-0');
-                 setTimeout(() => modalContent.classList.remove('scale-95', 'opacity-0'), 10);
-
-                 const distInput = document.getElementById('run-distance');
-                 const minInput = document.getElementById('run-time-min');
-                 const secInput = document.getElementById('run-time-sec');
-                 const paceDisplay = document.getElementById('run-pace');
-
-                 function calculatePace() {
-                     const dist = parseFloat(distInput.value) || 0;
-                     const min = parseInt(minInput.value) || 0;
-                     const sec = parseInt(secInput.value) || 0;
-                     if (dist <= 0 || (min === 0 && sec === 0)) {
-                         paceDisplay.textContent = '0:00 /km';
-                         return;
-                     }
-                     const totalSeconds = (min * 60) + sec;
-                     const paceSeconds = totalSeconds / dist;
-                     const paceMin = Math.floor(paceSeconds / 60);
-                     const paceSec = Math.round(paceSeconds % 60);
-                     paceDisplay.textContent = `${paceMin}:${String(paceSec).padStart(2, '0')} /km`;
-                 }
-
-                 [distInput, minInput, secInput].forEach(el => el.addEventListener('input', calculatePace));
-
-                 document.getElementById('save-run-log-btn').addEventListener('click', () => {
-                      database.trainingPlans[email].runningLog[dateStr] = {
-                         kcal: parseInt(document.getElementById('run-kcal').value) || 0,
-                         distance: parseFloat(distInput.value) || 0,
-                         time: {
-                             min: parseInt(minInput.value) || 0,
-                             sec: parseInt(secInput.value) || 0
-                         },
-                         pace: paceDisplay.textContent
-                     };
-                     closeRunningLogModal();
-                     populateTrainingScreen(email, 'corrida');
-                 });
-             }
-
-            function closeRunningLogModal() {
-                const modal = document.getElementById('runningLogModal');
-                const modalContent = document.getElementById('running-modal-content');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                modal.classList.add('opacity-0');
-                setTimeout(() => modal.classList.add('hidden'), 300);
-            }
-
-            function populateEvolutionScreen(email) {
-                const plan = database.trainingPlans[email];
-                if (!plan) return;
-
-                const generateChart = (canvasId, trainingType) => {
-                    const ctx = document.getElementById(canvasId);
-                    if(!ctx) return;
-                    const chartContext = ctx.getContext('2d');
-                    const exercises = plan[trainingType] || [];
-
-                    if (charts[trainingType]) {
-                        charts[trainingType].destroy();
-                    }
-
-                    const datasets = exercises
-                        .filter(ex => ex.cargaHistoria && ex.cargaHistoria.length > 0)
-                        .map((ex, index) => {
-                            const color = `hsl(${(index * 60) % 360}, 70%, 50%)`;
-                            return {
-                                label: ex.name,
-                                data: ex.cargaHistoria.map(h => ({ x: h.data, y: h.peso })),
-                                borderColor: color,
-                                backgroundColor: color,
-                                fill: false,
-                                tension: 0.1
-                            };
-                        });
-                    
-                    const allDates = [...new Set(datasets.flatMap(ds => ds.data.map(d => d.x)))].sort();
-                    
-                    charts[trainingType] = new Chart(chartContext, {
-                        type: 'line',
-                        data: {
-                            labels: allDates,
-                            datasets: datasets
+                // Atualizar gráfico
+                const ctx = document.getElementById('weightChart').getContext('2d');
+                
+                // Destruir gráfico existente se houver
+                if (window.weightChart && typeof window.weightChart.destroy === 'function') {
+                    window.weightChart.destroy();
+                }
+                
+                window.weightChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: weightData.map(w => new Date(w.date).toLocaleDateString('pt-BR')),
+                        datasets: [{
+                            label: 'Peso (kg)',
+                            data: weightData.map(w => w.value),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                x: {
-                                    type: 'time',
-                                    time: { unit: 'day', tooltipFormat: 'dd/MM/yy' },
-                                    title: { display: true, text: 'Data' }
-                                },
-                                y: {
-                                    beginAtZero: true,
-                                    title: { display: true, text: 'Carga (kg)' }
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Peso (kg)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Data'
                                 }
                             }
                         }
+                    }
+                });
+
+                // Atualizar histórico
+                const historyList = document.getElementById('weight-history-list');
+                historyList.innerHTML = '';
+                
+                const sortedWeights = [...weightData].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                sortedWeights.forEach((weight, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'flex justify-between items-center p-3 bg-gray-50 rounded-lg';
+                    
+                    const difference = index < sortedWeights.length - 1 ? 
+                        (weight.value - sortedWeights[index + 1].value).toFixed(1) : null;
+                    
+                    let differenceText = '';
+                    if (difference !== null) {
+                        const sign = difference > 0 ? '+' : '';
+                        const color = difference > 0 ? 'text-red-600' : 'text-green-600';
+                        differenceText = `<span class="${color} text-sm">(${sign}${difference} kg)</span>`;
+                    }
+                    
+                    historyItem.innerHTML = `
+                        <div>
+                            <span class="font-semibold">${weight.value} kg</span>
+                            ${differenceText}
+                        </div>
+                        <span class="text-gray-600 text-sm">${new Date(weight.date).toLocaleDateString('pt-BR')}</span>
+                    `;
+                    historyList.appendChild(historyItem);
+                });
+            }
+
+            // Funções globais para os botões
+            window.showTraining = function(type) {
+                showScreen('trainingScreen');
+            };
+
+            window.showEvolution = function() {
+                showScreen('evolutionScreen');
+            };
+
+            window.showWeightControl = function() {
+                const user = database.users.find(u => u.id === currentStudentId);
+                if (user) {
+                    populateWeightControlScreen(user.email);
+                    showScreen("weightControlScreen");
+                }
+            };
+
+            window.showRunningWorkouts = function() {
+                const user = database.users.find(u => u.id === currentStudentId);
+                if (user) {
+                    populateRunningWorkoutsScreen(user.email);
+                    showScreen("runningWorkoutsScreen");
+                }
+            };
+
+            window.showPeriodization = function() {
+                const user = database.users.find(u => u.id === currentStudentId);
+                if (user) {
+                    populatePeriodizationScreen(user.email);
+                    showScreen("periodizationScreen");
+                }
+            };
+
+            function populateRunningWorkoutsScreen(email) {
+                const runningWorkouts = database.trainingPlans[email]?.runningWorkouts || [];
+                const container = document.getElementById("running-workouts-list");
+                container.innerHTML = "";
+
+                if (runningWorkouts.length === 0) {
+                    container.innerHTML = 
+                        `<p class="text-gray-600 text-center">Nenhum treino de corrida registrado para este aluno.</p>`;
+                    return;
+                }
+
+                runningWorkouts.forEach(workout => {
+                    const workoutItem = document.createElement("div");
+                    workoutItem.className = "bg-white p-4 rounded-lg border border-gray-200 shadow-sm";
+                    workoutItem.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-lg text-gray-800">${workout.type}</h3>
+                            <span class="text-sm text-gray-600">${new Date(workout.date).toLocaleDateString("pt-BR")}</span>
+                        </div>
+                        <p class="text-gray-700 mb-1">Distância: ${workout.distance} km</p>
+                        <p class="text-gray-700 mb-1">Duração: ${workout.duration}</p>
+                        <p class="text-gray-700 mb-2">Pace Médio: ${workout.avgPace}</p>
+                        <div class="flex items-center">
+                            <input type="checkbox" ${workout.completed ? "checked" : ""} disabled
+                                class="form-checkbox h-5 w-5 text-red-600 rounded focus:ring-red-500">
+                            <span class="ml-2 text-gray-700">Concluído</span>
+                        </div>
+                    `;
+                    container.appendChild(workoutItem);
+                });
+            }
+
+            function populatePeriodizationScreen(email) {
+                const periodizationData = database.trainingPlans[email]?.periodization || [];
+                const container = document.getElementById("periodization-list");
+                container.innerHTML = "";
+
+                if (periodizationData.length === 0) {
+                    container.innerHTML = 
+                        `<p class="text-gray-600 text-center">Nenhuma periodização registrada para este aluno.</p>`;
+                    return;
+                }
+
+                periodizationData.forEach(period => {
+                    const periodItem = document.createElement("div");
+                    periodItem.className = "bg-white p-4 rounded-lg border border-gray-200 shadow-sm";
+                    periodItem.innerHTML = `
+                        <h3 class="font-bold text-lg text-gray-800 mb-2">${period.month} ${period.year}</h3>
+                        <p class="text-gray-700 mb-1">Foco: ${period.focus}</p>
+                        <p class="text-gray-600 text-sm">${period.details}</p>
+                    `;
+                    container.appendChild(periodItem);
+                });
+            }
+
+            // Event listeners
+            document.getElementById('save-weight-btn').addEventListener('click', () => {
+                const weightInput = document.getElementById('weight-input');
+                const newWeight = parseFloat(weightInput.value);
+                const user = database.users.find(u => u.id === currentStudentId);
+
+                if (newWeight > 0 && user) {
+                    const today = new Date().toISOString().split('T')[0];
+                    
+                    // Inicializar estrutura se não existir
+                    if (!database.trainingPlans[user.email]) {
+                        database.trainingPlans[user.email] = { weight: [] };
+                    } else if (!database.trainingPlans[user.email].weight) {
+                        database.trainingPlans[user.email].weight = [];
+                    }
+                    
+                    // Adicionar novo peso
+                    database.trainingPlans[user.email].weight.push({ 
+                        date: today, 
+                        value: newWeight 
                     });
-                };
-                
-                generateChart('treinoAChart', 'A');
-                generateChart('treinoBChart', 'B');
-            }
-
-            function closeExerciseModal() {
-                const modal = document.getElementById('exerciseDetailModal');
-                const modalContent = document.getElementById('exercise-modal-content');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                modal.classList.add('opacity-0');
-                setTimeout(() => modal.classList.add('hidden'), 300);
-            }
-
-            function generateCalendar(email) {
-                const calendarGrid = document.getElementById('calendar-grid');
-                if (!calendarGrid) return;
-                calendarGrid.innerHTML = '';
-                
-                const attendance = database.trainingPlans[email]?.attendance || {};
-                const today = new Date();
-                const currentDay = 25; // Hardcoded for September 2025
-                
-                const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                days.forEach(day => calendarGrid.innerHTML += `<div class="font-bold text-gray-600 text-xs">${day}</div>`);
-                
-                const firstDayOffset = 1; 
-                for(let i = 0; i < firstDayOffset; i++) {
-                    calendarGrid.innerHTML += `<div></div>`; 
-                }
-                
-                for (let day = 1; day <= 30; day++) {
-                    const isToday = day === currentDay;
-                    let dayContent = day;
-                    let specialClass = 'hover:bg-gray-100 rounded-full flex items-center justify-center h-9';
                     
-                    if (isToday) {
-                        specialClass += ' ring-2 ring-red-500';
-                    }
-
-                    const status = attendance[day.toString()];
+                    // Limpar input
+                    weightInput.value = '';
                     
-                    if (status === 'A') {
-                        dayContent = 'A';
-                        specialClass += ' bg-blue-500 text-white font-bold';
-                    } else if (status === 'B') {
-                        dayContent = 'B';
-                        specialClass += ' bg-green-500 text-white font-bold';
-                    } else if (status === 'F') {
-                        dayContent = 'F';
-                        specialClass += ' bg-red-500 text-white font-bold';
-                    }
-
-                    calendarGrid.innerHTML += `<div class="${specialClass}">${dayContent}</div>`;
+                    // Atualizar tela
+                    populateWeightControlScreen(user.email);
+                    
+                    // Feedback visual
+                    const saveBtn = document.getElementById('save-weight-btn');
+                    const originalText = saveBtn.textContent;
+                    saveBtn.textContent = 'Salvo!';
+                    saveBtn.classList.add('bg-green-600');
+                    saveBtn.classList.remove('bg-red-600');
+                    
+                    setTimeout(() => {
+                        saveBtn.textContent = originalText;
+                        saveBtn.classList.remove('bg-green-600');
+                        saveBtn.classList.add('bg-red-600');
+                    }, 1500);
+                } else {
+                    alert('Por favor, insira um peso válido.');
                 }
-            }
+            });
             
-            document.querySelectorAll('.back-to-list-btn').forEach(btn => btn.addEventListener('click', () => showScreen('studentListScreen')));
-            document.querySelectorAll('.back-to-profile-btn').forEach(btn => btn.addEventListener('click', () => {
-                populateStudentProfile(currentStudentId);
-                showScreen('studentProfileScreen');
-            }));
-            document.getElementById('closeExerciseModalBtn').addEventListener('click', closeExerciseModal);
-            document.getElementById('closeRunningLogModalBtn').addEventListener('click', closeRunningLogModal);
+            document.querySelectorAll('.back-to-list-btn').forEach(btn => 
+                btn.addEventListener('click', () => showScreen('studentListScreen'))
+            );
             
+            document.querySelectorAll('.back-to-profile-btn').forEach(btn => 
+                btn.addEventListener('click', () => {
+                    populateStudentProfile(currentStudentId);
+                    showScreen('studentProfileScreen');
+                })
+            );
+
+            // Inicialização
             initializeDatabase();
             showScreen('studentListScreen');
             populateStudentList();
