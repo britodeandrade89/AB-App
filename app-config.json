@@ -1,0 +1,47 @@
+{
+  "app": {
+    "name": "AB Fit",
+    "version": "1.0.0",
+    "description": "Assessoria de Treinamento Físico por André Brito",
+    "author": "André Brito",
+    "theme": {
+      "primary": "#111827",
+      "secondary": "#ef4444",
+      "accent": "#3b82f6"
+    }
+  },
+  "features": {
+    "trainingPlans": true,
+    "runningWorkouts": true,
+    "weightTracking": true,
+    "physicalAssessment": true,
+    "outdoorActivities": true,
+    "offlineSupport": true,
+    "pwa": true
+  },
+  "api": {
+    "gemini": {
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent",
+      "features": ["daily_tips", "exercise_analysis"]
+    },
+    "weather": {
+      "endpoint": "https://api.open-meteo.com/v1/forecast",
+      "params": "current=apparent_temperature"
+    }
+  },
+  "storage": {
+    "keys": {
+      "database": "abfit_database",
+      "pending_sync": "abfit_pending_sync",
+      "last_sync": "abfit_last_sync",
+      "current_user": "abfit_current_user",
+      "outdoor_workouts": "abfit_outdoor_workouts",
+      "physio_alunos": "abfit_physio_alunos"
+    }
+  },
+  "training": {
+    "periodization_weeks": 13,
+    "default_reps": 10,
+    "recovery_time": "30-90s"
+  }
+}
