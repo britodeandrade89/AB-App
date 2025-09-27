@@ -1,0 +1,35 @@
+{
+  "name": "ab-fit-webapp",
+  "version": "1.0.0",
+  "description": "Sistema completo de assessoria esportiva com treinos, avaliações físicas e atividades outdoor",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "fitness",
+    "training",
+    "workout",
+    "pwa",
+    "mobile-app",
+    "sports"
+  ],
+  "author": "André Brito",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^4.4.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.3.0",
+    "feather-icons": "^4.29.0",
+    "leaflet": "^1.9.4"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "not dead"
+  ]
+}
