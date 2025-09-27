@@ -1,0 +1,397 @@
+<script type="module">
+    // --- DATABASE COMPLETA ---
+    const database = {
+        users: [
+            { id: 1, name: 'André Brito', email: 'britodeandrade@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg' },
+            { id: 2, name: 'Marcelly Bispo', email: 'marcellybispo92@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg' },
+            { id: 3, name: 'Marcia Brito', email: 'andrademarcia.ucam@gmail.com', photo: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg' },
+            { id: 4, name: 'Liliane Torres', email: 'lilicatorres@gmail.com', photo: 'https://i.ibb.co/7j6x0gG/liliane-torres.jpg' }
+        ],
+        
+        trainingPlans: {
+            'britodeandrade@gmail.com': {
+                'A': [
+                    { id: 1, name: 'Supino Reto', series: '4x10', carga: 70, img: 'https://via.placeholder.com/80x80/3b82f6/ffffff?text=SR', history: [] },
+                    { id: 2, name: 'Agachamento Livre', series: '4x12', carga: 100, img: 'https://via.placeholder.com/80x80/10b981/ffffff?text=AL', history: [] }
+                ],
+                'B': [
+                    { id: 1, name: 'Levantamento Terra', series: '4x8', carga: 120, img: 'https://via.placeholder.com/80x80/8b5cf6/ffffff?text=LT', history: [] },
+                    { id: 2, name: 'Rosca Direta', series: '3x12', carga: 25, img: 'https://via.placeholder.com/80x80/06b6d4/ffffff?text=RD', history: [] }
+                ],
+                'periodizacao': [
+                    { week: "1ª e 2ª", phase: "Adaptação/Hipertrofia", methods: 'Método de execução Simples', reps: '10-12', volume: '16 séries/grupo', intensity: '70-75% 1RM', recovery: '60-90s' }
+                ],
+                'attendance': {}
+            },
+            'marcellybispo92@gmail.com': {
+                'A': [
+                    { id: 1, name: 'Leg Press', series: '4x15', carga: 80, img: 'https://via.placeholder.com/80x80/3b82f6/ffffff?text=LP', history: [] },
+                    { id: 2, name: 'Cadeira Extensora', series: '3x15', carga: 40, img: 'https://via.placeholder.com/80x80/10b981/ffffff?text=CE', history: [] }
+                ],
+                'B': [
+                    { id: 1, name: 'Puxada Alta', series: '4x12', carga: 45, img: 'https://via.placeholder.com/80x80/8b5cf6/ffffff?text=PA', history: [] },
+                    { id: 2, name: 'Remada Baixa', series: '3x12', carga: 50, img: 'https://via.placeholder.com/80x80/06b6d4/ffffff?text=RB', history: [] }
+                ],
+                'periodizacao': [
+                    { week: "1ª e 2ª", phase: "Adaptação", methods: 'Execução Controlada', reps: '12-15', volume: '12 séries/grupo', intensity: '60-65% 1RM', recovery: '90s' }
+                ],
+                'attendance': {}
+            }
+        },
+
+        userRunningWorkouts: {
+            'britodeandrade@gmail.com': [
+                { method: 'FARTLEK', details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC", speed: '8,5 Km/h', pace: '7:00/Km', time: '30 min', fcAlvo: '80%', fcMax: '184 BPM', fcTreino: '147,2 BPM' }
+            ],
+            'marcellybispo92@gmail.com': [
+                { method: 'FARTLEK', details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC", speed: '7,5 Km/h', pace: '8:00/Km', time: '30 min', fcAlvo: '80%', fcMax: '187 BPM', fcTreino: '149,6 BPM' }
+            ]
+        }
+    };
+
+    // --- VARIÁVEIS GLOBAIS ---
+    let currentStudentId = null;
+    let currentStudentEmail = null;
+    let currentTrainingType = null;
+
+    // --- FUNÇÃO PRINCIPAL DE INICIALIZAÇÃO ---
+    function initializeApp() {
+        feather.replace();
+        
+        const splash = document.getElementById('splashScreen');
+        const app = document.getElementById('appContainer');
+
+        setTimeout(() => {
+            splash.classList.add('fade-out');
+            setTimeout(() => {
+                splash.style.display = 'none';
+                app.classList.remove('hidden');
+                app.style.display = 'flex';
+                
+                populateUserSelection();
+                populateStudentList();
+                setupEventListeners();
+            }, 500);
+        }, 1500);
+    }
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO ---
+    function populateUserSelection() {
+        const container = document.getElementById('user-selection-container');
+        if (!container) return;
+        
+        container.innerHTML = database.users.map(user => `
+            <div class="user-card flex items-center p-3 bg-gray-800 rounded-xl border border-gray-700 cursor-pointer hover:bg-gray-700 transition" data-user-email="${user.email}">
+                <img src="${user.photo}" alt="${user.name}" class="w-12 h-12 rounded-full object-cover mr-4">
+                <div class="flex-grow">
+                    <p class="font-semibold text-white">${user.name}</p>
+                    <span class="text-sm text-gray-400">Acessar meu perfil</span>
+                </div>
+                <i data-feather="log-in" class="text-red-500"></i>
+            </div>
+        `).join('');
+        feather.replace();
+    }
+
+    function populateStudentList() {
+        const container = document.getElementById('student-list-container');
+        if (!container) return;
+        
+        container.innerHTML = database.users.map(student => `
+            <div class="student-card flex items-center p-3 bg-gray-800 rounded-xl border border-gray-700 cursor-pointer hover:bg-gray-700 transition" data-student-id="${student.id}">
+                <img src="${student.photo}" alt="${student.name}" class="w-12 h-12 rounded-full object-cover mr-4">
+                <div class="flex-grow">
+                    <p class="font-semibold text-white">${student.name}</p>
+                    <span class="text-sm text-gray-400">Ver perfil completo</span>
+                </div>
+                <i data-feather="user" class="text-blue-500"></i>
+            </div>
+        `).join('');
+        feather.replace();
+    }
+
+    function populateStudentProfile(studentId) {
+        currentStudentId = studentId;
+        const student = database.users.find(s => s.id == studentId);
+        if (!student) return;
+        
+        currentStudentEmail = student.email;
+        
+        const infoContainer = document.getElementById('student-profile-info');
+        if (infoContainer) {
+            infoContainer.innerHTML = `
+                <img src="${student.photo}" alt="${student.name}" class="w-14 h-14 rounded-full object-cover mr-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white">${student.name}</h2>
+                    <p class="text-gray-400 text-sm">${student.email}</p>
+                </div>
+            `;
+        }
+
+        const buttonsContainer = document.getElementById('student-profile-buttons');
+        if (buttonsContainer) {
+            buttonsContainer.innerHTML = `
+                <button class="profile-action-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 rounded-xl flex flex-col items-center justify-center space-y-2 transition shadow-lg" data-action="A">
+                    <i data-feather="star"></i><span class="text-xs">TREINO A</span>
+                </button>
+                <button class="profile-action-btn bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl flex flex-col items-center justify-center space-y-2 transition shadow-lg" data-action="B">
+                    <i data-feather="zap"></i><span class="text-xs">TREINO B</span>
+                </button>
+                <button class="profile-action-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 rounded-xl flex flex-col items-center justify-center space-y-2 transition shadow-lg" data-action="corrida">
+                    <i data-feather="trending-up"></i><span class="text-xs">CORRIDA</span>
+                </button>
+                <button class="profile-action-btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-4 rounded-xl flex flex-col items-center justify-center space-y-2 transition shadow-lg" data-action="periodizacao">
+                    <i data-feather="calendar"></i><span class="text-xs">PERIODIZAÇÃO</span>
+                </button>
+            `;
+            feather.replace();
+        }
+    }
+
+    // --- FUNÇÕES DE CARREGAMENTO DE TREINOS ---
+    function loadTrainingScreen(trainingType) {
+        currentTrainingType = trainingType;
+        const trainingPlan = database.trainingPlans[currentStudentEmail]?.[trainingType] || [];
+        
+        const title = document.getElementById('training-title');
+        const content = document.getElementById('training-content-wrapper');
+        
+        if (title) title.textContent = `Treino ${trainingType}`;
+        if (!content) return;
+        
+        content.innerHTML = '';
+
+        if (trainingPlan.length === 0) {
+            content.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                    <i data-feather="frown" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Nenhum treino cadastrado</h3>
+                    <p class="text-gray-400">Entre em contato com o professor para definir seu treino.</p>
+                </div>
+            `;
+            feather.replace();
+            return;
+        }
+
+        trainingPlan.forEach((exercise) => {
+            const exerciseCard = document.createElement('div');
+            exerciseCard.className = 'bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4';
+            exerciseCard.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center flex-1">
+                        <img src="${exercise.img}" alt="${exercise.name}" class="w-16 h-16 rounded-lg object-cover mr-4">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-white text-lg">${exercise.name}</h3>
+                            <p class="text-gray-300 text-sm">${exercise.series}</p>
+                            <div class="flex items-center mt-2">
+                                <input type="number" 
+                                       value="${exercise.carga || ''}" 
+                                       class="carga-input w-20 bg-gray-700 text-white border border-gray-600 rounded-lg py-1 px-2 mr-2" 
+                                       placeholder="Carga"
+                                       data-exercise-id="${exercise.id}">
+                                <span class="text-gray-300 text-sm">kg</span>
+                                <button class="save-carga-btn ml-4 bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-3 rounded-lg transition-colors" data-exercise-id="${exercise.id}">
+                                    Salvar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="checkin-btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors ml-4" data-exercise-id="${exercise.id}">
+                        <i data-feather="check"></i>
+                    </button>
+                </div>
+            `;
+            content.appendChild(exerciseCard);
+        });
+
+        feather.replace();
+
+        // Event listeners para os botões de check-in
+        content.querySelectorAll('.checkin-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const exerciseId = e.target.closest('.checkin-btn').dataset.exerciseId;
+                alert(`Exercício ${exerciseId} marcado como realizado!`);
+            });
+        });
+
+        content.querySelectorAll('.save-carga-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const exerciseId = e.target.closest('.save-carga-btn').dataset.exerciseId;
+                const input = content.querySelector(`.carga-input[data-exercise-id="${exerciseId}"]`);
+                alert(`Carga ${input.value} kg salva para o exercício ${exerciseId}!`);
+            });
+        });
+    }
+
+    function loadRunningScreen() {
+        const runningWorkouts = database.userRunningWorkouts[currentStudentEmail] || [];
+        
+        const title = document.getElementById('training-title');
+        const content = document.getElementById('training-content-wrapper');
+        
+        if (title) title.textContent = 'Treino de Corrida';
+        if (!content) return;
+        
+        content.innerHTML = '';
+
+        if (runningWorkouts.length === 0) {
+            content.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                    <i data-feather="frown" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Nenhum treino de corrida</h3>
+                    <p class="text-gray-400">Treinos de corrida serão adicionados em breve.</p>
+                </div>
+            `;
+            feather.replace();
+            return;
+        }
+
+        runningWorkouts.forEach((workout) => {
+            const methodClass = `running-title-${workout.method.toLowerCase()}`;
+            const card = document.createElement('div');
+            card.className = 'running-session-card bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="${methodClass} font-bold text-lg">${workout.method}</h3>
+                    <button class="checkin-btn bg-green-600 hover:bg-green-700 text-white text-xs py-1 px-3 rounded-lg transition-colors">
+                        <i data-feather="check" class="w-3 h-3"></i> Realizado
+                    </button>
+                </div>
+                <p class="text-white mb-2"><strong>Detalhes:</strong> ${workout.details}</p>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div><span class="text-gray-400">Velocidade:</span> <span class="text-white">${workout.speed}</span></div>
+                    <div><span class="text-gray-400">Pace:</span> <span class="text-white">${workout.pace}</span></div>
+                    <div><span class="text-gray-400">Tempo:</span> <span class="text-white">${workout.time}</span></div>
+                    <div><span class="text-gray-400">FC Alvo:</span> <span class="text-white">${workout.fcAlvo}</span></div>
+                </div>
+            `;
+            content.appendChild(card);
+        });
+
+        feather.replace();
+    }
+
+    function loadPeriodizationScreen() {
+        const periodization = database.trainingPlans[currentStudentEmail]?.periodizacao || [];
+        
+        const title = document.getElementById('training-title');
+        const content = document.getElementById('training-content-wrapper');
+        
+        if (title) title.textContent = 'Periodização';
+        if (!content) return;
+        
+        content.innerHTML = '';
+
+        if (periodization.length === 0) {
+            content.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 text-center">
+                    <i data-feather="frown" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+                    <h3 class="text-xl font-bold text-white mb-2">Periodização não definida</h3>
+                    <p class="text-gray-400">Sua periodização será definida pelo professor.</p>
+                </div>
+            `;
+            feather.replace();
+            return;
+        }
+
+        periodization.forEach((phase) => {
+            const phaseCard = document.createElement('div');
+            phaseCard.className = 'bg-gray-800 p-4 rounded-xl border border-gray-700 mb-4';
+            phaseCard.innerHTML = `
+                <h3 class="font-bold text-white text-lg mb-3">${phase.week} - ${phase.phase}</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div><span class="text-gray-400">Método:</span> <span class="text-white">${phase.methods}</span></div>
+                    <div><span class="text-gray-400">Repetições:</span> <span class="text-white">${phase.reps}</span></div>
+                    <div><span class="text-gray-400">Volume:</span> <span class="text-white">${phase.volume}</span></div>
+                    <div><span class="text-gray-400">Intensidade:</span> <span class="text-white">${phase.intensity}</span></div>
+                    <div><span class="text-gray-400">Recuperação:</span> <span class="text-white">${phase.recovery}</span></div>
+                </div>
+            `;
+            content.appendChild(phaseCard);
+        });
+
+        feather.replace();
+    }
+
+    // --- SISTEMA DE NAVEGAÇÃO ---
+    function showScreen(targetId, direction = 'forward') {
+        const targetScreen = document.getElementById(targetId);
+        if (!targetScreen) return;
+        
+        // Esconde todas as telas
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        
+        // Mostra a tela alvo
+        targetScreen.classList.add('active');
+    }
+
+    // --- CONFIGURAÇÃO DE EVENT LISTENERS ---
+    function setupEventListeners() {
+        document.addEventListener('click', (e) => {
+            // Login - Seleção de usuário
+            const userCard = e.target.closest('.user-card');
+            if (userCard) {
+                const userEmail = userCard.dataset.userEmail;
+                const user = database.users.find(u => u.email === userEmail);
+                if (user) {
+                    populateStudentProfile(user.id);
+                    showScreen('studentProfileScreen');
+                }
+                return;
+            }
+
+            // Lista de alunos - Seleção de aluno
+            const studentCard = e.target.closest('.student-card');
+            if (studentCard) {
+                const studentId = studentCard.dataset.studentId;
+                populateStudentProfile(studentId);
+                showScreen('studentProfileScreen');
+                return;
+            }
+
+            // Botões de voltar
+            const backBtn = e.target.closest('.back-btn');
+            if (backBtn) {
+                const target = backBtn.dataset.target;
+                showScreen(target);
+                return;
+            }
+
+            // Navegação inferior
+            const navBtn = e.target.closest('.nav-btn');
+            if (navBtn) {
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('text-red-500');
+                    btn.classList.add('text-gray-400', 'hover:text-white');
+                });
+                navBtn.classList.remove('text-gray-400', 'hover:text-white');
+                navBtn.classList.add('text-red-500');
+                const targetScreen = navBtn.dataset.target;
+                showScreen(targetScreen);
+                return;
+            }
+
+            // Botões de ação no perfil
+            const actionBtn = e.target.closest('.profile-action-btn');
+            if (actionBtn) {
+                const action = actionBtn.dataset.action;
+                if (action === 'A' || action === 'B') {
+                    loadTrainingScreen(action);
+                    showScreen('trainingScreen');
+                } else if (action === 'corrida') {
+                    loadRunningScreen();
+                    showScreen('trainingScreen');
+                } else if (action === 'periodizacao') {
+                    loadPeriodizationScreen();
+                    showScreen('trainingScreen');
+                }
+                return;
+            }
+        });
+    }
+
+    // --- INICIALIZAÇÃO DO APP ---
+    document.addEventListener('DOMContentLoaded', initializeApp);
+</script>
