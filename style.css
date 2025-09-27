@@ -1,0 +1,63 @@
+/* Estilos básicos e para as animações de transição de tela */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    overscroll-behavior: none;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+#appContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    background-color: #111827; /* bg-gray-900 */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+}
+.screen.active {
+    display: flex;
+}
+.screen-enter-from-right { transform: translateX(100%); }
+.screen-exit-to-left { transform: translateX(-100%); }
+.screen-enter-from-left { transform: translateX(-100%); }
+.screen-exit-to-right { transform: translateX(100%); }
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+.running-title-fartlek { color: #f97316; } /* orange-500 */
+.running-title-intervalado { color: #3b82f6; } /* blue-500 */
+.running-title-caminhada { color: #10b981; } /* emerald-500 */
+.calendar-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #374151; /* gray-700 */
+    border-radius: 4px;
+    position: relative;
+}
+.calendar-day.today {
+    background-color: #1f2937; /* gray-800 */
+    font-weight: bold;
+}
+.calendar-day.has-treino::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+.calendar-day.treino-A::after { background-color: #3b82f6; } /* blue-500 */
+.calendar-day.treino-B::after { background-color: #22c55e; } /* green-500 */
+.calendar-day.treino-F::after, .calendar-day.treino-running::after { background-color: #a855f7; } /* purple-500 */
