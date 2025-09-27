@@ -1,0 +1,88 @@
+{
+    "users": [
+        { "id": 1, "name": "André Brito", "email": "britodeandrade@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/3Zy4n6ZmWp9DW98VtXpO.jpeg" },
+        { "id": 2, "name": "Marcelly Bispo", "email": "marcellybispo92@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/2VWhNV4eSyDNkwEzPGvq.jpeg" },
+        { "id": 3, "name": "Marcia Brito", "email": "andrademarcia.ucam@gmail.com", "photo": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/WsTwhcQeE99iAkUHmCmn/pub/huS3I3wDTHbXGY1EuLjf.jpg" },
+        { "id": 4, "name": "Liliane Torres", "email": "lilicatorres@gmail.com", "photo": "https://i.ibb.co/7j6x0gG/liliane-torres.jpg" }
+    ],
+    "trainingPlans": {
+        "britodeandrade@gmail.com": {
+            "A": [
+                { "id": 1, "name": "Supino Reto", "series": "4x10", "carga": 70, "img": "https://via.placeholder.com/80x80/3b82f6/ffffff?text=SR", "history": [] },
+                { "id": 2, "name": "Agachamento Livre", "series": "4x12", "carga": 100, "img": "https://via.placeholder.com/80x80/10b981/ffffff?text=AL", "history": [] },
+                { "id": 3, "name": "Remada Curvada", "series": "3x10", "carga": 60, "img": "https://via.placeholder.com/80x80/f59e0b/ffffff?text=RC", "history": [] },
+                { "id": 4, "name": "Desenvolvimento", "series": "3x12", "carga": 40, "img": "https://via.placeholder.com/80x80/ef4444/ffffff?text=DV", "history": [] }
+            ],
+            "B": [
+                { "id": 1, "name": "Levantamento Terra", "series": "4x8", "carga": 120, "img": "https://via.placeholder.com/80x80/8b5cf6/ffffff?text=LT", "history": [] },
+                { "id": 2, "name": "Rosca Direta", "series": "3x12", "carga": 25, "img": "https://via.placeholder.com/80x80/06b6d4/ffffff?text=RD", "history": [] },
+                { "id": 3, "name": "Tríceps Testa", "series": "3x15", "carga": 30, "img": "https://via.placeholder.com/80x80/84cc16/ffffff?text=TT", "history": [] },
+                { "id": 4, "name": "Elevação Lateral", "series": "3x15", "carga": 12, "img": "https://via.placeholder.com/80x80/f97316/ffffff?text=EL", "history": [] }
+            ],
+            "periodizacao": [
+                { "week": "1ª e 2ª", "phase": "Adaptação/Hipertrofia", "methods": "Método de execução Simples", "reps": "10-12", "volume": "16 séries/grupo", "intensity": "70-75% 1RM", "recovery": "60-90s" },
+                { "week": "3ª e 4ª", "phase": "Hipertrofia", "methods": "Bi-Set", "reps": "8-10", "volume": "18 séries/grupo", "intensity": "75-80% 1RM", "recovery": "45-60s" },
+                { "week": "5ª e 6ª", "phase": "Força/Hipertrofia", "methods": "Drop-Set", "reps": "6-8", "volume": "20 séries/grupo", "intensity": "80-85% 1RM", "recovery": "90-120s" }
+            ],
+            "attendance": {}
+        },
+        "marcellybispo92@gmail.com": {
+            "A": [
+                { "id": 1, "name": "Leg Press", "series": "4x15", "carga": 80, "img": "https://via.placeholder.com/80x80/3b82f6/ffffff?text=LP", "history": [] },
+                { "id": 2, "name": "Cadeira Extensora", "series": "3x15", "carga": 40, "img": "https://via.placeholder.com/80x80/10b981/ffffff?text=CE", "history": [] },
+                { "id": 3, "name": "Cadeira Flexora", "series": "3x12", "carga": 35, "img": "https://via.placeholder.com/80x80/f59e0b/ffffff?text=CF", "history": [] }
+            ],
+            "B": [
+                { "id": 1, "name": "Puxada Alta", "series": "4x12", "carga": 45, "img": "https://via.placeholder.com/80x80/8b5cf6/ffffff?text=PA", "history": [] },
+                { "id": 2, "name": "Remada Baixa", "series": "3x12", "carga": 50, "img": "https://via.placeholder.com/80x80/06b6d4/ffffff?text=RB", "history": [] },
+                { "id": 3, "name": "Rosca Scott", "series": "3x15", "carga": 15, "img": "https://via.placeholder.com/80x80/84cc16/ffffff?text=RS", "history": [] }
+            ],
+            "periodizacao": [
+                { "week": "1ª e 2ª", "phase": "Adaptação", "methods": "Execução Controlada", "reps": "12-15", "volume": "12 séries/grupo", "intensity": "60-65% 1RM", "recovery": "90s" }
+            ],
+            "attendance": {}
+        },
+        "andrademarcia.ucam@gmail.com": {
+            "A": [
+                { "id": 1, "name": "Caminhada Esteira", "series": "30min", "carga": null, "img": "https://via.placeholder.com/80x80/3b82f6/ffffff?text=CE", "history": [] },
+                { "id": 2, "name": "Alongamento", "series": "15min", "carga": null, "img": "https://via.placeholder.com/80x80/10b981/ffffff?text=AL", "history": [] }
+            ],
+            "B": [
+                { "id": 1, "name": "Hidroginástica", "series": "45min", "carga": null, "img": "https://via.placeholder.com/80x80/8b5cf6/ffffff?text=HD", "history": [] }
+            ],
+            "periodizacao": [
+                { "week": "1ª a 4ª", "phase": "Adaptação Cardio", "methods": "Atividade Contínua", "reps": "Leve", "volume": "30-45min", "intensity": "60% FC Max", "recovery": "Ativo" }
+            ],
+            "attendance": {}
+        },
+        "lilicatorres@gmail.com": {
+            "A": [
+                { "id": 1, "name": "Supino Máquina", "series": "4x12", "carga": 40, "img": "https://via.placeholder.com/80x80/3b82f6/ffffff?text=SM", "history": [] },
+                { "id": 2, "name": "Puxada Frente", "series": "4x10", "carga": 35, "img": "https://via.placeholder.com/80x80/10b981/ffffff?text=PF", "history": [] }
+            ],
+            "B": [
+                { "id": 1, "name": "Agachamento Smith", "series": "4x10", "carga": 50, "img": "https://via.placeholder.com/80x80/8b5cf6/ffffff?text=AS", "history": [] },
+                { "id": 2, "name": "Cadeira Adutora", "series": "3x15", "carga": 30, "img": "https://via.placeholder.com/80x80/06b6d4/ffffff?text=CA", "history": [] }
+            ],
+            "periodizacao": [
+                { "week": "1ª e 2ª", "phase": "Base", "methods": "Máquinas Guiadas", "reps": "10-12", "volume": "14 séries/grupo", "intensity": "65-70% 1RM", "recovery": "75s" }
+            ],
+            "attendance": {}
+        }
+    },
+    "userRunningWorkouts": {
+        "britodeandrade@gmail.com": [
+            { "method": "FARTLEK", "details": "5' AQ + 20' CO alternado entre CA : CO + 5' REC", "speed": "8,5 Km/h", "pace": "7:00/Km", "time": "30 min", "fcAlvo": "80%", "fcMax": "184 BPM", "fcTreino": "147,2 BPM" },
+            { "method": "INTERVALADO", "details": "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", "speed": "9,5 Km/h", "pace": "6:19/Km", "time": "30 min", "fcAlvo": "85%", "fcMax": "184 BPM", "fcTreino": "156,4 BPM" }
+        ],
+        "marcellybispo92@gmail.com": [
+            { "method": "FARTLEK", "details": "5' AQ + 20' CO alternado entre CA : CO + 5' REC", "speed": "7,5 Km/h", "pace": "8:00/Km", "time": "30 min", "fcAlvo": "80%", "fcMax": "187 BPM", "fcTreino": "149,6 BPM" }
+        ],
+        "andrademarcia.ucam@gmail.com": [
+            { "method": "CAMINHADA", "details": "30' caminhada contínua em ritmo confortável", "speed": "5,5 Km/h", "pace": "11:00/Km", "time": "30 min", "fcAlvo": "N/A", "fcMax": "161 BPM", "fcTreino": "N/A" }
+        ],
+        "lilicatorres@gmail.com": [
+            { "method": "FARTLEK", "details": "5' CA Fraca + 25' CA Forte : CA Fraca", "speed": "5,5 Km/h", "pace": "11:00/Km", "time": "30 min", "fcAlvo": "N/A", "fcMax": "186 BPM", "fcTreino": "N/A" }
+        ]
+    }
+}
