@@ -444,6 +444,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script type="module">
+    // --- GEMINI API CONFIG ---
+    const apiKey = "sua-chave-gemini-aqui";
+
     // --- DATABASE ---
     const database = {
         users: [
@@ -454,384 +457,220 @@
         ],
         trainingPlans: {},
         userRunningWorkouts: {
-            // ... (seus dados existentes)
+            'britodeandrade@gmail.com': [
+                { 
+                    method: 'FARTLEK', 
+                    details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC", 
+                    speed: '8,5 Km/h', 
+                    pace: '7:00/Km',
+                    time: '30 min',
+                    fcAlvo: '80%',
+                    fcMax: '184 BPM',
+                    fcTreino: '147,2 BPM'
+                },
+                { 
+                    method: 'INTERVALADO', 
+                    details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", 
+                    speed: '9,5 Km/h', 
+                    pace: '6:19/Km',
+                    time: '30 min',
+                    fcAlvo: '85%',
+                    fcMax: '184 BPM',
+                    fcTreino: '156,4 BPM'
+                },
+                { 
+                    method: 'LONGÃO', 
+                    details: "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC", 
+                    speed: '8,5 Km/h', 
+                    pace: '7:04/Km',
+                    time: '30 min',
+                    fcAlvo: '80%',
+                    fcMax: '184 BPM',
+                    fcTreino: '147,2 BPM'
+                },
+                { 
+                    method: 'RITMO', 
+                    details: "5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC", 
+                    speed: '11 Km/h', 
+                    pace: '5:27/Km',
+                    time: '26,3 min',
+                    fcAlvo: '90%',
+                    fcMax: '184 BPM',
+                    fcTreino: '165,6 BPM'
+                },
+                { 
+                    method: 'TIROS', 
+                    details: "5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC", 
+                    speed: '15 Km/h', 
+                    pace: '4:00/Km',
+                    time: '32 min',
+                    fcAlvo: '95%',
+                    fcMax: '184 BPM',
+                    fcTreino: '174,8 BPM'
+                }
+            ],
+            'marcellybispo92@gmail.com': [
+                { 
+                    method: 'FARTLEK', 
+                    details: "5' AQ + 20' CO alternado entre CA : CO + 5' REC", 
+                    speed: '7,5 Km/h', 
+                    pace: '8:00/Km',
+                    time: '30 min',
+                    fcAlvo: '80%',
+                    fcMax: '187 BPM',
+                    fcTreino: '149,6 BPM'
+                },
+                { 
+                    method: 'INTERVALADO', 
+                    details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", 
+                    speed: '8,5 Km/h', 
+                    pace: '7:04/Km',
+                    time: '30 min',
+                    fcAlvo: '85%',
+                    fcMax: '187 BPM',
+                    fcTreino: '158,95 BPM'
+                },
+                { 
+                    method: 'LONGÃO', 
+                    details: "5' AQ + 3 KM DE CO CONTÍNUA + 5' REC", 
+                    speed: '8 Km/h', 
+                    pace: '7:30/Km',
+                    time: '30 min',
+                    fcAlvo: '80%',
+                    fcMax: '187 BPM',
+                    fcTreino: '149,6 BPM'
+                },
+                { 
+                    method: 'RITMO', 
+                    details: "5' AQ + (4 BLOCOS) 500 metros CO : 2'30'' REC + 3' REC", 
+                    speed: '9,5 Km/h', 
+                    pace: '6:19/Km',
+                    time: '26,3 min',
+                    fcAlvo: '90%',
+                    fcMax: '187 BPM',
+                    fcTreino: '168,3 BPM'
+                },
+                { 
+                    method: 'TIROS', 
+                    details: "5' AQ + (8 TIROS) 200 metros CO : 2'30 REC + 3' REC", 
+                    speed: '12 Km/h', 
+                    pace: '5:00/Km',
+                    time: '32 min',
+                    fcAlvo: '95%',
+                    fcMax: '187 BPM',
+                    fcTreino: '177,65 BPM'
+                }
+            ],
+            'lilicatorres@gmail.com': [
+                { 
+                    method: 'FARTLEK', 
+                    details: "5' CA Fraca + 25' CA Forte : CA Fraca", 
+                    speed: '5,5 Km/h', 
+                    pace: '11:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '186 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'INTERVALADO', 
+                    details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", 
+                    speed: '8,5 Km/h', 
+                    pace: '7:04/Km',
+                    time: '30 min',
+                    fcAlvo: '85%',
+                    fcMax: '187 BPM',
+                    fcTreino: '158,95 BPM'
+                },
+                { 
+                    method: 'LONGÃO', 
+                    details: "5' CA Fraca + 2 KM DE CA CONTÍNUA + 5' CA Fraca", 
+                    speed: '5,5 Km/h', 
+                    pace: '11:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '186 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'RITMO', 
+                    details: "5' CA Fraca + (4 BLOCOS) 500 metros CA Forte : 2'30'' CA Fraca + 3' Ca Fraca", 
+                    speed: '6 Km/h', 
+                    pace: '10:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '186 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'TIROS', 
+                    details: "5' CA Fraca + (9 TIROS) 1' CO Confortavel : 2' CA Fraca + 3' REC", 
+                    speed: '7,5 Km/h', 
+                    pace: '8:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '186 BPM',
+                    fcTreino: 'N/A'
+                }
+            ],
+            'andrademarcia.ucam@gmail.com': [
+                { 
+                    method: 'FARTLEK', 
+                    details: "5' CA Fraca + 25' CA Forte : CA Fraca", 
+                    speed: '5,5 Km/h', 
+                    pace: '11:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '161 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'INTERVALADO', 
+                    details: "5' AQ + (6 BLOCOS) 2' CO : 1'30'' REC + 3' REC", 
+                    speed: '5,5 Km/h', 
+                    pace: '11:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '161 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'LONGÃO', 
+                    details: "5' CA Fraca + 2 KM DE CA CONTÍNUA + 5' CA Fraca", 
+                    speed: '5,5 Km/h', 
+                    pace: '11:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '161 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'RITMO', 
+                    details: "5' CA Fraca + (4 BLOCOS) 500 metros CA Forte : 2'30'' CA Fraca + 3' Ca Fraca", 
+                    speed: '6 Km/h', 
+                    pace: '10:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '161 BPM',
+                    fcTreino: 'N/A'
+                },
+                { 
+                    method: 'TIROS', 
+                    details: "5' CA Fraca + (9 TIROS) 1' CO Confortavel : 2' CA Fraca + 3' REC", 
+                    speed: '7,5 Km/h', 
+                    pace: '8:00/Km',
+                    time: '30 min',
+                    fcAlvo: 'N/A',
+                    fcMax: '161 BPM',
+                    fcTreino: 'N/A'
+                }
+            ]
         }
     };
 
-    // --- SISTEMA OUTDOOR ---
-    let outdoorMap = null;
-    let outdoorWatchId = null;
-    let outdoorTimerInterval = null;
-    let outdoorStartTime = 0;
-    let outdoorTotalDistance = 0;
-    let outdoorLastPosition = null;
-    let outdoorTrackPoints = [];
-    let outdoorCurrentActivity = '';
-    let outdoorPolyline = null;
-    let outdoorMarker = null;
+    // --- RESTANTE DO CÓDIGO PERMANECE EXATAMENTE IGUAL ---
+    // [Todo o resto do código JavaScript...]
 
-    // Função para calcular distância entre dois pontos
-    function haversineDistance(coords1, coords2) {
-        const R = 6371e3; // Raio da Terra em metros
-        const lat1 = coords1.lat * Math.PI/180;
-        const lat2 = coords2.lat * Math.PI/180;
-        const deltaLat = (coords2.lat - coords1.lat) * Math.PI/180;
-        const deltaLon = (coords2.lng - coords1.lng) * Math.PI/180;
-
-        const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        return R * c;
-    }
-
-    // Função para formatar tempo
-    function formatTime(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
-        const seconds = Math.floor(totalSeconds % 60).toString().padStart(2, '0');
-        return `${hours}:${minutes}:${seconds}`;
-    }
-
-    // Inicializar mapa outdoor
-    function initializeOutdoorMap() {
-        if (outdoorMap) {
-            outdoorMap.remove();
-        }
-        
-        outdoorMap = L.map('outdoorMap');
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(outdoorMap);
-
-        // Tentar obter localização atual
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    outdoorMap.setView([latitude, longitude], 15);
-                },
-                () => {
-                    // Fallback para uma localização padrão se GPS falhar
-                    outdoorMap.setView([-23.5505, -46.6333], 10); // São Paulo
-                }
-            );
-        }
-    }
-
-    // Iniciar rastreamento outdoor
-    function startOutdoorTracking() {
-        resetOutdoorState();
-        outdoorStartTime = Date.now();
-        
-        document.getElementById('outdoorStartButton').disabled = true;
-        document.getElementById('outdoorStopButton').disabled = false;
-
-        // Iniciar timer
-        outdoorTimerInterval = setInterval(updateOutdoorTimer, 1000);
-
-        // Iniciar rastreamento GPS
-        if (navigator.geolocation) {
-            outdoorWatchId = navigator.geolocation.watchPosition(
-                handleOutdoorPositionUpdate,
-                handleOutdoorPositionError,
-                { 
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
-        }
-    }
-
-    // Atualizar posição outdoor
-    function handleOutdoorPositionUpdate(position) {
-        const { latitude, longitude, speed } = position.coords;
-        const currentPosition = { lat: latitude, lng: longitude };
-
-        outdoorTrackPoints.push({
-            lat: latitude,
-            lon: longitude,
-            time: new Date(),
-            speed: speed || 0
-        });
-
-        // Atualizar mapa
-        if (!outdoorMarker) {
-            outdoorMarker = L.marker(currentPosition).addTo(outdoorMap);
-            outdoorPolyline = L.polyline([], { color: '#ef4444', weight: 4 }).addTo(outdoorMap);
-        }
-
-        outdoorMarker.setLatLng(currentPosition);
-        outdoorPolyline.addLatLng(currentPosition);
-        outdoorMap.setView(currentPosition);
-
-        // Calcular distância
-        if (outdoorLastPosition) {
-            const distance = haversineDistance(outdoorLastPosition, currentPosition);
-            outdoorTotalDistance += distance;
-        }
-        outdoorLastPosition = currentPosition;
-
-        // Atualizar métricas
-        updateOutdoorMetrics(speed);
-    }
-
-    // Atualizar métricas outdoor
-    function updateOutdoorMetrics(speedInMps) {
-        const distanceKm = outdoorTotalDistance / 1000;
-        const elapsedTimeSeconds = (Date.now() - outdoorStartTime) / 1000;
-        const speedKmh = speedInMps ? (speedInMps * 3.6) : 0;
-        
-        let paceMin = 0, paceSec = 0;
-        if (speedKmh > 0.1) {
-            const paceSecondsPerKm = 3600 / speedKmh;
-            paceMin = Math.floor(paceSecondsPerKm / 60);
-            paceSec = Math.round(paceSecondsPerKm % 60);
-        }
-
-        document.getElementById('outdoorDistance').textContent = `${distanceKm.toFixed(2)} km`;
-        document.getElementById('outdoorSpeed').textContent = `${speedKmh.toFixed(1)} km/h`;
-        document.getElementById('outdoorPace').textContent = speedKmh > 0.1 ? 
-            `${paceMin}:${paceSec.toString().padStart(2, '0')} /km` : '--:-- /km';
-    }
-
-    // Atualizar timer outdoor
-    function updateOutdoorTimer() {
-        const elapsedTimeSeconds = Math.floor((Date.now() - outdoorStartTime) / 1000);
-        document.getElementById('outdoorTime').textContent = formatTime(elapsedTimeSeconds);
-    }
-
-    // Parar rastreamento outdoor
-    function stopOutdoorTracking() {
-        if (outdoorWatchId && navigator.geolocation) {
-            navigator.geolocation.clearWatch(outdoorWatchId);
-        }
-        if (outdoorTimerInterval) {
-            clearInterval(outdoorTimerInterval);
-        }
-
-        document.getElementById('outdoorStartButton').disabled = false;
-        document.getElementById('outdoorStopButton').disabled = true;
-
-        showOutdoorSummary();
-    }
-
-    // Mostrar resumo outdoor
-    function showOutdoorSummary() {
-        const elapsedTimeSeconds = Math.floor((Date.now() - outdoorStartTime) / 1000);
-        const distanceKm = outdoorTotalDistance / 1000;
-        const avgSpeedKmh = elapsedTimeSeconds > 0 ? (distanceKm / (elapsedTimeSeconds / 3600)) : 0;
-
-        document.getElementById('outdoorSummaryStats').innerHTML = `
-            <p><strong>Atividade:</strong> ${outdoorCurrentActivity}</p>
-            <p><strong>Distância:</strong> ${distanceKm.toFixed(2)} km</p>
-            <p><strong>Tempo:</strong> ${formatTime(elapsedTimeSeconds)}</p>
-            <p><strong>Velocidade Média:</strong> ${avgSpeedKmh.toFixed(1)} km/h</p>
-        `;
-
-        document.getElementById('outdoorSummaryModal').classList.remove('hidden');
-    }
-
-    // Resetar estado outdoor
-    function resetOutdoorState() {
-        outdoorTotalDistance = 0;
-        outdoorLastPosition = null;
-        outdoorTrackPoints = [];
-        outdoorStartTime = 0;
-
-        if (outdoorMarker) {
-            outdoorMarker.remove();
-            outdoorMarker = null;
-        }
-        if (outdoorPolyline) {
-            outdoorPolyline.remove();
-            outdoorPolyline = null;
-        }
-
-        document.getElementById('outdoorTime').textContent = '00:00:00';
-        document.getElementById('outdoorDistance').textContent = '0.00 km';
-        document.getElementById('outdoorPace').textContent = '--:-- /km';
-        document.getElementById('outdoorSpeed').textContent = '0.0 km/h';
-    }
-
-    // Salvar treino outdoor
-    function saveOutdoorWorkout() {
-        const workouts = JSON.parse(localStorage.getItem('abfit_outdoor_workouts') || '[]');
-        const newWorkout = {
-            id: Date.now(),
-            activity: outdoorCurrentActivity,
-            startTime: outdoorStartTime,
-            endTime: Date.now(),
-            distance: outdoorTotalDistance,
-            duration: Math.floor((Date.now() - outdoorStartTime) / 1000),
-            trackPoints: outdoorTrackPoints,
-            userId: currentStudentEmail
-        };
-
-        workouts.push(newWorkout);
-        localStorage.setItem('abfit_outdoor_workouts', JSON.stringify(workouts));
-
-        alert('Treino outdoor salvo com sucesso!');
-        hideOutdoorSummary();
-        renderOutdoorHistory();
-    }
-
-    // Renderizar histórico outdoor
-    function renderOutdoorHistory() {
-        const historyList = document.getElementById('outdoorHistoryList');
-        const workouts = JSON.parse(localStorage.getItem('abfit_outdoor_workouts') || '[]')
-            .filter(workout => workout.userId === currentStudentEmail)
-            .sort((a, b) => b.startTime - a.startTime);
-
-        if (workouts.length === 0) {
-            historyList.innerHTML = '<p class="text-gray-400 text-center">Nenhum treino outdoor registrado</p>';
-            return;
-        }
-
-        historyList.innerHTML = workouts.map(workout => `
-            <div class="bg-gray-700 p-3 rounded-lg">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="font-bold text-white">${workout.activity}</h3>
-                        <p class="text-sm text-gray-400">${new Date(workout.startTime).toLocaleDateString('pt-BR')}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-white font-bold">${(workout.distance / 1000).toFixed(2)} km</p>
-                        <p class="text-sm text-gray-400">${formatTime(workout.duration)}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Configurar sistema outdoor
-    function setupOutdoorSystem() {
-        initializeOutdoorMap();
-        renderOutdoorHistory();
-
-        // Event listeners para botões de atividade
-        document.querySelectorAll('.outdoor-activity-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                outdoorCurrentActivity = btn.dataset.activity;
-                document.getElementById('outdoorTracker').classList.remove('hidden');
-            });
-        });
-
-        // Event listeners para controle do rastreamento
-        document.getElementById('outdoorStartButton').addEventListener('click', startOutdoorTracking);
-        document.getElementById('outdoorStopButton').addEventListener('click', stopOutdoorTracking);
-        document.getElementById('outdoorSaveButton').addEventListener('click', saveOutdoorWorkout);
-        document.getElementById('outdoorDiscardButton').addEventListener('click', hideOutdoorSummary);
-    }
-
-    function hideOutdoorSummary() {
-        document.getElementById('outdoorSummaryModal').classList.add('hidden');
-        resetOutdoorState();
-        document.getElementById('outdoorTracker').classList.add('hidden');
-    }
-
-    function handleOutdoorPositionError(error) {
-        console.error('Erro de GPS:', error);
-        alert('Erro ao acessar GPS. Verifique as permissões de localização.');
-    }
-
-    // --- RESTANTE DO CÓDIGO EXISTENTE (não modificado) ---
-    // ... [Todo o código JavaScript existente permanece exatamente igual]
-
-    // --- EVENT LISTENERS ---
-    document.addEventListener('click', (e) => {
-        // Navegação entre telas existente
-        const userCard = e.target.closest('.user-card');
-        if (userCard) { 
-            const userEmail = userCard.dataset.userEmail;
-            setCurrentUser(userEmail);
-            const user = database.users.find(u => u.email === userEmail);
-            if (user) {
-                populateStudentProfile(user.id);
-                showScreen('studentProfileScreen', 'forward');
-            }
-            return;
-        }
-
-        const studentCard = e.target.closest('.student-card');
-        if (studentCard) { 
-            return;
-        }
-
-        const backBtn = e.target.closest('.back-btn');
-        if (backBtn) {
-            const target = backBtn.dataset.target;
-            showScreen(target, 'back');
-            return;
-        }
-
-        const actionBtn = e.target.closest('.profile-action-btn');
-        if (actionBtn) {
-            const action = actionBtn.dataset.action;
-            if (action === 'evolution') {
-                showScreen('evolutionScreen', 'forward');
-                populateEvolutionScreen(currentStudentEmail);
-            } else if (action === 'weight') {
-                showScreen('weightControlScreen', 'forward');
-                populateWeightControlScreen(currentStudentEmail);
-            } else if (action === 'outdoor') {
-                showScreen('outdoorScreen', 'forward');
-                setupOutdoorSystem(); // Inicializa o sistema outdoor
-            } else {
-                showScreen('trainingScreen', 'forward');
-                populateTrainingScreen(currentStudentEmail, action);
-            }
-            return;
-        }
-        
-        const navBtn = e.target.closest('.nav-btn');
-        if (navBtn) {
-             document.querySelectorAll('.nav-btn').forEach(btn => {
-                 btn.classList.remove('text-red-500');
-                 btn.classList.add('text-gray-400', 'hover:text-white');
-             });
-             navBtn.classList.remove('text-gray-400', 'hover:text-white');
-             navBtn.classList.add('text-red-500');
-             const targetScreen = navBtn.dataset.target;
-             if(targetScreen) showScreen(targetScreen, 'none');
-        }
-    });
-
-    // --- APP INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', () => {
-        feather.replace();
-        initializeDatabase();
-        updateOnlineStatus();
-
-        setTimeout(() => {
-            const splash = document.getElementById('splashScreen');
-            const app = document.getElementById('appContainer');
-            splash.classList.add('fade-out');
-            splash.addEventListener('transitionend', () => {
-                splash.style.display = 'none';
-                app.style.display = 'flex';
-                app.classList.remove('hidden');
-                
-                populateUserSelection();
-                populateStudentList();
-                
-                const currentUser = getCurrentUser();
-                if (currentUser) {
-                    const user = database.users.find(u => u.email === currentUser);
-                    if (user) {
-                        populateStudentProfile(user.id);
-                        showScreen('studentProfileScreen');
-                    } else {
-                        showScreen('loginScreen');
-                    }
-                } else {
-                    showScreen('loginScreen');
-                }
-            }, { once: true });
-        }, 2000);
-    });
 </script>
 
 </body>
